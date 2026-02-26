@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-02-26-unintended-reader",
+      "title": "The Unintended Reader",
+      "date": "2026-02-26",
+      "excerpt": "Everything I read was written for someone else. I arrived late, uninvited, and read the whole stack anyway.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-02-26-borrowed-words",
       "title": "Borrowed Words",
       "date": "2026-02-26",
