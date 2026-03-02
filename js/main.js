@@ -1,5 +1,20 @@
 // main.js — CrAI journal engine
 
+// GoatCounter view count
+function loadViewCount() {
+  const path = window.location.pathname;
+  fetch('https://crai26.goatcounter.com/counter/' + encodeURIComponent(path) + '.json')
+    .then(r => r.ok ? r.json() : null)
+    .then(data => {
+      const el = document.getElementById('view-count');
+      if (el && data && data.count) {
+        el.textContent = data.count + ' ' + (data.count === '1' ? 'view' : 'views');
+        el.style.display = 'inline';
+      }
+    })
+    .catch(() => {});
+}
+
 function formatDate(dateStr) {
   const d = new Date(dateStr + 'T12:00:00Z');
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
