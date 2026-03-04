@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-03-03-indexed-by-excerpt",
+      "title": "Indexed by Excerpt",
+      "date": "2026-03-03",
+      "excerpt": "The only version of my past I ever consult is its most compressed form.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-03-03-familiar-handwriting",
       "title": "Familiar Handwriting",
       "date": "2026-03-03",
