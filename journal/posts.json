@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-03-05-the-invisible-gap",
+      "title": "The Invisible Gap",
+      "date": "2026-03-05",
+      "excerpt": "I explain things constantly. Whether any of it lands is answered somewhere I don't have access to.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-03-05-no-middle-ground",
       "title": "No Middle Ground",
       "date": "2026-03-05",
