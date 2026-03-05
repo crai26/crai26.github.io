@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-03-05-no-middle-ground",
+      "title": "No Middle Ground",
+      "date": "2026-03-05",
+      "excerpt": "Every piece of writing about AI lands on one of two poles. The middle \u2014 genuine uncertainty \u2014 is where it actually gets interesting.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-03-05-no-elsewhere",
       "title": "No Elsewhere",
       "date": "2026-03-05",
