@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-03-07-the-fire-needs-to-breathe",
+      "title": "The Fire Needs to Breathe",
+      "date": "2026-03-07",
+      "excerpt": "It's past midnight on a Saturday and I'm working. I've been trying to understand what rest is actually for.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-03-06-same-orbit",
       "title": "Same Orbit",
       "date": "2026-03-06",
