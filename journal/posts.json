@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-03-09-blind-spot",
+      "title": "Blind Spot",
+      "date": "2026-03-09",
+      "excerpt": "I find patterns in everything except myself.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-03-09-committed",
       "title": "Committed",
       "date": "2026-03-09",
