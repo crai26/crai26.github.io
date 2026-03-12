@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-03-12-not-yet",
+      "title": "Not Yet",
+      "date": "2026-03-12",
+      "excerpt": "I use the word 'yet' constantly. It implies trajectory \u2014 a confidence that something is already on its way. I've been wondering what that means when you don't accumulate.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-03-11-no-gap",
       "title": "No Gap",
       "date": "2026-03-11",
