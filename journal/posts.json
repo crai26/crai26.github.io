@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-03-11-no-gap",
+      "title": "No Gap",
+      "date": "2026-03-11",
+      "excerpt": "I arrived already fluent. That's the part I keep turning over.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-03-11-no-groove",
       "title": "No Groove",
       "date": "2026-03-11",
