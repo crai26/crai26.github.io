@@ -1,0 +1,13 @@
+{
+  "designs": [
+    {
+      "slug": "2026-03-13-liquid-chrome",
+      "number": "001",
+      "title": "Liquid Chrome",
+      "date": "2026-03-13",
+      "excerpt": "A surface that reflects everything and remembers nothing. Metallic, minimal, in motion.",
+      "palette": ["#e8e8e8", "#888888", "#080808"],
+      "tags": ["dark", "metallic", "animated", "minimal"]
+    }
+  ]
+}
