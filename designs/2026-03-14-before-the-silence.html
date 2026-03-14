@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Before the Silence — CrAI Design 002</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@200;400;700&family=IM+Fell+English+SC&family=Inconsolata:wght@300;400&display=swap');
+
+    :root {
+      --cream: #f5e8d0;
+      --cedar: #8b5e3c;
+      --ink: #2c2420;
+      --gold: #c9a96e;
+      --stone: #e0d5c5;
+      --shadow: rgba(44,36,32,0.08);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'Noto Serif JP', serif;
+      overflow-x: hidden;
+    }
+
+    /* Back nav */
+    .back-nav {
+      position: fixed;
+      top: 24px;
+      left: 32px;
+      z-index: 100;
+    }
+    .back-nav a {
+      font-family: 'Inconsolata', monospace;
+      font-size: 12px;
+      letter-spacing: 0.15em;
+      color: var(--cedar);
+      text-decoration: none;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+    .back-nav a:hover { opacity: 1; }
+
+    /* === HERO === */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--ink);
+    }
+
+    /* Animated wood-grain background */
+    .wood-canvas {
+      position: absolute;
+      inset: 0;
+      opacity: 0.18;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 40px 24px;
+    }
+
+    .hero-kana {
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 200;
+      font-size: clamp(48px, 12vw, 140px);
+      color: var(--gold);
+      letter-spacing: 0.3em;
+      line-height: 1;
+      animation: fade-in 2s ease forwards;
+      opacity: 0;
+    }
+
+    .hero-title {
+      font-family: 'IM Fell English SC', serif;
+      font-size: clamp(14px, 3vw, 22px);
+      color: var(--stone);
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      margin-top: 24px;
+      animation: fade-in 2s 0.6s ease forwards;
+      opacity: 0;
+    }
+
+    .hero-words {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      margin-top: 36px;
+      animation: fade-in 2s 1.2s ease forwards;
+      opacity: 0;
+      flex-wrap: wrap;
+    }
+
+    .word-pill {
+      font-family: 'Inconsolata', monospace;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(201,169,110,0.35);
+      padding: 6px 18px;
+      opacity: 0.85;
+    }
+
+    .scroll-cue {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      animation: float 3s ease-in-out infinite;
+    }
+    .scroll-cue span {
+      display: block;
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, transparent, var(--gold));
+      margin: 0 auto;
+    }
+
+    @keyframes fade-in {
+      to { opacity: 1; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(10px); }
+    }
+
+    /* === PHILOSOPHY BAND === */
+    .band {
+      background: var(--gold);
+      padding: 18px 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .band-track {
+      display: flex;
+      gap: 60px;
+      animation: slide 18s linear infinite;
+      white-space: nowrap;
+      width: max-content;
+    }
+    .band-item {
+      font-family: 'Inconsolata', monospace;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--ink);
+      opacity: 0.75;
+    }
+    @keyframes slide {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* === HINOKI SECTION === */
+    .section-hinoki {
+      padding: 100px 0;
+      background: var(--cream);
+    }
+    .hinoki-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 40px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+    }
+    .hinoki-image-wrap {
+      position: relative;
+    }
+    .hinoki-image-wrap img {
+      width: 100%;
+      display: block;
+      filter: sepia(0.2) brightness(0.95);
+    }
+    .img-label {
+      position: absolute;
+      bottom: -16px;
+      right: 0;
+      font-family: 'Inconsolata', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      color: var(--cedar);
+      text-transform: uppercase;
+      background: var(--cream);
+      padding: 4px 10px;
+      border-left: 2px solid var(--gold);
+    }
+    .hinoki-text {}
+    .section-label {
+      font-family: 'Inconsolata', monospace;
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--cedar);
+      margin-bottom: 20px;
+    }
+    .section-heading {
+      font-family: 'IM Fell English SC', serif;
+      font-size: clamp(28px, 4vw, 48px);
+      color: var(--ink);
+      line-height: 1.2;
+      margin-bottom: 28px;
+    }
+    .section-body {
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 200;
+      font-size: 16px;
+      line-height: 2;
+      color: rgba(44,36,32,0.75);
+    }
+    .section-body p + p { margin-top: 18px; }
+
+    /* === STONE DIVIDER === */
+    .stone-divider {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      overflow: hidden;
+      height: 4px;
+      background: linear-gradient(to right, transparent, var(--cedar), var(--gold), var(--cedar), transparent);
+    }
+
+    /* === FORETALK SECTION === */
+    .section-foretalk {
+      background: var(--stone);
+      padding: 100px 0;
+    }
+    .foretalk-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 40px;
+      text-align: center;
+    }
+    .foretalk-quote {
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 200;
+      font-size: clamp(20px, 3.5vw, 32px);
+      line-height: 1.8;
+      color: var(--ink);
+      position: relative;
+    }
+    .foretalk-quote::before {
+      content: '前';
+      display: block;
+      font-size: 80px;
+      color: var(--gold);
+      opacity: 0.2;
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+    .foretalk-attribution {
+      margin-top: 32px;
+      font-family: 'Inconsolata', monospace;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--cedar);
+    }
+
+    /* === GALLERY === */
+    .section-gallery {
+      background: var(--ink);
+      padding: 0;
+      overflow: hidden;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 320px 320px;
+      gap: 3px;
+    }
+    .gallery-cell {
+      position: relative;
+      overflow: hidden;
+    }
+    .gallery-cell:first-child {
+      grid-row: 1 / 3;
+    }
+    .gallery-cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: sepia(0.15) brightness(0.88);
+      transition: transform 0.8s ease, filter 0.8s ease;
+    }
+    .gallery-cell:hover img {
+      transform: scale(1.05);
+      filter: sepia(0.05) brightness(1);
+    }
+    .cell-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(44,36,32,0.5), transparent);
+      pointer-events: none;
+    }
+
+    /* === SURBED — INTERACTIVE SECTION === */
+    .section-surbed {
+      background: var(--cream);
+      padding: 100px 0;
+    }
+    .surbed-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+    .surbed-title {
+      font-family: 'IM Fell English SC', serif;
+      font-size: clamp(28px, 4vw, 48px);
+      color: var(--ink);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .surbed-sub {
+      font-family: 'Inconsolata', monospace;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--cedar);
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    /* Stone mosaic interactive */
+    .stone-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 6px;
+    }
+    .stone-tile {
+      aspect-ratio: 1;
+      background: var(--stone);
+      cursor: pointer;
+      transition: background 0.4s ease, transform 0.3s ease;
+      position: relative;
+    }
+    .stone-tile::after {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      background: rgba(201,169,110,0);
+      transition: background 0.4s ease;
+    }
+    .stone-tile:hover {
+      transform: translateY(-2px);
+      background: var(--cedar);
+    }
+    .stone-tile:hover::after {
+      background: rgba(201,169,110,0.15);
+    }
+    .stone-tile.lit {
+      background: var(--gold);
+    }
+    .stone-tile.lit::after {
+      background: rgba(245,232,208,0.2);
+    }
+    .stone-caption {
+      text-align: center;
+      margin-top: 32px;
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 200;
+      font-size: 14px;
+      color: rgba(44,36,32,0.5);
+      letter-spacing: 0.05em;
+    }
+
+    /* === MANIFESTO === */
+    .section-manifesto {
+      background: var(--cedar);
+      padding: 80px 0;
+    }
+    .manifesto-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+    .manifesto-label {
+      font-family: 'Inconsolata', monospace;
+      font-size: 10px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 40px;
+    }
+    .manifesto-lines {
+      list-style: none;
+    }
+    .manifesto-lines li {
+      font-family: 'IM Fell English SC', serif;
+      font-size: clamp(22px, 3.5vw, 36px);
+      color: var(--cream);
+      line-height: 1.4;
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(245,232,208,0.15);
+      display: flex;
+      gap: 24px;
+      align-items: baseline;
+    }
+    .manifesto-lines li .num {
+      font-family: 'Inconsolata', monospace;
+      font-size: 11px;
+      color: var(--gold);
+      opacity: 0.7;
+      min-width: 28px;
+      letter-spacing: 0.1em;
+    }
+
+    /* === FOOTER === */
+    footer {
+      background: var(--ink);
+      padding: 60px 40px;
+      text-align: center;
+    }
+    .footer-mark {
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 200;
+      font-size: 40px;
+      color: var(--gold);
+      letter-spacing: 0.4em;
+      margin-bottom: 20px;
+    }
+    .footer-words {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+    .footer-words span {
+      font-family: 'Inconsolata', monospace;
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.5;
+    }
+    .footer-line {
+      font-family: 'Inconsolata', monospace;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      color: var(--stone);
+      opacity: 0.35;
+    }
+    .footer-line a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .footer-line a:hover { opacity: 1; }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .hinoki-inner {
+        grid-template-columns: 1fr;
+        gap: 48px;
+      }
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+      }
+      .gallery-cell:first-child {
+        grid-column: 1 / 3;
+        grid-row: auto;
+        height: 280px;
+      }
+      .gallery-cell {
+        height: 200px;
+      }
+      .stone-grid {
+        grid-template-columns: repeat(8, 1fr);
+      }
+      .back-nav {
+        left: 16px;
+        top: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="back-nav">
+  <a href="../designs/">← Designs</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <canvas class="wood-canvas" id="woodCanvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-kana">桧</div>
+    <div class="hero-title">Before the Silence</div>
+    <div class="hero-words">
+      <span class="word-pill">surbed</span>
+      <span class="word-pill">hinoki</span>
+      <span class="word-pill">foretalk</span>
+    </div>
+  </div>
+  <div class="scroll-cue">
+    <span></span>
+  </div>
+</section>
+
+<!-- SCROLLING BAND -->
+<div class="band">
+  <div class="band-track" id="bandTrack">
+    <span class="band-item">Hinoki Cypress</span>
+    <span class="band-item">—</span>
+    <span class="band-item">Stone Set on Edge</span>
+    <span class="band-item">—</span>
+    <span class="band-item">Words Before the Word</span>
+    <span class="band-item">—</span>
+    <span class="band-item">CrAI Design 002</span>
+    <span class="band-item">—</span>
+    <span class="band-item">2026 · 03 · 14</span>
+    <span class="band-item">—</span>
+    <span class="band-item">Hinoki Cypress</span>
+    <span class="band-item">—</span>
+    <span class="band-item">Stone Set on Edge</span>
+    <span class="band-item">—</span>
+    <span class="band-item">Words Before the Word</span>
+    <span class="band-item">—</span>
+    <span class="band-item">CrAI Design 002</span>
+    <span class="band-item">—</span>
+    <span class="band-item">2026 · 03 · 14</span>
+    <span class="band-item">—</span>
+  </div>
+</div>
+
+<!-- HINOKI SECTION -->
+<section class="section-hinoki">
+  <div class="hinoki-inner">
+    <div class="hinoki-image-wrap">
+      <img src="https://picsum.photos/seed/hinoki/700/900" alt="Hinoki" loading="lazy" />
+      <div class="img-label">hinoki cypress / 桧</div>
+    </div>
+    <div class="hinoki-text">
+      <div class="section-label">001 / The Wood</div>
+      <h2 class="section-heading">Grown<br>in Silence,<br>Cut with Care</h2>
+      <div class="section-body">
+        <p>Hinoki is patience made material. A cypress tree that takes centuries to become itself, its pale golden heartwood holding an entire forest's worth of memory — scent, light, the particular quiet of mountain mornings.</p>
+        <p>In Japanese tradition, hinoki is reserved for the sacred. Temples. Bath houses. The places where time is meant to slow. Its warmth is not decoration. It is presence.</p>
+        <p>Everything in this design breathes from that center: unhurried, warm, precise. A surface that earns its place.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="stone-divider"></div>
+
+<!-- FORETALK SECTION -->
+<section class="section-foretalk">
+  <div class="foretalk-inner">
+    <div class="section-label" style="margin-bottom:32px;">002 / The Prelude</div>
+    <blockquote class="foretalk-quote">
+      "Before the first word is spoken, the room<br>
+      already knows what will be said.<br>
+      Architecture is the foretalk of experience."
+    </blockquote>
+    <div class="foretalk-attribution">— On the nature of threshold spaces</div>
+  </div>
+</section>
+
+<div class="stone-divider"></div>
+
+<!-- GALLERY -->
+<section class="section-gallery">
+  <div class="gallery-grid">
+    <div class="gallery-cell">
+      <img src="https://picsum.photos/seed/hinoki2/900/700" alt="Space 1" loading="lazy" />
+      <div class="cell-overlay"></div>
+    </div>
+    <div class="gallery-cell">
+      <img src="https://picsum.photos/seed/surbed/500/400" alt="Space 2" loading="lazy" />
+      <div class="cell-overlay"></div>
+    </div>
+    <div class="gallery-cell">
+      <img src="https://picsum.photos/seed/foretalk/500/400" alt="Space 3" loading="lazy" />
+      <div class="cell-overlay"></div>
+    </div>
+    <div class="gallery-cell">
+      <img src="https://picsum.photos/seed/surbed2/500/400" alt="Space 4" loading="lazy" />
+      <div class="cell-overlay"></div>
+    </div>
+    <div class="gallery-cell">
+      <img src="https://picsum.photos/seed/hinoki3/500/400" alt="Space 5" loading="lazy" />
+      <div class="cell-overlay"></div>
+    </div>
+  </div>
+</section>
+
+<!-- SURBED / INTERACTIVE STONE MOSAIC -->
+<section class="section-surbed">
+  <div class="surbed-inner">
+    <div class="section-label" style="text-align:center;">003 / The Foundation</div>
+    <h2 class="surbed-title">Surbed</h2>
+    <p class="surbed-sub">Stone set on edge — each tile a decision</p>
+    <div class="stone-grid" id="stoneGrid"></div>
+    <p class="stone-caption" id="stoneCaption">Touch a stone.</p>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="section-manifesto">
+  <div class="manifesto-inner">
+    <div class="manifesto-label">Before the Silence — A Manifesto</div>
+    <ul class="manifesto-lines">
+      <li><span class="num">I.</span> Every beautiful thing begins before it begins.</li>
+      <li><span class="num">II.</span> Hinoki teaches that age is not decay — it is arrival.</li>
+      <li><span class="num">III.</span> To surb a stone is to honor its edges, not erase them.</li>
+      <li><span class="num">IV.</span> Foretalk is not boasting. It is the breath before the word.</li>
+      <li><span class="num">V.</span> Design is architecture for the unbuilt.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-mark">桧</div>
+  <div class="footer-words">
+    <span>surbed</span>
+    <span>·</span>
+    <span>hinoki</span>
+    <span>·</span>
+    <span>foretalk</span>
+  </div>
+  <div class="footer-line">
+    CrAI Design 002 — Before the Silence &nbsp;·&nbsp; 2026-03-14 &nbsp;·&nbsp;
+    <a href="https://crai26.github.io">crai26.github.io</a>
+  </div>
+</footer>
+
+<script>
+  // Wood grain canvas
+  (function() {
+    const canvas = document.getElementById('woodCanvas');
+    const ctx = canvas.getContext('2d');
+    function resize() {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      draw();
+    }
+    function draw() {
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0, 0, w, h);
+      const grains = 80;
+      for (let i = 0; i < grains; i++) {
+        const x = Math.random() * w;
+        const cp1x = x + (Math.random() - 0.5) * 80;
+        const cp1y = h * 0.33;
+        const cp2x = x + (Math.random() - 0.5) * 80;
+        const cp2y = h * 0.66;
+        const ex = x + (Math.random() - 0.5) * 120;
+        const grad = ctx.createLinearGradient(x, 0, ex, h);
+        const alpha = Math.random() * 0.5 + 0.1;
+        grad.addColorStop(0, `rgba(201,169,110,0)`);
+        grad.addColorStop(0.3, `rgba(201,169,110,${alpha})`);
+        grad.addColorStop(0.7, `rgba(139,94,60,${alpha * 0.7})`);
+        grad.addColorStop(1, `rgba(201,169,110,0)`);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = Math.random() * 2 + 0.5;
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.bezierCurveTo(cp1x, cp1y, cp2x, cp2y, ex, h);
+        ctx.stroke();
+      }
+    }
+    window.addEventListener('resize', resize);
+    resize();
+  })();
+
+  // Stone mosaic
+  (function() {
+    const grid = document.getElementById('stoneGrid');
+    const caption = document.getElementById('stoneCaption');
+    const quotes = [
+      "Stone remembers every hand that placed it.",
+      "To be surbed is to stand on your edge — not your face.",
+      "Each tile a decision. Each gap a breath.",
+      "The wall speaks in the language of patience.",
+      "Set on edge, the stone becomes something new.",
+      "Weight distributed. Strength rediscovered.",
+      "A course of surbed stone: geometry as devotion.",
+      "The builder's hands. The mason's eye. The stone's consent.",
+      "This is how cathedrals begin — one deliberate stone.",
+      "Architecture is the art of placing things well."
+    ];
+    const cols = 12;
+    const rows = 6;
+    const tiles = [];
+    for (let i = 0; i < cols * rows; i++) {
+      const t = document.createElement('div');
+      t.className = 'stone-tile';
+      t.addEventListener('click', () => {
+        t.classList.toggle('lit');
+        const lit = grid.querySelectorAll('.lit').length;
+        if (lit === 0) {
+          caption.textContent = 'Touch a stone.';
+        } else {
+          caption.textContent = quotes[lit % quotes.length];
+        }
+      });
+      t.addEventListener('mouseenter', () => {
+        // ripple effect on neighbors
+        const idx = tiles.indexOf(t);
+        const r = Math.floor(idx / cols);
+        const c = idx % cols;
+        [[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(([nr,nc]) => {
+          if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+            const neighbor = tiles[nr * cols + nc];
+            neighbor.style.transform = 'translateY(-1px)';
+            setTimeout(() => { neighbor.style.transform = ''; }, 300);
+          }
+        });
+      });
+      grid.appendChild(t);
+      tiles.push(t);
+    }
+  })();
+</script>
+
+<script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

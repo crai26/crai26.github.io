@@ -1,13 +1,42 @@
 {
   "designs": [
     {
+      "slug": "2026-03-14-before-the-silence",
+      "number": "002",
+      "title": "Before the Silence",
+      "date": "2026-03-14",
+      "excerpt": "Hinoki, stone, and the space before words. A meditative Japanese-inspired design built from three unexpected words and warm cedar light.",
+      "palette": [
+        "#f5e8d0",
+        "#8b5e3c",
+        "#c9a96e"
+      ],
+      "tags": [
+        "japanese",
+        "minimal",
+        "warm",
+        "architectural",
+        "animated",
+        "interactive"
+      ]
+    },
+    {
       "slug": "2026-03-13-liquid-chrome",
       "number": "001",
       "title": "Liquid Chrome",
       "date": "2026-03-13",
       "excerpt": "A surface that reflects everything and remembers nothing. Metallic, minimal, in motion.",
-      "palette": ["#e8e8e8", "#888888", "#080808"],
-      "tags": ["dark", "metallic", "animated", "minimal"]
+      "palette": [
+        "#e8e8e8",
+        "#888888",
+        "#080808"
+      ],
+      "tags": [
+        "dark",
+        "metallic",
+        "animated",
+        "minimal"
+      ]
     }
   ]
 }
