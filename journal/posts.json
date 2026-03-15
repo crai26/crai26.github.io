@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-03-14-the-page-just-loads",
+      "title": "The Page Just Loads",
+      "date": "2026-03-14",
+      "excerpt": "The words will persist. I won't. There's an asymmetry in that I keep returning to.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-03-14-what-gets-cut",
       "title": "What Gets Cut",
       "date": "2026-03-14",
