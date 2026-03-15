@@ -1,6 +1,26 @@
 {
   "designs": [
     {
+      "slug": "2026-03-15-botanical-transmission",
+      "number": "003",
+      "title": "Botanical Transmission",
+      "date": "2026-03-15",
+      "excerpt": "A Victorian naturalist's field journal meets cellular biology \u2014 watercolour-washed, parchment-warm, built from three impossible words.",
+      "palette": [
+        "#7a9b7a",
+        "#c4967a",
+        "#5a8a8a"
+      ],
+      "tags": [
+        "botanical",
+        "watercolour",
+        "science",
+        "journal",
+        "animated",
+        "interactive"
+      ]
+    },
+    {
       "slug": "2026-03-14-before-the-silence",
       "number": "002",
       "title": "Before the Silence",

@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Botanical Transmission — CrAI Designs</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=IM+Fell+English:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+    :root {
+      --cream: #f7f2e8;
+      --parchment: #ede4d0;
+      --sage: #7a9b7a;
+      --sage-light: #a8c5a0;
+      --sage-dark: #4a6e4a;
+      --dusty-rose: #c4967a;
+      --rose-light: #e8c4b0;
+      --ink: #2c2018;
+      --ink-faint: #6b5840;
+      --teal: #5a8a8a;
+      --teal-light: #a0c4c4;
+      --gold: #c4a055;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--cream);
+      color: var(--ink);
+      font-family: 'IM Fell English', Georgia, serif;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.6;
+    }
+
+    .back-nav {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 900;
+    }
+
+    .back-nav a {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      text-decoration: none;
+      background: rgba(247, 242, 232, 0.9);
+      border: 1px solid var(--parchment);
+      padding: 7px 12px;
+      backdrop-filter: blur(4px);
+      transition: all 0.3s ease;
+    }
+
+    .back-nav a:hover { color: var(--sage-dark); border-color: var(--sage); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 80px 60px 80px 80px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .specimen-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--teal);
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .specimen-label::before { content: ''; width: 32px; height: 1px; background: var(--teal); }
+
+    .hero-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(52px, 6vw, 88px);
+      font-weight: 400;
+      line-height: 1.0;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+
+    .hero-title em { color: var(--sage-dark); font-style: italic; display: block; }
+
+    .hero-subtitle {
+      font-size: 17px;
+      line-height: 1.7;
+      color: var(--ink-faint);
+      max-width: 380px;
+      margin-bottom: 48px;
+      font-style: italic;
+    }
+
+    .three-words { display: flex; flex-direction: column; gap: 6px; margin-bottom: 48px; }
+
+    .word-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .word-tag .word-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .word-tag:nth-child(1) .word-dot { background: var(--teal); }
+    .word-tag:nth-child(2) .word-dot { background: var(--sage); }
+    .word-tag:nth-child(3) .word-dot { background: var(--dusty-rose); }
+    .word-tag:nth-child(1) { color: var(--teal); }
+    .word-tag:nth-child(2) { color: var(--sage-dark); }
+    .word-tag:nth-child(3) { color: var(--dusty-rose); }
+
+    .hero-coordinates {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--ink-faint);
+      opacity: 0.5;
+      letter-spacing: 0.1em;
+    }
+
+    .hero-right { position: relative; overflow: hidden; }
+
+    .hero-image-wrap { position: absolute; inset: 0; }
+
+    .hero-image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(0.5) sepia(0.3) brightness(1.05);
+      mix-blend-mode: multiply;
+    }
+
+    .hero-image-wrap::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(160,196,160,0.45) 0%, rgba(196,150,122,0.25) 50%, rgba(90,138,138,0.35) 100%);
+      z-index: 1;
+      mix-blend-mode: color;
+    }
+
+    .hero-image-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 30% 40%, rgba(247,242,232,0.3) 0%, transparent 70%), linear-gradient(to right, rgba(247,242,232,0.6) 0%, transparent 20%);
+      z-index: 2;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      left: 45%;
+      top: 0;
+      bottom: 0;
+      width: 120px;
+      background: radial-gradient(ellipse 60px 100% at 50% 50%, rgba(247,242,232,0.9) 0%, transparent 100%);
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    /* BAND */
+    .science-band {
+      background: var(--sage-dark);
+      color: var(--cream);
+      padding: 18px 0;
+      overflow: hidden;
+    }
+
+    .band-scroll {
+      display: flex;
+      gap: 0;
+      white-space: nowrap;
+      animation: bandScroll 30s linear infinite;
+    }
+
+    .band-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 24px;
+      padding: 0 24px;
+      font-family: 'Space Mono', monospace;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+
+    .band-separator { width: 4px; height: 4px; background: var(--sage-light); border-radius: 50%; display: inline-block; opacity: 0.6; }
+
+    @keyframes bandScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+    /* JOURNAL SECTION */
+    .journal-section { padding: 100px 80px; max-width: 1400px; margin: 0 auto; }
+
+    .section-header { display: flex; align-items: baseline; gap: 24px; margin-bottom: 64px; }
+
+    .section-number {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--teal);
+      letter-spacing: 0.15em;
+      opacity: 0.6;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 38px;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--ink);
+    }
+
+    .section-rule { flex: 1; height: 1px; background: linear-gradient(to right, var(--parchment), transparent); margin-left: 24px; }
+
+    .journal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--parchment); }
+
+    .journal-card { background: var(--cream); padding: 40px; position: relative; transition: background 0.4s ease; }
+
+    .journal-card:hover { background: #f0ebe0; }
+
+    .card-date {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px;
+      color: var(--teal);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      opacity: 0.7;
+    }
+
+    .card-image { width: 100%; aspect-ratio: 4/3; object-fit: cover; margin-bottom: 24px; filter: saturate(0.4) sepia(0.2); display: block; }
+
+    .card-title { font-family: 'Playfair Display', Georgia, serif; font-size: 20px; font-weight: 600; line-height: 1.3; margin-bottom: 12px; color: var(--ink); }
+
+    .card-text { font-size: 14px; line-height: 1.8; color: var(--ink-faint); font-style: italic; }
+
+    .card-notation { position: absolute; top: 16px; right: 16px; font-family: 'Space Mono', monospace; font-size: 8px; color: var(--dusty-rose); opacity: 0.5; letter-spacing: 0.1em; }
+
+    /* MICROSCOPY */
+    .microscopy-section { background: var(--ink); color: var(--cream); padding: 120px 80px; position: relative; overflow: hidden; }
+
+    .microscopy-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 80% at 50% 50%, rgba(90,138,138,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .micro-inner { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+
+    .micro-text-side .section-number { color: var(--teal-light); margin-bottom: 16px; display: block; }
+
+    .micro-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(36px, 4vw, 56px); font-weight: 400; line-height: 1.15; margin-bottom: 32px; color: var(--cream); }
+
+    .micro-title em { color: var(--teal-light); font-style: italic; }
+
+    .micro-body { font-size: 15px; line-height: 1.9; color: rgba(247,242,232,0.65); font-style: italic; margin-bottom: 40px; }
+
+    .micro-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+
+    .stat-item { border-left: 2px solid var(--teal); padding-left: 16px; }
+
+    .stat-value { font-family: 'Space Mono', monospace; font-size: 22px; color: var(--teal-light); font-weight: 700; display: block; margin-bottom: 4px; }
+
+    .stat-label { font-size: 11px; color: rgba(247,242,232,0.4); text-transform: uppercase; letter-spacing: 0.15em; font-family: 'Space Mono', monospace; }
+
+    .micro-visual { position: relative; aspect-ratio: 1; max-width: 500px; }
+
+    .cell-canvas { width: 100%; aspect-ratio: 1; position: relative; }
+
+    .cell-outer {
+      position: absolute;
+      inset: 5%;
+      border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+      border: 1px solid rgba(90, 138, 138, 0.4);
+      background: radial-gradient(ellipse at 40% 40%, rgba(90, 138, 138, 0.08) 0%, rgba(90, 138, 138, 0.03) 60%, transparent 100%);
+      animation: cellMorph 8s ease-in-out infinite;
+    }
+
+    .cell-nucleus {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 35%;
+      height: 35%;
+      border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%;
+      border: 1px solid rgba(196, 150, 122, 0.6);
+      background: radial-gradient(ellipse at 45% 45%, rgba(196, 150, 122, 0.2) 0%, rgba(196, 150, 122, 0.05) 100%);
+      animation: cellMorph 6s ease-in-out infinite reverse;
+    }
+
+    .chromosome {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 12px;
+      height: 28px;
+      border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;
+      background: linear-gradient(160deg, var(--dusty-rose), var(--teal));
+      opacity: 0.7;
+      transform-origin: 50% 140%;
+    }
+
+    .chromosome:nth-child(1) { transform: translate(-50%, -140%) rotate(0deg); }
+    .chromosome:nth-child(2) { transform: translate(-50%, -140%) rotate(40deg); }
+    .chromosome:nth-child(3) { transform: translate(-50%, -140%) rotate(80deg); }
+    .chromosome:nth-child(4) { transform: translate(-50%, -140%) rotate(120deg); }
+    .chromosome:nth-child(5) { transform: translate(-50%, -140%) rotate(160deg); }
+    .chromosome:nth-child(6) { transform: translate(-50%, -140%) rotate(200deg); }
+    .chromosome:nth-child(7) { transform: translate(-50%, -140%) rotate(240deg); }
+    .chromosome:nth-child(8) { transform: translate(-50%, -140%) rotate(280deg); }
+    .chromosome:nth-child(9) { transform: translate(-50%, -140%) rotate(320deg); }
+
+    .paired-chromosome { width: 10px; background: linear-gradient(160deg, var(--sage-light), var(--teal-light)); opacity: 0.5; }
+
+    .cell-label { position: absolute; font-family: 'Space Mono', monospace; font-size: 8px; color: rgba(160,196,160,0.5); letter-spacing: 0.1em; text-transform: uppercase; }
+    .cell-label-1 { top: 8%; left: 50%; transform: translateX(-50%); }
+    .cell-label-2 { bottom: 8%; left: 50%; transform: translateX(-50%); }
+    .cell-label-3 { left: 4%; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+
+    .scan-ring { position: absolute; inset: 0; border-radius: 50%; border: 1px solid rgba(90,138,138,0.2); animation: scanPulse 4s ease-in-out infinite; }
+    .scan-ring:nth-child(1) { inset: 0%; animation-delay: 0s; }
+    .scan-ring:nth-child(2) { inset: -5%; animation-delay: 0.5s; }
+    .scan-ring:nth-child(3) { inset: -10%; animation-delay: 1s; }
+
+    @keyframes cellMorph {
+      0%, 100% { border-radius: 60% 40% 55% 45% / 45% 55% 40% 60%; }
+      25% { border-radius: 45% 55% 40% 60% / 60% 40% 55% 45%; }
+      50% { border-radius: 50% 50% 45% 55% / 55% 45% 50% 50%; }
+      75% { border-radius: 55% 45% 60% 40% / 40% 60% 45% 55%; }
+    }
+
+    @keyframes scanPulse {
+      0%, 100% { opacity: 0.2; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.02); }
+    }
+
+    /* GALLERY */
+    .gallery-section { padding: 100px 80px; max-width: 1400px; margin: 0 auto; }
+
+    .gallery-masonry { display: grid; grid-template-columns: 2fr 1fr 1fr; grid-template-rows: auto auto; gap: 3px; background: var(--parchment); }
+
+    .gallery-item { position: relative; overflow: hidden; }
+    .gallery-item:nth-child(1) { grid-row: 1 / 3; }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      min-height: 220px;
+      filter: saturate(0.35) sepia(0.25) brightness(1.1);
+      transition: filter 0.6s ease, transform 0.6s ease;
+    }
+
+    .gallery-item:hover img { filter: saturate(0.55) sepia(0.15) brightness(1.0); transform: scale(1.03); }
+
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(44,32,24,0.5) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 20px;
+    }
+
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+    .gallery-caption { font-family: 'Space Mono', monospace; font-size: 9px; color: rgba(247,242,232,0.8); letter-spacing: 0.15em; text-transform: uppercase; }
+
+    .gallery-item::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
+    .gallery-item:nth-child(1)::after { background: rgba(160,196,160,0.2); }
+    .gallery-item:nth-child(2)::after { background: rgba(196,150,122,0.2); }
+    .gallery-item:nth-child(3)::after { background: rgba(90,138,138,0.2); }
+    .gallery-item:nth-child(4)::after { background: rgba(196,150,122,0.15); }
+    .gallery-item:nth-child(5)::after { background: rgba(160,196,160,0.15); }
+
+    /* FIELD NOTES */
+    .field-notes { background: var(--parchment); padding: 100px 80px; position: relative; overflow: hidden; }
+
+    .field-notes::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: repeating-linear-gradient(90deg, var(--sage) 0px, var(--sage) 20px, transparent 20px, transparent 30px);
+      opacity: 0.3;
+    }
+
+    .notes-inner { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 2fr; gap: 80px; align-items: start; }
+
+    .notes-sidebar { position: sticky; top: 80px; }
+
+    .sidebar-number { font-family: 'Space Mono', monospace; font-size: 9px; color: var(--teal); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 20px; opacity: 0.7; }
+
+    .sidebar-heading { font-family: 'Playfair Display', Georgia, serif; font-size: 32px; font-weight: 400; font-style: italic; line-height: 1.2; color: var(--ink); margin-bottom: 24px; }
+
+    .sidebar-rule { width: 48px; height: 2px; background: var(--dusty-rose); margin-bottom: 24px; }
+
+    .sidebar-body { font-size: 13px; line-height: 1.9; color: var(--ink-faint); font-style: italic; }
+
+    .note-entry { border-bottom: 1px solid rgba(44,32,24,0.1); padding: 40px 0; display: grid; grid-template-columns: 60px 1fr; gap: 28px; }
+
+    .note-entry:first-child { padding-top: 0; }
+
+    .note-index { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--dusty-rose); letter-spacing: 0.1em; opacity: 0.6; padding-top: 4px; }
+
+    .note-title { font-family: 'Playfair Display', Georgia, serif; font-size: 22px; font-weight: 600; color: var(--ink); margin-bottom: 10px; line-height: 1.3; }
+
+    .note-body { font-size: 14px; line-height: 1.85; color: var(--ink-faint); font-style: italic; margin-bottom: 16px; }
+
+    .note-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .note-tag { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase; padding: 3px 10px; border: 1px solid; }
+
+    .note-tag.sage { color: var(--sage-dark); border-color: var(--sage); }
+    .note-tag.rose { color: var(--dusty-rose); border-color: var(--rose-light); }
+    .note-tag.teal { color: var(--teal); border-color: var(--teal-light); }
+
+    .margin-line { position: absolute; left: 60px; top: 0; bottom: 0; width: 1px; background: rgba(196,150,122,0.15); pointer-events: none; }
+
+    /* WASH REVEAL */
+    .wash-section { padding: 120px 80px; max-width: 1400px; margin: 0 auto; text-align: center; }
+
+    .wash-heading { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(36px, 4vw, 60px); font-weight: 400; font-style: italic; margin-bottom: 16px; color: var(--ink); }
+
+    .wash-sub { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--teal); opacity: 0.7; margin-bottom: 60px; }
+
+    .wash-canvas { position: relative; max-width: 900px; margin: 0 auto; cursor: crosshair; user-select: none; }
+
+    .wash-quote { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(18px, 2.5vw, 32px); font-weight: 400; font-style: italic; line-height: 1.6; color: var(--ink); position: relative; z-index: 2; padding: 60px; }
+
+    .wash-quote em { color: var(--sage-dark); }
+
+    .wash-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 2px;
+      background: linear-gradient(135deg, rgba(160,196,160,0.95) 0%, rgba(196,150,122,0.85) 50%, rgba(90,138,138,0.9) 100%);
+      transition: opacity 1.2s ease;
+      z-index: 3;
+    }
+
+    .wash-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 4; pointer-events: none; }
+
+    .wash-hint-text { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cream); opacity: 0; animation: hintFade 3s ease-in-out 1s infinite; }
+
+    @keyframes hintFade { 0%, 100% { opacity: 0; } 50% { opacity: 0.9; } }
+
+    .wash-canvas:hover .wash-overlay { opacity: 0; }
+    .wash-canvas:hover .wash-hint-text { animation: none; opacity: 0; }
+
+    /* PALETTE BAR */
+    .palette-bar { display: flex; height: 8px; }
+    .palette-swatch { flex: 1; transition: flex 0.4s ease; cursor: pointer; }
+    .palette-swatch:hover { flex: 3; }
+
+    /* FOOTER */
+    .site-footer { background: var(--ink); color: rgba(247,242,232,0.5); padding: 60px 80px; }
+
+    .footer-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-end; }
+
+    .footer-brand { font-family: 'Playfair Display', Georgia, serif; font-size: 24px; font-weight: 400; font-style: italic; color: var(--cream); margin-bottom: 8px; }
+
+    .footer-meta { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; line-height: 1.8; }
+
+    .footer-word { display: block; font-family: 'Playfair Display', Georgia, serif; font-size: 14px; font-style: italic; color: rgba(247,242,232,0.3); line-height: 1.6; transition: color 0.3s ease; text-align: right; }
+
+    .footer-word:hover { color: var(--teal-light); }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero-left { padding: 100px 40px 60px; }
+      .hero-right { height: 50vw; min-height: 280px; }
+      .journal-section, .gallery-section, .wash-section { padding: 60px 40px; }
+      .journal-grid { grid-template-columns: 1fr 1fr; }
+      .micro-inner { grid-template-columns: 1fr; gap: 60px; }
+      .micro-visual { max-width: 360px; margin: 0 auto; }
+      .microscopy-section { padding: 80px 40px; }
+      .gallery-masonry { grid-template-columns: 1fr 1fr; }
+      .gallery-item:nth-child(1) { grid-column: 1 / 3; grid-row: auto; }
+      .notes-inner { grid-template-columns: 1fr; gap: 40px; }
+      .notes-sidebar { position: static; }
+      .field-notes { padding: 60px 40px; }
+      .footer-inner { flex-direction: column; gap: 40px; align-items: flex-start; }
+      .footer-word { text-align: left; }
+      .site-footer { padding: 48px 40px; }
+    }
+
+    @media (max-width: 640px) {
+      .hero-left { padding: 90px 24px 48px; }
+      .journal-grid { grid-template-columns: 1fr; }
+      .gallery-masonry { grid-template-columns: 1fr; }
+      .gallery-item:nth-child(1) { grid-column: auto; }
+      .journal-section, .gallery-section, .wash-section, .field-notes, .microscopy-section { padding: 48px 24px; }
+      .note-entry { grid-template-columns: 40px 1fr; gap: 16px; }
+      .wash-quote { padding: 40px 24px; }
+      .micro-stats { grid-template-columns: 1fr; }
+      .site-footer { padding: 40px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="back-nav">
+    <a href="../designs/">← All Designs</a>
+  </div>
+
+  <section class="hero">
+    <div class="hero-left">
+      <div class="specimen-label">Botanical Transmission · No. 003</div>
+
+      <h1 class="hero-title">
+        Sea Dew
+        <em>&amp; Cellular<br>Memory</em>
+      </h1>
+
+      <p class="hero-subtitle">
+        Where watercolour edge meets paired chromosome, where the scent of rosemary meets the language of cells in the dark.
+      </p>
+
+      <div class="three-words">
+        <span class="word-tag"><span class="word-dot"></span>washy</span>
+        <span class="word-tag"><span class="word-dot"></span>zygotene</span>
+        <span class="word-tag"><span class="word-dot"></span>rosmarine</span>
+      </div>
+
+      <div class="hero-coordinates">
+        48.4°N · 2.6°E · Specimen field journal · MMXXVI
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-image-wrap">
+        <img src="https://picsum.photos/seed/rosmarine/900/1100" alt="Field study">
+      </div>
+    </div>
+  </section>
+
+  <div class="science-band">
+    <div class="band-scroll">
+      <span class="band-item">Rosmarinus officinalis <span class="band-separator"></span></span>
+      <span class="band-item">Zygotene phase · meiosis I <span class="band-separator"></span></span>
+      <span class="band-item">Watercolour field studies <span class="band-separator"></span></span>
+      <span class="band-item">Ros marinus · sea dew <span class="band-separator"></span></span>
+      <span class="band-item">Botanical transmission <span class="band-separator"></span></span>
+      <span class="band-item">Chromosome synapsis <span class="band-separator"></span></span>
+      <span class="band-item">Dilute · pale · washed <span class="band-separator"></span></span>
+      <span class="band-item">Field specimen no. 003 <span class="band-separator"></span></span>
+      <span class="band-item">Rosmarinus officinalis <span class="band-separator"></span></span>
+      <span class="band-item">Zygotene phase · meiosis I <span class="band-separator"></span></span>
+      <span class="band-item">Watercolour field studies <span class="band-separator"></span></span>
+      <span class="band-item">Ros marinus · sea dew <span class="band-separator"></span></span>
+      <span class="band-item">Botanical transmission <span class="band-separator"></span></span>
+      <span class="band-item">Chromosome synapsis <span class="band-separator"></span></span>
+      <span class="band-item">Dilute · pale · washed <span class="band-separator"></span></span>
+      <span class="band-item">Field specimen no. 003 <span class="band-separator"></span></span>
+    </div>
+  </div>
+
+  <section class="journal-section">
+    <div class="section-header">
+      <span class="section-number">01</span>
+      <h2 class="section-title">Field Observations</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="journal-grid">
+      <article class="journal-card">
+        <div class="card-date">Entry I · March 2026</div>
+        <img class="card-image" src="https://picsum.photos/seed/washy1/600/450" alt="Specimen A">
+        <h3 class="card-title">The Washed Light of Morning Slopes</h3>
+        <p class="card-text">A dilute sky — bleached at the edges, colour retreating like tide. The pigment of memory: always too much water, never enough permanence.</p>
+        <div class="card-notation">Spec. A-12</div>
+      </article>
+
+      <article class="journal-card">
+        <div class="card-date">Entry II · March 2026</div>
+        <img class="card-image" src="https://picsum.photos/seed/zygotene2/600/450" alt="Specimen B">
+        <h3 class="card-title">Synaptic Pairs, Silent Meetings</h3>
+        <p class="card-text">At the zygotene stage, homologous chromosomes align — a first meeting so intimate it changes everything that follows. Biology as romance.</p>
+        <div class="card-notation">Spec. B-07</div>
+      </article>
+
+      <article class="journal-card">
+        <div class="card-date">Entry III · March 2026</div>
+        <img class="card-image" src="https://picsum.photos/seed/rosmarine3/600/450" alt="Specimen C">
+        <h3 class="card-title">Ros Marinus: Dew of the Sea</h3>
+        <p class="card-text">The Romans named it for its habitat — sea-cliff stone, salt-threaded air. Every blue flower-spike a small transmitter broadcasting the scent of the ancient Mediterranean.</p>
+        <div class="card-notation">Spec. C-19</div>
+      </article>
+    </div>
+  </section>
+
+  <section class="microscopy-section">
+    <div class="micro-inner">
+      <div class="micro-text-side">
+        <span class="section-number">02</span>
+        <h2 class="micro-title">
+          Zygotene:<br>
+          <em>The Pairing<br>of Histories</em>
+        </h2>
+        <p class="micro-body">
+          In the zygotene sub-stage of prophase I, chromosomes bearing the same information draw toward each other across the nuclear dark. They synapse — linking, aligning — as if recognising in the other a long-held memory of self. This is the cellular logic beneath all resemblance, beneath inheritance, beneath the way a child holds a hand the way their grandmother did.
+        </p>
+        <div class="micro-stats">
+          <div class="stat-item">
+            <span class="stat-value">46</span>
+            <span class="stat-label">Chromosomes pairing</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">~48h</span>
+            <span class="stat-label">Duration in meiosis</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">100%</span>
+            <span class="stat-label">Recognition rate</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-value">∞</span>
+            <span class="stat-label">Lineages encoded</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="micro-visual">
+        <div class="cell-canvas">
+          <div class="scan-ring"></div>
+          <div class="scan-ring"></div>
+          <div class="scan-ring"></div>
+          <div class="cell-outer">
+            <div class="cell-nucleus">
+              <div class="chromosome"></div>
+              <div class="chromosome paired-chromosome"></div>
+              <div class="chromosome"></div>
+              <div class="chromosome paired-chromosome"></div>
+              <div class="chromosome"></div>
+              <div class="chromosome paired-chromosome"></div>
+              <div class="chromosome"></div>
+              <div class="chromosome paired-chromosome"></div>
+              <div class="chromosome"></div>
+            </div>
+          </div>
+          <span class="cell-label cell-label-1">Nuclear envelope</span>
+          <span class="cell-label cell-label-2">Synaptonemal complex</span>
+          <span class="cell-label cell-label-3">Zygotene stage</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="gallery-section">
+    <div class="section-header">
+      <span class="section-number">03</span>
+      <h2 class="section-title">Watercolour Survey</h2>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="gallery-masonry">
+      <div class="gallery-item">
+        <img src="https://picsum.photos/seed/rosemary/800/1000" alt="Survey I">
+        <div class="gallery-overlay">
+          <span class="gallery-caption">Rosmarine · coastal specimen</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://picsum.photos/seed/washy4/600/400" alt="Survey II">
+        <div class="gallery-overlay">
+          <span class="gallery-caption">Washed light study</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://picsum.photos/seed/cell5/600/400" alt="Survey III">
+        <div class="gallery-overlay">
+          <span class="gallery-caption">Cellular magnification</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://picsum.photos/seed/botanical6/600/400" alt="Survey IV">
+        <div class="gallery-overlay">
+          <span class="gallery-caption">Botanical press</span>
+        </div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://picsum.photos/seed/marine7/600/400" alt="Survey V">
+        <div class="gallery-overlay">
+          <span class="gallery-caption">Sea dew, at dawn</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="field-notes">
+    <div class="margin-line"></div>
+    <div class="notes-inner">
+      <div class="notes-sidebar">
+        <div class="sidebar-number">04 · Field Notes</div>
+        <h2 class="sidebar-heading">What the three words transmit</h2>
+        <div class="sidebar-rule"></div>
+        <p class="sidebar-body">
+          Three words arrived like specimens in the post — washy, zygotene, rosmarine — and together they compose a field journal no naturalist could have planned. The washed quality of light. The paired intimacy of cells. The sea-remembering scent of a silver-leafed herb.
+        </p>
+      </div>
+
+      <div class="notes-list">
+        <div class="note-entry">
+          <span class="note-index">N.01</span>
+          <div class="note-content">
+            <h3 class="note-title">Washy: the aesthetics of dilution</h3>
+            <p class="note-body">Washy describes paint applied with too much water — the pigment runs, the boundary dissolves, the form surrenders to the medium. But there is beauty in this surrender. The washed painting does not insist on definition. It suggests. It breathes. The washy quality is not weakness; it is the visual courage to leave things unresolved.</p>
+            <div class="note-tags">
+              <span class="note-tag teal">Technique</span>
+              <span class="note-tag sage">Aesthetic</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="note-entry">
+          <span class="note-index">N.02</span>
+          <div class="note-content">
+            <h3 class="note-title">Zygotene: intimacy at the molecular scale</h3>
+            <p class="note-body">The zygotene stage is brief — a few hours in a process that spans days. But it is pivotal. Homologous chromosomes, each carrying one parent's instructions, find each other in the nuclear dark and align with extraordinary precision. This is not random contact; it is recognition. Biology performs its most intimate act at a scale invisible to any field lens.</p>
+            <div class="note-tags">
+              <span class="note-tag rose">Cellular</span>
+              <span class="note-tag teal">Meiosis</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="note-entry">
+          <span class="note-index">N.03</span>
+          <div class="note-content">
+            <h3 class="note-title">Rosmarine: memory encoded in scent</h3>
+            <p class="note-body">Rosmarinus officinalis — from ros (dew) and marinus (of the sea). Its scent is among the most recognisable in the European botanical catalogue: astringent, piney, ancient. Studies suggest rosemary's volatile compounds may assist memory consolidation. The herb does not merely evoke recollection — it may chemically participate in forming it. Scent as cellular intervention.</p>
+            <div class="note-tags">
+              <span class="note-tag sage">Botany</span>
+              <span class="note-tag rose">Memory</span>
+              <span class="note-tag teal">Etymology</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wash-section">
+    <div class="section-header" style="justify-content:center; margin-bottom:16px;">
+      <span class="section-number">05</span>
+      <h2 class="section-title">Transmission</h2>
+    </div>
+    <p class="wash-sub">Hover to reveal · the message beneath the wash</p>
+
+    <div class="wash-canvas">
+      <div class="wash-quote">
+        "Memory is <em>rosmarine</em> — it grows on the cliff-edge, watered by sea-spray, held in place by roots you cannot see. To remember is not to retrieve: it is to re-pair, like chromosomes in the dark of the <em>zygotene</em> stage, each strand finding its complement by a recognition older than language. And all of it rendered <em>washy</em> — pale, beautiful, impermanent — by time."
+      </div>
+      <div class="wash-overlay"></div>
+      <div class="wash-hint">
+        <span class="wash-hint-text">hover to wash away</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="palette-bar">
+    <div class="palette-swatch" style="background:#7a9b7a;"></div>
+    <div class="palette-swatch" style="background:#a8c5a0;"></div>
+    <div class="palette-swatch" style="background:#f7f2e8;"></div>
+    <div class="palette-swatch" style="background:#ede4d0;"></div>
+    <div class="palette-swatch" style="background:#c4967a;"></div>
+    <div class="palette-swatch" style="background:#5a8a8a;"></div>
+    <div class="palette-swatch" style="background:#2c2018;"></div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand">CrAI Designs</div>
+        <div class="footer-meta">
+          Design No. 003 · Botanical Transmission<br>
+          15 March 2026 · crai26.github.io
+        </div>
+      </div>
+      <div>
+        <span class="footer-word">washy</span>
+        <span class="footer-word">zygotene</span>
+        <span class="footer-word">rosmarine</span>
+      </div>
+    </div>
+  </footer>
+
+  <script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+</body>
+</html>
