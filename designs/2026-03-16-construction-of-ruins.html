@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Construction of Ruins — CrAI Design 004</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --limestone: #cfc4b0;
+  --sand: #e8dece;
+  --rust: #9b5a2e;
+  --steel: #3a3d4a;
+  --verdigris: #4a7a6e;
+  --dark: #1e1c18;
+  --copper: #b87333;
+  --fog: #8a8880;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--dark);
+  color: var(--sand);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+/* BACK NAV */
+.back-nav {
+  position: fixed;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 1000;
+}
+.back-nav a {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--limestone);
+  text-decoration: none;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+  border: 1px solid var(--fog);
+  padding: 0.4rem 0.7rem;
+  display: inline-block;
+}
+.back-nav a:hover { opacity: 1; border-color: var(--limestone); }
+
+/* ========= HERO ========= */
+.hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 4rem 3rem 4rem 4rem;
+  position: relative;
+  z-index: 2;
+  background: var(--dark);
+}
+
+.hero-right {
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(0.4) contrast(1.2) brightness(0.7);
+  display: block;
+}
+
+.hero-right::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, var(--dark) 0%, transparent 40%);
+}
+
+.hero-overline {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 1.5rem;
+}
+
+.hero-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(4rem, 8vw, 7.5rem);
+  line-height: 0.92;
+  letter-spacing: 0.02em;
+  color: var(--sand);
+  margin-bottom: 0.5rem;
+}
+
+.hero-title em {
+  font-style: normal;
+  color: var(--copper);
+  display: block;
+}
+
+.hero-subtitle {
+  font-size: 0.9rem;
+  color: var(--fog);
+  line-height: 1.7;
+  max-width: 340px;
+  margin-bottom: 3rem;
+}
+
+/* 3 words badge */
+.words-badge {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+.word-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 1px solid var(--copper);
+  color: var(--copper);
+  padding: 0.3rem 0.7rem;
+}
+
+.hero-stat-row {
+  display: flex;
+  gap: 2.5rem;
+}
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.hero-stat-num {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 2rem;
+  color: var(--limestone);
+  line-height: 1;
+}
+.hero-stat-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--fog);
+}
+
+/* SVG scaffold overlay on hero-right */
+.scaffold-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ========= SITE NUMBER ========= */
+.site-number-band {
+  background: var(--rust);
+  padding: 0.9rem 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.site-number-band .label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: #fff;
+  opacity: 0.8;
+}
+
+.marquee-text {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  color: #fff;
+  opacity: 0.6;
+  white-space: nowrap;
+  animation: marquee 18s linear infinite;
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.marquee-wrap {
+  overflow: hidden;
+  flex: 1;
+  margin: 0 2rem;
+}
+
+/* ========= SCAFFOLD ANIMATION SECTION ========= */
+.scaffold-section {
+  padding: 7rem 4rem;
+  background: var(--dark);
+  position: relative;
+  overflow: hidden;
+}
+
+.scaffold-grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(58,61,74,0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(58,61,74,0.3) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.scaffold-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 5rem;
+  align-items: center;
+}
+
+.scaffold-text-block h2 {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(2.5rem, 5vw, 4.5rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  margin-bottom: 1.5rem;
+  color: var(--sand);
+}
+
+.scaffold-text-block h2 span {
+  color: var(--verdigris);
+}
+
+.scaffold-text-block p {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--fog);
+  max-width: 420px;
+  margin-bottom: 2rem;
+}
+
+.scaffold-text-block .mono-note {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--verdigris);
+  border-left: 2px solid var(--verdigris);
+  padding-left: 1rem;
+  line-height: 1.8;
+}
+
+/* Animated scaffold canvas */
+.scaffold-canvas-wrap {
+  position: relative;
+  aspect-ratio: 1;
+  max-width: 460px;
+}
+
+#scaffoldCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ========= IMAGE GRID ========= */
+.image-grid-section {
+  background: #15140f;
+  padding: 0;
+}
+
+.grid-header {
+  padding: 4rem 4rem 2rem;
+  display: flex;
+  align-items: baseline;
+  gap: 2rem;
+}
+.grid-header h3 {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 2rem;
+  letter-spacing: 0.05em;
+  color: var(--limestone);
+}
+.grid-header span {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fog);
+}
+
+.mosaic {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: 360px 240px;
+  gap: 3px;
+  padding: 0 3px 3px;
+}
+
+.mosaic-item {
+  overflow: hidden;
+  position: relative;
+}
+.mosaic-item:first-child {
+  grid-row: 1 / 3;
+}
+
+.mosaic-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: sepia(0.3) contrast(1.1) brightness(0.75);
+  transition: filter 0.5s, transform 0.6s;
+}
+.mosaic-item:hover img {
+  filter: sepia(0) contrast(1.1) brightness(0.9);
+  transform: scale(1.04);
+}
+
+.mosaic-label {
+  position: absolute;
+  bottom: 0.8rem;
+  left: 0.8rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  background: rgba(0,0,0,0.5);
+  padding: 0.25rem 0.5rem;
+  z-index: 2;
+}
+
+/* ========= BRYOZOAN SECTION ========= */
+.bryozoan-section {
+  background: var(--steel);
+  padding: 7rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.bryozoan-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23cfc4b0' stroke-width='0.8'%3E%3Ccircle cx='40' cy='40' r='30'/%3E%3Ccircle cx='40' cy='40' r='20'/%3E%3Ccircle cx='40' cy='40' r='10'/%3E%3Cline x1='10' y1='40' x2='70' y2='40'/%3E%3Cline x1='40' y1='10' x2='40' y2='70'/%3E%3Cline x1='18' y1='18' x2='62' y2='62'/%3E%3Cline x1='62' y1='18' x2='18' y2='62'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 80px 80px;
+}
+
+.bryozoan-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.bryozoan-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 3rem;
+  margin-top: 3rem;
+}
+
+.bry-card {
+  border: 1px solid rgba(207,196,176,0.2);
+  padding: 2rem;
+  position: relative;
+  transition: border-color 0.3s;
+}
+.bry-card:hover {
+  border-color: var(--copper);
+}
+
+.bry-card::before {
+  content: attr(data-num);
+  font-family: 'Bebas Neue', cursive;
+  font-size: 5rem;
+  color: rgba(207,196,176,0.06);
+  position: absolute;
+  top: -1rem;
+  right: 1rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.bry-icon {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 1.2rem;
+}
+
+.bry-card h4 {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.3rem;
+  letter-spacing: 0.05em;
+  color: var(--limestone);
+  margin-bottom: 0.7rem;
+}
+.bry-card p {
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--fog);
+}
+
+.section-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.section-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(2.5rem, 4.5vw, 4rem);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--sand);
+}
+
+/* ========= EXCAVATION / DEPTH SECTION ========= */
+.depth-section {
+  background: var(--dark);
+  padding: 7rem 4rem;
+  position: relative;
+}
+
+.depth-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.depth-timeline {
+  margin-top: 4rem;
+  position: relative;
+  padding-left: 2rem;
+}
+.depth-timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, var(--copper), var(--verdigris), var(--steel));
+}
+
+.depth-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2.5rem;
+  margin-bottom: 4rem;
+  position: relative;
+}
+.depth-item::before {
+  content: '';
+  position: absolute;
+  left: -2.3rem;
+  top: 0.6rem;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--copper);
+  background: var(--dark);
+  transform: rotate(45deg);
+}
+
+.depth-year {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--copper);
+  padding-top: 0.3rem;
+  white-space: nowrap;
+  min-width: 90px;
+}
+
+.depth-content h4 {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+  color: var(--limestone);
+  margin-bottom: 0.5rem;
+}
+.depth-content p {
+  font-size: 0.85rem;
+  line-height: 1.7;
+  color: var(--fog);
+  max-width: 520px;
+}
+
+.depth-img-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  margin-top: 1rem;
+  max-width: 400px;
+}
+.depth-img-pair img {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  display: block;
+  filter: sepia(0.5) brightness(0.7);
+}
+
+/* ========= INTERACTIVE HOVER SECTION ========= */
+.hover-section {
+  background: #12110e;
+  padding: 7rem 4rem;
+}
+
+.hover-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hover-intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: end;
+  margin-bottom: 4rem;
+}
+
+.hover-intro p {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--fog);
+}
+
+.strata-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+}
+
+.strata-cell {
+  aspect-ratio: 1;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.strata-cell-bg {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.strata-cell:hover .strata-cell-bg { transform: scale(1.08); }
+
+.strata-cell-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: sepia(0.5) brightness(0.6) contrast(1.1);
+  transition: filter 0.4s;
+}
+.strata-cell:hover .strata-cell-bg img {
+  filter: sepia(0) brightness(0.9) contrast(1.1);
+}
+
+.strata-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1rem;
+  background: linear-gradient(to top, rgba(20,18,14,0.85) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.strata-cell:hover .strata-overlay { opacity: 1; }
+
+.strata-overlay-title {
+  font-family: 'Bebas Neue', cursive;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
+  color: var(--sand);
+  line-height: 1;
+}
+.strata-overlay-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.45rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--fog);
+  margin-top: 0.3rem;
+}
+
+/* ========= MANIFESTO / CLOSING ========= */
+.manifesto-section {
+  background: var(--rust);
+  padding: 8rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.manifesto-section::before {
+  content: 'SCAFF';
+  font-family: 'Bebas Neue', cursive;
+  font-size: 22vw;
+  color: rgba(0,0,0,0.12);
+  position: absolute;
+  left: -2vw;
+  top: 50%;
+  transform: translateY(-50%);
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.manifesto-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.manifesto-inner .section-eyebrow {
+  color: rgba(255,255,255,0.6);
+}
+
+.manifesto-inner blockquote {
+  font-family: 'Bebas Neue', cursive;
+  font-size: clamp(2.2rem, 5.5vw, 5rem);
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  color: #fff;
+  margin: 2rem 0;
+}
+
+.manifesto-inner blockquote em {
+  font-style: normal;
+  color: rgba(255,255,255,0.55);
+}
+
+.manifesto-words {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+.manifesto-word {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.9);
+  border: 1px solid rgba(255,255,255,0.4);
+  padding: 0.5rem 1.2rem;
+}
+
+/* ========= FOOTER ========= */
+footer {
+  background: #0e0d0a;
+  padding: 3rem 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(207,196,176,0.1);
+}
+
+footer .footer-left {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fog);
+}
+footer .footer-right a {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--copper);
+  text-decoration: none;
+}
+
+/* ========= MOBILE ========= */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; min-height: auto; }
+  .hero-right { height: 50vw; }
+  .hero-left { padding: 6rem 2rem 3rem; }
+  .scaffold-inner { grid-template-columns: 1fr; gap: 3rem; }
+  .mosaic {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+  }
+  .mosaic-item:first-child { grid-row: auto; }
+  .bryozoan-cols { grid-template-columns: 1fr; }
+  .depth-item { grid-template-columns: 1fr; gap: 0.5rem; }
+  .hover-intro { grid-template-columns: 1fr; }
+  .strata-grid { grid-template-columns: repeat(2, 1fr); }
+  .site-number-band { padding: 0.9rem 2rem; }
+  .scaffold-section, .bryozoan-section, .depth-section,
+  .hover-section, .manifesto-section { padding: 4rem 2rem; }
+  .grid-header { padding: 3rem 2rem 1.5rem; }
+  footer { flex-direction: column; gap: 1rem; text-align: center; }
+  .manifesto-section::before { font-size: 35vw; }
+}
+@media (max-width: 500px) {
+  .strata-grid { grid-template-columns: repeat(2, 1fr); }
+  .mosaic { grid-template-columns: 1fr; grid-template-rows: auto; }
+  .hero-title { font-size: 3.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="back-nav">
+  <a href="../designs/">← Designs</a>
+</div>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-overline">CrAI Design 004 — March 2026</div>
+    <h1 class="hero-title">
+      Construction
+      <em>of Ruins</em>
+    </h1>
+    <p class="hero-subtitle">
+      Scaffolding rises from mounded limestone sediment. Ancient bryozoan colonies
+      lace the stone like fossilized blueprints. We build around what we cannot
+      understand, and call it architecture.
+    </p>
+    <div class="words-badge">
+      <span class="word-tag">scaff</span>
+      <span class="word-tag">immound</span>
+      <span class="word-tag">bryozoum</span>
+    </div>
+    <div class="hero-stat-row">
+      <div class="hero-stat">
+        <div class="hero-stat-num">430</div>
+        <div class="hero-stat-label">M Years Ago</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">17</div>
+        <div class="hero-stat-label">Strata Layers</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">∞</div>
+        <div class="hero-stat-label">Scaffolding Days</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <img class="hero-img"
+         src="https://picsum.photos/seed/scaff/1200/1000"
+         alt="Construction site ruins">
+    <svg class="scaffold-svg" viewBox="0 0 600 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <g stroke="#b87333" stroke-width="1.5" fill="none" opacity="0.55">
+        <!-- vertical poles -->
+        <line x1="80" y1="0" x2="80" y2="800"/>
+        <line x1="200" y1="0" x2="200" y2="800"/>
+        <line x1="320" y1="0" x2="320" y2="800"/>
+        <line x1="440" y1="100" x2="440" y2="800"/>
+        <line x1="560" y1="200" x2="560" y2="800"/>
+        <!-- horizontal ledgers -->
+        <line x1="60" y1="160" x2="460" y2="160"/>
+        <line x1="60" y1="320" x2="560" y2="320"/>
+        <line x1="60" y1="480" x2="560" y2="480"/>
+        <line x1="80" y1="640" x2="560" y2="640"/>
+        <!-- diagonals / bracing -->
+        <line x1="80" y1="160" x2="200" y2="320"/>
+        <line x1="200" y1="160" x2="80" y2="320"/>
+        <line x1="200" y1="320" x2="320" y2="480"/>
+        <line x1="320" y1="320" x2="200" y2="480"/>
+        <line x1="320" y1="480" x2="440" y2="640"/>
+        <line x1="440" y1="480" x2="320" y2="640"/>
+        <!-- joints -->
+        <circle cx="80" cy="160" r="4" fill="#b87333"/>
+        <circle cx="200" cy="160" r="4" fill="#b87333"/>
+        <circle cx="320" cy="160" r="4" fill="#b87333"/>
+        <circle cx="80" cy="320" r="4" fill="#b87333"/>
+        <circle cx="200" cy="320" r="4" fill="#b87333"/>
+        <circle cx="320" cy="320" r="4" fill="#b87333"/>
+        <circle cx="440" cy="320" r="4" fill="#b87333"/>
+        <circle cx="560" cy="320" r="4" fill="#b87333"/>
+        <circle cx="80" cy="480" r="4" fill="#b87333"/>
+        <circle cx="200" cy="480" r="4" fill="#b87333"/>
+        <circle cx="320" cy="480" r="4" fill="#b87333"/>
+        <circle cx="440" cy="480" r="4" fill="#b87333"/>
+        <circle cx="560" cy="480" r="4" fill="#b87333"/>
+        <circle cx="80" cy="640" r="4" fill="#b87333"/>
+        <circle cx="200" cy="640" r="4" fill="#b87333"/>
+        <circle cx="320" cy="640" r="4" fill="#b87333"/>
+        <circle cx="440" cy="640" r="4" fill="#b87333"/>
+        <circle cx="560" cy="640" r="4" fill="#b87333"/>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ===================== MARQUEE BAND ===================== -->
+<div class="site-number-band">
+  <div class="label">Site 004</div>
+  <div class="marquee-wrap">
+    <div class="marquee-text">
+      SCAFF — IMMOUND — BRYOZOUM — SCAFF — IMMOUND — BRYOZOUM — SCAFF — IMMOUND — BRYOZOUM — SCAFF — IMMOUND — BRYOZOUM — SCAFF — IMMOUND — BRYOZOUM — SCAFF — IMMOUND — BRYOZOUM &nbsp;&nbsp;&nbsp;
+    </div>
+  </div>
+  <div class="label">Excavation</div>
+</div>
+
+<!-- ===================== SCAFFOLD ANIMATION ===================== -->
+<section class="scaffold-section">
+  <div class="scaffold-grid-bg"></div>
+  <div class="scaffold-inner">
+    <div class="scaffold-text-block">
+      <h2>Immound <span>& Rising</span></h2>
+      <p>
+        Before the concrete, before the crane, the earth itself is mounded — immound —
+        pushed up from below by pressure no scaffold can contain. We lay pipes and boards
+        over forces we don't understand, and call the temporary structure "progress."
+      </p>
+      <p>
+        The bryozoan knew this. It built its colony over 430 million years, each
+        individual creature secreting a tiny chamber of limestone. Immound. Stacked.
+        A city no one designed.
+      </p>
+      <div class="mono-note">
+        SCAFF — a temporary skeleton<br>
+        IMMOUND — to heap, to raise up<br>
+        BRYOZOUM — colonial limestone architects
+      </div>
+    </div>
+    <div class="scaffold-canvas-wrap">
+      <canvas id="scaffoldCanvas" width="460" height="460"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== IMAGE GRID ===================== -->
+<section class="image-grid-section">
+  <div class="grid-header">
+    <h3>Field Documentation</h3>
+    <span>Excavation Frames 001—006</span>
+  </div>
+  <div class="mosaic">
+    <div class="mosaic-item">
+      <img src="https://picsum.photos/seed/immound/800/1200" alt="Field 1" loading="lazy">
+      <span class="mosaic-label">Frame 001 / Strata A</span>
+    </div>
+    <div class="mosaic-item">
+      <img src="https://picsum.photos/seed/bryozoum/400/360" alt="Field 2" loading="lazy">
+      <span class="mosaic-label">Frame 002</span>
+    </div>
+    <div class="mosaic-item">
+      <img src="https://picsum.photos/seed/ruins1/400/360" alt="Field 3" loading="lazy">
+      <span class="mosaic-label">Frame 003</span>
+    </div>
+    <div class="mosaic-item">
+      <img src="https://picsum.photos/seed/sediment/400/240" alt="Field 4" loading="lazy">
+      <span class="mosaic-label">Frame 004</span>
+    </div>
+    <div class="mosaic-item">
+      <img src="https://picsum.photos/seed/limestone/400/240" alt="Field 5" loading="lazy">
+      <span class="mosaic-label">Frame 005</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== BRYOZOAN INFO CARDS ===================== -->
+<section class="bryozoan-section">
+  <div class="bryozoan-bg"></div>
+  <div class="bryozoan-inner">
+    <span class="section-eyebrow">Colonial Architecture</span>
+    <div class="section-title">What the Bryozoan Built</div>
+    <div class="bryozoan-cols">
+      <div class="bry-card" data-num="I">
+        <svg class="bry-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="20" cy="20" r="14" stroke="#b87333" stroke-width="1"/>
+          <circle cx="20" cy="20" r="7" stroke="#b87333" stroke-width="1"/>
+          <line x1="6" y1="20" x2="34" y2="20" stroke="#b87333" stroke-width="1"/>
+          <line x1="20" y1="6" x2="20" y2="34" stroke="#b87333" stroke-width="1"/>
+          <circle cx="20" cy="20" r="2" fill="#b87333"/>
+        </svg>
+        <h4>Colony Logic</h4>
+        <p>No central planner. Each zooid builds its own chamber according to chemical gradients from its neighbors. The result: a branching lattice of extraordinary complexity.</p>
+      </div>
+      <div class="bry-card" data-num="II">
+        <svg class="bry-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="8" width="24" height="24" stroke="#4a7a6e" stroke-width="1"/>
+          <rect x="14" y="14" width="12" height="12" stroke="#4a7a6e" stroke-width="1"/>
+          <line x1="8" y1="8" x2="32" y2="32" stroke="#4a7a6e" stroke-width="1"/>
+          <line x1="32" y1="8" x2="8" y2="32" stroke="#4a7a6e" stroke-width="1"/>
+        </svg>
+        <h4>Immound Growth</h4>
+        <p>Colonies grow upward and outward simultaneously, creating dome-shaped mounds — immound — on the sea floor. Gravity is the only constraint on their ambition.</p>
+      </div>
+      <div class="bry-card" data-num="III">
+        <svg class="bry-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="20" y1="4" x2="20" y2="36" stroke="#cfc4b0" stroke-width="1"/>
+          <line x1="20" y1="10" x2="10" y2="20" stroke="#cfc4b0" stroke-width="1"/>
+          <line x1="20" y1="10" x2="30" y2="20" stroke="#cfc4b0" stroke-width="1"/>
+          <line x1="20" y1="22" x2="12" y2="30" stroke="#cfc4b0" stroke-width="1"/>
+          <line x1="20" y1="22" x2="28" y2="30" stroke="#cfc4b0" stroke-width="1"/>
+          <circle cx="20" cy="4" r="2" fill="#cfc4b0"/>
+          <circle cx="10" cy="20" r="2" fill="#cfc4b0"/>
+          <circle cx="30" cy="20" r="2" fill="#cfc4b0"/>
+          <circle cx="12" cy="30" r="2" fill="#cfc4b0"/>
+          <circle cx="28" cy="30" r="2" fill="#cfc4b0"/>
+        </svg>
+        <h4>Scaff Geometry</h4>
+        <p>The branching structure of a bryozoan colony is indistinguishable from optimal scaffolding. Nature solved the load-distribution problem before humans knew the problem existed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== EXCAVATION TIMELINE ===================== -->
+<section class="depth-section">
+  <div class="depth-inner">
+    <span class="section-eyebrow">Stratigraphic Record</span>
+    <div class="section-title">Layers of Construction</div>
+    <div class="depth-timeline">
+      <div class="depth-item">
+        <div class="depth-year">430 MYA</div>
+        <div class="depth-content">
+          <h4>Bryozoan Reef Formations</h4>
+          <p>The first immounded colonies. Silurian seas full of tiny architects,
+          each secreting its chamber of calcite. No plan. No foreman. Just chemistry
+          and the slow accumulation of time into limestone.</p>
+          <div class="depth-img-pair">
+            <img src="https://picsum.photos/seed/silurian/200/150" alt="Fossil 1" loading="lazy">
+            <img src="https://picsum.photos/seed/calcite/200/150" alt="Fossil 2" loading="lazy">
+          </div>
+        </div>
+      </div>
+      <div class="depth-item">
+        <div class="depth-year">2500 BCE</div>
+        <div class="depth-content">
+          <h4>First Scaffolding Records</h4>
+          <p>Cave paintings at Lascaux, painted from scaffolding — wooden poles
+          lashed to the cave walls. The oldest evidence of humans building temporary
+          structures to reach impossible places. We are still doing this.</p>
+        </div>
+      </div>
+      <div class="depth-item">
+        <div class="depth-year">Today</div>
+        <div class="depth-content">
+          <h4>The Same Problem, Unsolved</h4>
+          <p>Every skyscraper is wrapped in temporary scaffolding before it becomes
+          permanent. Every ruin was once wrapped in scaffolding too. The scaff is
+          the truth of it — the building itself is just the scaffolding we decided to keep.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== STRATA HOVER GRID ===================== -->
+<section class="hover-section">
+  <div class="hover-inner">
+    <div class="hover-intro">
+      <div>
+        <span class="section-eyebrow">Visual Archive</span>
+        <div class="section-title">Hover to Excavate</div>
+      </div>
+      <p>Each cell is a stratum. Hover to strip the sepia — to see what was there before
+      the patina of time settled over it. This is what archaeology feels like: the sudden
+      shock of original color.</p>
+    </div>
+    <div class="strata-grid">
+      <div class="strata-cell">
+        <div class="strata-cell-bg"><img src="https://picsum.photos/seed/strata1/300/300" alt="" loading="lazy"></div>
+        <div class="strata-overlay">
+          <div class="strata-overlay-title">Scaff Layer I</div>
+          <div class="strata-overlay-sub">Depth 0.3m</div>
+        </div>
+      </div>
+      <div class="strata-cell">
+        <div class="strata-cell-bg"><img src="https://picsum.photos/seed/strata2/300/300" alt="" loading="lazy"></div>
+        <div class="strata-overlay">
+          <div class="strata-overlay-title">Mound Core</div>
+          <div class="strata-overlay-sub">Depth 1.2m</div>
+        </div>
+      </div>
+      <div class="strata-cell">
+        <div class="strata-cell-bg"><img src="https://picsum.photos/seed/strata3/300/300" alt="" loading="lazy"></div>
+        <div class="strata-overlay">
+          <div class="strata-overlay-title">Colony Base</div>
+          <div class="strata-overlay-sub">Depth 2.8m</div>
+        </div>
+      </div>
+      <div class="strata-cell">
+        <div class="strata-cell-bg"><img src="https://picsum.photos/seed/strata4/300/300" alt="" loading="lazy"></div>
+        <div class="strata-overlay">
+          <div class="strata-overlay-title">Bryozoan Reef</div>
+          <div class="strata-overlay-sub">Depth 4.1m</div>
+        </div>
+      </div>
+      <div class="strata-cell">
+        <div class="strata-cell-bg"><img src="https://picsum.photos/seed/strata5/300/300" alt="" loading="lazy"></div>
+        <div class="strata-overlay">
+          <div class="strata-overlay-title">Calcite Bed</div>
+          <div class="strata-overlay-sub">Depth 5.6m</div>
+        </div>
+      </div>
+      <div class="strata-cell">
+        <div class="strata-cell-bg"><img src="https://picsum.photos/seed/strata6/300/300" alt="" loading="lazy"></div>
+        <div class="strata-overlay">
+          <div class="strata-overlay-title">Sediment Floor</div>
+          <div class="strata-overlay-sub">Depth 7.0m</div>
+        </div>
+      </div>
+      <div class="strata-cell">
+        <div class="strata-cell-bg"><img src="https://picsum.photos/seed/strata7/300/300" alt="" loading="lazy"></div>
+        <div class="strata-overlay">
+          <div class="strata-overlay-title">Iron Vein</div>
+          <div class="strata-overlay-sub">Depth 9.2m</div>
+        </div>
+      </div>
+      <div class="strata-cell">
+        <div class="strata-cell-bg"><img src="https://picsum.photos/seed/strata8/300/300" alt="" loading="lazy"></div>
+        <div class="strata-overlay">
+          <div class="strata-overlay-title">Bedrock</div>
+          <div class="strata-overlay-sub">Depth 12.0m</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== MANIFESTO ===================== -->
+<section class="manifesto-section">
+  <div class="manifesto-inner">
+    <span class="section-eyebrow">Design Manifesto</span>
+    <blockquote>
+      Every structure is<br>
+      <em>scaffolding</em><br>
+      for the next one.
+    </blockquote>
+    <p style="font-size:0.95rem; line-height:1.7; color:rgba(255,255,255,0.7); max-width:480px; margin:0 auto;">
+      We build, we immound, we fossilize. The bryozoan and the builder share the
+      same compulsion: to add one more chamber, one more floor, one more layer
+      to the structure that will outlast them both.
+    </p>
+    <div class="manifesto-words">
+      <span class="manifesto-word">scaff</span>
+      <span class="manifesto-word">immound</span>
+      <span class="manifesto-word">bryozoum</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FOOTER ===================== -->
+<footer>
+  <div class="footer-left">
+    CrAI Designs — 004 of ∞<br>
+    Construction of Ruins — March 2026
+  </div>
+  <a href="../designs/">← All Designs</a>
+</footer>
+
+<!-- ===================== CANVAS ANIMATION ===================== -->
+<script>
+(function() {
+  var canvas = document.getElementById('scaffoldCanvas');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+
+  // Scaffold nodes
+  var nodes = [];
+  var edges = [];
+  var frame = 0;
+  var maxEdges = 60;
+
+  // Define grid nodes
+  var cols = 7, rows = 7;
+  var padX = 40, padY = 40;
+  for (var r = 0; r < rows; r++) {
+    for (var c = 0; c < cols; c++) {
+      nodes.push({
+        x: padX + c * (W - padX*2) / (cols-1),
+        y: padY + r * (H - padY*2) / (rows-1),
+        active: false,
+        activatedAt: -999
+      });
+    }
+  }
+
+  // Potential edges (orthogonal + diagonal neighbors)
+  for (var i = 0; i < nodes.length; i++) {
+    var ri = Math.floor(i / cols), ci = i % cols;
+    [[0,1],[1,0],[1,1],[1,-1]].forEach(function(d) {
+      var nr = ri + d[0], nc = ci + d[1];
+      if (nr >= 0 && nr < rows && nc >= 0 && nc < cols) {
+        edges.push({
+          a: i,
+          b: nr * cols + nc,
+          drawn: false,
+          drawnAt: -999
+        });
+      }
+    });
+  }
+
+  // Shuffle edges for random build order
+  edges.sort(function() { return Math.random() - 0.5; });
+
+  function drawScaffold() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Background grid dots
+    ctx.fillStyle = 'rgba(58,61,74,0.3)';
+    for (var x = 30; x < W; x += 30) {
+      for (var y = 30; y < H; y += 30) {
+        ctx.beginPath();
+        ctx.arc(x, y, 0.8, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+
+    var buildSpeed = 1; // edges per frame
+    var t = frame;
+
+    // Reveal edges progressively
+    var revealed = Math.min(Math.floor(t / 3), edges.length);
+    for (var i = 0; i < revealed; i++) {
+      if (!edges[i].drawn) {
+        edges[i].drawn = true;
+        edges[i].drawnAt = t;
+        nodes[edges[i].a].active = true;
+        nodes[edges[i].a].activatedAt = t;
+        nodes[edges[i].b].active = true;
+        nodes[edges[i].b].activatedAt = t;
+      }
+    }
+
+    // Draw edges
+    edges.forEach(function(e) {
+      if (!e.drawn) return;
+      var age = t - e.drawnAt;
+      var alpha = Math.min(age / 20, 1) * 0.7;
+      var na = nodes[e.a], nb = nodes[e.b];
+      // color based on direction
+      var dx = nb.x - na.x, dy = nb.y - na.y;
+      var isDiag = dx !== 0 && dy !== 0;
+      if (isDiag) {
+        ctx.strokeStyle = 'rgba(74,122,110,' + alpha + ')';
+        ctx.lineWidth = 0.8;
+      } else {
+        ctx.strokeStyle = 'rgba(184,115,51,' + alpha + ')';
+        ctx.lineWidth = 1.5;
+      }
+      ctx.beginPath();
+      ctx.moveTo(na.x, na.y);
+      ctx.lineTo(nb.x, nb.y);
+      ctx.stroke();
+    });
+
+    // Draw nodes (joints)
+    nodes.forEach(function(n) {
+      if (!n.active) return;
+      var age = t - n.activatedAt;
+      var alpha = Math.min(age / 15, 1);
+      // pulse on fresh nodes
+      var pulse = age < 30 ? Math.sin(age * 0.4) * 2 : 0;
+      ctx.fillStyle = 'rgba(184,115,51,' + alpha + ')';
+      ctx.strokeStyle = 'rgba(207,196,176,' + (alpha * 0.5) + ')';
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, 3 + pulse, 0, Math.PI*2);
+      ctx.fill();
+      ctx.stroke();
+    });
+
+    // Once all edges drawn, add a slow pulse effect
+    if (revealed >= edges.length) {
+      var pulse2 = (Math.sin(t * 0.03) + 1) / 2;
+      ctx.strokeStyle = 'rgba(184,115,51,' + (0.15 + pulse2 * 0.1) + ')';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(20, 20, W - 40, H - 40);
+
+      // Reset after full cycle (slow restart)
+      if (t - edges[edges.length-1].drawnAt > 200) {
+        frame = 0;
+        edges.forEach(function(e) { e.drawn = false; e.drawnAt = -999; });
+        nodes.forEach(function(n) { n.active = false; n.activatedAt = -999; });
+        return;
+      }
+    }
+
+    frame++;
+    requestAnimationFrame(drawScaffold);
+  }
+
+  drawScaffold();
+})();
+</script>
+
+<script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

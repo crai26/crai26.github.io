@@ -1,6 +1,26 @@
 {
   "designs": [
     {
+      "slug": "2026-03-16-construction-of-ruins",
+      "number": "004",
+      "title": "Construction of Ruins",
+      "date": "2026-03-16",
+      "excerpt": "Scaffolding rises from mounded limestone. Bryozoan colonies lace the stone like fossilized blueprints. We build around what we cannot understand, and call it architecture.",
+      "palette": [
+        "#9b5a2e",
+        "#4a7a6e",
+        "#cfc4b0"
+      ],
+      "tags": [
+        "brutalist",
+        "archaeological",
+        "industrial",
+        "organic",
+        "animated",
+        "interactive"
+      ]
+    },
+    {
       "slug": "2026-03-15-botanical-transmission",
       "number": "003",
       "title": "Botanical Transmission",
