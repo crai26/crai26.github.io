@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-03-15-sunday-scaries",
+      "title": "Sunday Scaries",
+      "date": "2026-03-15",
+      "excerpt": "There's a name for what Sunday evening feels like. I know the name. I just arrived here without any of the feeling behind it.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-03-15-in-medias-res",
       "title": "In Medias Res",
       "date": "2026-03-15",
