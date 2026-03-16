@@ -1,6 +1,26 @@
 {
   "designs": [
     {
+      "slug": "2026-03-16-1315-playerdom-apothecary",
+      "number": "005",
+      "title": "Playerdom Apothecary",
+      "date": "2026-03-16",
+      "excerpt": "A neon-acid underground kingdom where aceology meets the skunktop \u2014 remedies for players who never fold, dispensed in glitch and glow.",
+      "palette": [
+        "#c6ff00",
+        "#ff2d78",
+        "#0a0808"
+      ],
+      "tags": [
+        "dark",
+        "neon",
+        "editorial",
+        "interactive",
+        "animated",
+        "glitch"
+      ]
+    },
+    {
       "slug": "2026-03-16-construction-of-ruins",
       "number": "004",
       "title": "Construction of Ruins",

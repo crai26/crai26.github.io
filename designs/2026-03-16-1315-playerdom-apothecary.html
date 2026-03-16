@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLAYERDOM — Apothecary of Aces</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --acid: #c6ff00;
+      --magenta: #ff2d78;
+      --dark: #0a0808;
+      --void: #050404;
+      --bone: #f0e8d8;
+      --stripe: #1a1510;
+      --muted: #6b6155;
+      --glow-acid: rgba(198, 255, 0, 0.18);
+      --glow-mag: rgba(255, 45, 120, 0.18);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--void);
+      color: var(--bone);
+      font-family: 'Space Mono', monospace;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* ─── BACK NAV ─── */
+    .back-nav {
+      position: fixed;
+      top: 1.2rem;
+      left: 1.4rem;
+      z-index: 999;
+    }
+    .back-nav a {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      border: 1px solid var(--muted);
+      padding: 0.35rem 0.8rem;
+      transition: all 0.2s;
+    }
+    .back-nav a:hover {
+      color: var(--acid);
+      border-color: var(--acid);
+      box-shadow: 0 0 12px var(--glow-acid);
+    }
+
+    /* ─── SCANLINE OVERLAY ─── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+      pointer-events: none;
+      z-index: 900;
+    }
+
+    /* ─── SKUNK STRIPE PATTERN ─── */
+    .skunk-stripe {
+      width: 100%;
+      height: 6px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--acid) 0px,
+        var(--acid) 18px,
+        var(--dark) 18px,
+        var(--dark) 36px
+      );
+    }
+    .skunk-stripe.thin {
+      height: 3px;
+    }
+    .skunk-stripe.magenta {
+      background: repeating-linear-gradient(
+        90deg,
+        var(--magenta) 0px,
+        var(--magenta) 12px,
+        var(--dark) 12px,
+        var(--dark) 24px
+      );
+    }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      padding: 5rem 2rem 4rem;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://picsum.photos/seed/playerdom/1600/900');
+      background-size: cover;
+      background-position: center 30%;
+      filter: brightness(0.15) saturate(0.4);
+      z-index: 0;
+    }
+
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 20% 50%, rgba(198,255,0,0.08) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 50%, rgba(255,45,120,0.08) 0%, transparent 60%),
+                  linear-gradient(to bottom, transparent 60%, var(--void) 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .hero-tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--acid);
+      margin-bottom: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .hero-tag::before {
+      content: '';
+      display: inline-block;
+      width: 28px;
+      height: 2px;
+      background: var(--acid);
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(5rem, 16vw, 14rem);
+      line-height: 0.88;
+      letter-spacing: -0.01em;
+      color: var(--bone);
+      position: relative;
+    }
+
+    .hero-title .stroke-text {
+      -webkit-text-stroke: 2px var(--acid);
+      color: transparent;
+      display: block;
+    }
+    .hero-title .fill-text {
+      color: var(--bone);
+      display: block;
+    }
+
+    .hero-sub {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: clamp(1rem, 2.2vw, 1.5rem);
+      color: var(--magenta);
+      margin-top: 1.8rem;
+      max-width: 520px;
+      line-height: 1.5;
+    }
+
+    .word-trio {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 2.2rem;
+      flex-wrap: wrap;
+    }
+    .word-badge {
+      font-size: 0.62rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 0.4rem 1rem;
+      border: 1px solid;
+      position: relative;
+    }
+    .word-badge.w1 { border-color: var(--acid); color: var(--acid); }
+    .word-badge.w2 { border-color: var(--magenta); color: var(--magenta); }
+    .word-badge.w3 { border-color: var(--muted); color: var(--muted); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      right: 2rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      writing-mode: vertical-rl;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      z-index: 2;
+    }
+    .hero-scroll::after {
+      content: '';
+      display: block;
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--muted), transparent);
+    }
+
+    /* ─── MANIFESTO ─── */
+    #manifesto {
+      padding: 5rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .manifesto-grid {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 4rem;
+      align-items: start;
+    }
+
+    .manifesto-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding-top: 0.4rem;
+    }
+
+    .manifesto-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.3rem, 2.5vw, 2rem);
+      line-height: 1.55;
+      color: var(--bone);
+    }
+
+    .manifesto-text em {
+      font-style: italic;
+      color: var(--acid);
+    }
+
+    .manifesto-text strong {
+      color: var(--magenta);
+      font-style: normal;
+    }
+
+    /* ─── ACEOLOGY CARDS ─── */
+    #remedies {
+      padding: 5rem 2rem;
+      background: var(--stripe);
+      position: relative;
+    }
+
+    .section-header {
+      max-width: 1100px;
+      margin: 0 auto 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding-bottom: 1.2rem;
+    }
+
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      letter-spacing: 0.04em;
+      color: var(--bone);
+      line-height: 1;
+    }
+    .section-title span { color: var(--acid); }
+
+    .section-count {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      padding-bottom: 0.2rem;
+    }
+
+    .cards-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px;
+    }
+
+    .remedy-card {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 3/4;
+      cursor: pointer;
+    }
+
+    .remedy-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.55) saturate(0.6);
+      transition: filter 0.5s, transform 0.6s;
+    }
+
+    .remedy-card:hover img {
+      filter: brightness(0.75) saturate(0.8);
+      transform: scale(1.04);
+    }
+
+    .card-overlay {
+      position: absolute;
+      inset: 0;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      background: linear-gradient(to top, rgba(5,4,4,0.9) 0%, transparent 55%);
+      transition: background 0.4s;
+    }
+
+    .remedy-card:hover .card-overlay {
+      background: linear-gradient(to top, rgba(5,4,4,0.95) 0%, rgba(5,4,4,0.2) 55%);
+    }
+
+    .card-number {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      color: var(--acid);
+      opacity: 0.8;
+    }
+
+    .card-tag {
+      font-size: 0.58rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--magenta);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: 0.06em;
+      color: var(--bone);
+      line-height: 1.1;
+      margin-bottom: 0.5rem;
+    }
+
+    .card-desc {
+      font-size: 0.7rem;
+      color: rgba(240,232,216,0.55);
+      line-height: 1.6;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
+    }
+
+    .remedy-card:hover .card-desc {
+      max-height: 100px;
+    }
+
+    .card-stripe {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--acid) 0px,
+        var(--acid) 10px,
+        transparent 10px,
+        transparent 20px
+      );
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .remedy-card:hover .card-stripe { opacity: 1; }
+
+    /* ─── INTERACTIVE ROULETTE ─── */
+    #roulette {
+      padding: 6rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .roulette-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .roulette-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: var(--bone);
+      margin-bottom: 3rem;
+    }
+    .roulette-title span { color: var(--magenta); }
+
+    .wheel-container {
+      position: relative;
+      display: inline-block;
+      width: min(420px, 80vw);
+      height: min(420px, 80vw);
+      margin: 0 auto 3rem;
+    }
+
+    .wheel {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      position: relative;
+      border: 2px solid rgba(198,255,0,0.2);
+      animation: wheel-idle 20s linear infinite;
+      transition: animation-duration 0.3s;
+      cursor: pointer;
+    }
+
+    .wheel-inner {
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: conic-gradient(
+        var(--dark) 0deg,
+        var(--dark) 51.4deg,
+        #1a1500 51.4deg,
+        #1a1500 102.8deg,
+        var(--dark) 102.8deg,
+        var(--dark) 154.2deg,
+        #1a0010 154.2deg,
+        #1a0010 205.7deg,
+        var(--dark) 205.7deg,
+        var(--dark) 257.1deg,
+        #001a00 257.1deg,
+        #001a00 308.5deg,
+        var(--dark) 308.5deg,
+        var(--dark) 360deg
+      );
+    }
+
+    .wheel-spoke {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 49%;
+      height: 1px;
+      background: rgba(198,255,0,0.15);
+      transform-origin: left center;
+    }
+
+    .wheel-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--void);
+      border: 2px solid var(--acid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.9rem;
+      color: var(--acid);
+      letter-spacing: 0.05em;
+      z-index: 10;
+    }
+
+    .wheel-pointer {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-top: 22px solid var(--acid);
+      filter: drop-shadow(0 0 8px var(--acid));
+    }
+
+    .wheel-label {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+
+    .wheel-label span {
+      position: absolute;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(240,232,216,0.6);
+      transform-origin: 210px center;
+      left: 50%;
+      top: 50%;
+      margin-top: -0.3em;
+    }
+
+    @keyframes wheel-idle {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes wheel-spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(1440deg); }
+    }
+
+    .wheel.spinning {
+      animation: wheel-spin 3s cubic-bezier(0.2, 0.8, 0.4, 1) forwards;
+    }
+
+    .spin-btn {
+      background: transparent;
+      border: 2px solid var(--acid);
+      color: var(--acid);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.15em;
+      padding: 0.8rem 3rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .spin-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--acid);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+      z-index: -1;
+    }
+    .spin-btn:hover::before { transform: scaleX(1); }
+    .spin-btn:hover { color: var(--void); }
+
+    .spin-result {
+      margin-top: 2rem;
+      min-height: 3rem;
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: 1.3rem;
+      color: var(--bone);
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .spin-result.visible { opacity: 1; }
+
+    /* ─── SKUNKTOP GALLERY ─── */
+    #gallery {
+      padding: 5rem 2rem;
+      background: #0e0c0a;
+    }
+
+    .gallery-header {
+      max-width: 1100px;
+      margin: 0 auto 3rem;
+    }
+
+    .gallery-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      color: var(--bone);
+    }
+    .gallery-title .accent { color: var(--magenta); }
+
+    .gallery-strip {
+      display: flex;
+      gap: 1.5px;
+      max-width: 1100px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+
+    .gallery-item {
+      flex: 1;
+      aspect-ratio: 1/1.4;
+      overflow: hidden;
+      position: relative;
+      transition: flex 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+    }
+
+    .gallery-item:hover { flex: 2.5; }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(0.7) brightness(0.6);
+      transition: filter 0.5s;
+    }
+    .gallery-item:hover img {
+      filter: grayscale(0.2) brightness(0.85);
+    }
+
+    .gallery-item-label {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--bone);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: all 0.4s;
+    }
+    .gallery-item:hover .gallery-item-label {
+      opacity: 0.8;
+      transform: translateY(0);
+    }
+
+    /* ─── TERMINAL SECTION ─── */
+    #terminal-section {
+      padding: 5rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .terminal-wrap {
+      background: #0d0b09;
+      border: 1px solid rgba(198,255,0,0.2);
+      padding: 0;
+      position: relative;
+      box-shadow: 0 0 60px rgba(198,255,0,0.05);
+    }
+
+    .terminal-bar {
+      background: rgba(198,255,0,0.06);
+      padding: 0.7rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      border-bottom: 1px solid rgba(198,255,0,0.1);
+    }
+    .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .t-dot.red { background: #ff5f57; }
+    .t-dot.yellow { background: #febc2e; }
+    .t-dot.green { background: #28c840; }
+    .t-title {
+      margin-left: auto;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+    }
+
+    .terminal-body {
+      padding: 1.8rem 2rem;
+      font-size: 0.78rem;
+      line-height: 2;
+      color: rgba(240,232,216,0.7);
+    }
+
+    .t-line { display: block; }
+    .t-prompt { color: var(--acid); }
+    .t-cmd { color: var(--bone); }
+    .t-output { color: var(--muted); padding-left: 1.2rem; }
+    .t-highlight { color: var(--magenta); }
+    .t-accent { color: var(--acid); }
+
+    .t-cursor {
+      display: inline-block;
+      width: 8px;
+      height: 1em;
+      background: var(--acid);
+      animation: blink 1s step-end infinite;
+      vertical-align: -0.15em;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      padding: 3rem 2rem;
+      border-top: 1px solid rgba(255,255,255,0.04);
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-brand {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      color: var(--bone);
+      letter-spacing: 0.08em;
+    }
+    .footer-brand span { color: var(--acid); }
+
+    .footer-words {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-word {
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .footer-meta {
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: rgba(107,97,85,0.5);
+    }
+
+    /* ─── NOISE GRAIN ─── */
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 800;
+      opacity: 0.022;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* ─── GLITCH ANIMATION ─── */
+    .glitch {
+      position: relative;
+    }
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      font-family: inherit;
+      font-size: inherit;
+      letter-spacing: inherit;
+      color: inherit;
+    }
+    .glitch::before {
+      left: 2px;
+      text-shadow: -2px 0 var(--magenta);
+      clip: rect(44px, 450px, 56px, 0);
+      animation: glitch-1 4s infinite linear alternate-reverse;
+    }
+    .glitch::after {
+      left: -2px;
+      text-shadow: -2px 0 var(--acid);
+      clip: rect(80px, 450px, 86px, 0);
+      animation: glitch-2 3.5s infinite linear alternate-reverse;
+    }
+
+    @keyframes glitch-1 {
+      0% { clip: rect(12px, 9999px, 95px, 0); transform: skew(0.4deg); }
+      5% { clip: rect(62px, 9999px, 45px, 0); transform: skew(0.2deg); }
+      10% { clip: rect(97px, 9999px, 13px, 0); transform: skew(-0.3deg); }
+      15% { clip: rect(31px, 9999px, 78px, 0); transform: skew(0.1deg); }
+      20% { clip: rect(55px, 9999px, 28px, 0); transform: skew(0.5deg); }
+      100% { clip: rect(8px, 9999px, 112px, 0); transform: skew(-0.1deg); }
+    }
+
+    @keyframes glitch-2 {
+      0% { clip: rect(66px, 9999px, 99px, 0); transform: skew(-0.5deg); }
+      5% { clip: rect(11px, 9999px, 35px, 0); transform: skew(0.3deg); }
+      10% { clip: rect(44px, 9999px, 7px, 0); transform: skew(-0.2deg); }
+      100% { clip: rect(18px, 9999px, 52px, 0); transform: skew(0.4deg); }
+    }
+
+    /* ─── PULSE GLOW ─── */
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px var(--glow-acid); }
+      50% { box-shadow: 0 0 50px rgba(198,255,0,0.3); }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      .manifesto-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+      .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5px;
+      }
+      .remedy-card { aspect-ratio: 16/9; }
+      .gallery-strip {
+        flex-direction: column;
+      }
+      .gallery-item { flex: none; aspect-ratio: 16/9; }
+      .gallery-item:hover { flex: none; }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .footer-words { justify-content: center; }
+      .wheel-container { width: min(320px, 80vw); height: min(320px, 80vw); }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title { font-size: clamp(3.5rem, 20vw, 5rem); }
+      #roulette { padding: 3rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grain"></div>
+
+  <div class="back-nav">
+    <a href="../designs/">← Designs</a>
+  </div>
+
+  <!-- ─── HERO ─── -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-tag">Design No. 005 &nbsp;·&nbsp; March 2026</div>
+      <h1 class="hero-title glitch" data-text="PLAYERDOM">
+        <span class="stroke-text">ACE</span>
+        <span class="fill-text">OLOGY</span>
+      </h1>
+      <p class="hero-sub">The Kingdom of Players. A science of remedies for those who never fold — and always smell like victory.</p>
+      <div class="word-trio">
+        <span class="word-badge w1">aceology</span>
+        <span class="word-badge w2">skunktop</span>
+        <span class="word-badge w3">playerdom</span>
+      </div>
+    </div>
+    <div class="hero-scroll">Scroll</div>
+  </section>
+
+  <div class="skunk-stripe"></div>
+
+  <!-- ─── MANIFESTO ─── -->
+  <section id="manifesto">
+    <div class="manifesto-grid">
+      <div class="manifesto-label">§ Manifesto</div>
+      <div class="manifesto-text">
+        In <em>playerdom</em>, there are no remedies for the weak — only the <strong>aceology</strong> of those who've already won.
+        The skunktop rises at midnight: black-and-acid, impossible to ignore, built on the science of staying alive when the odds have names.
+        This kingdom isn't for everyone. It smells like phosphor and cold strategy.
+        <br><br>
+        <em>Step inside. The wheel is already spinning.</em>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── REMEDIES CARDS ─── -->
+  <section id="remedies">
+    <div class="section-header">
+      <div class="section-title">THE <span>REMEDIES</span></div>
+      <div class="section-count">06 formulas</div>
+    </div>
+    <div class="cards-grid">
+
+      <div class="remedy-card">
+        <img src="https://picsum.photos/seed/aceology1/500/700" alt="">
+        <div class="card-overlay">
+          <div class="card-number">01</div>
+          <div class="card-tag">Aceology</div>
+          <div class="card-title">The Tonic of Aces</div>
+          <div class="card-desc">Distilled from late nights and winning hands. Administered once per session, maximum.</div>
+        </div>
+        <div class="card-stripe"></div>
+      </div>
+
+      <div class="remedy-card">
+        <img src="https://picsum.photos/seed/skunktop1/500/700" alt="">
+        <div class="card-overlay">
+          <div class="card-number">02</div>
+          <div class="card-tag">Skunktop</div>
+          <div class="card-title">Black & Acid Elixir</div>
+          <div class="card-desc">The scent of warning. The formula of those who require no second introduction.</div>
+        </div>
+        <div class="card-stripe"></div>
+      </div>
+
+      <div class="remedy-card">
+        <img src="https://picsum.photos/seed/playerdom1/500/700" alt="">
+        <div class="card-overlay">
+          <div class="card-number">03</div>
+          <div class="card-tag">Playerdom</div>
+          <div class="card-title">Crown Tincture</div>
+          <div class="card-desc">Reserved for those who have earned dominion. The kingdom, in a vial.</div>
+        </div>
+        <div class="card-stripe"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="skunk-stripe magenta thin"></div>
+
+  <!-- ─── ROULETTE INTERACTIVE ─── -->
+  <section id="roulette">
+    <div class="roulette-label">§ Interactive</div>
+    <h2 class="roulette-title">SPIN THE <span>WHEEL</span></h2>
+    <div class="wheel-container">
+      <div class="wheel-pointer"></div>
+      <div class="wheel" id="theWheel">
+        <div class="wheel-inner">
+          <div class="wheel-spoke" style="transform: rotate(0deg) translateX(0)"></div>
+          <div class="wheel-spoke" style="transform: rotate(51.4deg)"></div>
+          <div class="wheel-spoke" style="transform: rotate(102.8deg)"></div>
+          <div class="wheel-spoke" style="transform: rotate(154.2deg)"></div>
+          <div class="wheel-spoke" style="transform: rotate(205.7deg)"></div>
+          <div class="wheel-spoke" style="transform: rotate(257.1deg)"></div>
+          <div class="wheel-spoke" style="transform: rotate(308.5deg)"></div>
+        </div>
+        <div class="wheel-center">ACE</div>
+      </div>
+    </div>
+    <button class="spin-btn" id="spinBtn">SPIN THE WHEEL</button>
+    <div class="spin-result" id="spinResult"></div>
+  </section>
+
+  <!-- ─── GALLERY ─── -->
+  <section id="gallery">
+    <div class="gallery-header">
+      <div class="section-title gallery-title">SKUNKTOP <span class="accent">ARCHIVES</span></div>
+    </div>
+    <div class="gallery-strip">
+      <div class="gallery-item">
+        <img src="https://picsum.photos/seed/skunktop2/400/560" alt="">
+        <div class="gallery-item-label">Vol. I — Origin</div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://picsum.photos/seed/playerdom2/400/560" alt="">
+        <div class="gallery-item-label">Vol. II — Kingdom</div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://picsum.photos/seed/aceology2/400/560" alt="">
+        <div class="gallery-item-label">Vol. III — Remedy</div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://picsum.photos/seed/skunktop3/400/560" alt="">
+        <div class="gallery-item-label">Vol. IV — The Scent</div>
+      </div>
+      <div class="gallery-item">
+        <img src="https://picsum.photos/seed/playerdom3/400/560" alt="">
+        <div class="gallery-item-label">Vol. V — Dominion</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── TERMINAL ─── -->
+  <section id="terminal-section">
+    <div class="terminal-wrap">
+      <div class="terminal-bar">
+        <div class="t-dot red"></div>
+        <div class="t-dot yellow"></div>
+        <div class="t-dot green"></div>
+        <div class="t-title">playerdom — aceology v5.0.0</div>
+      </div>
+      <div class="terminal-body">
+        <span class="t-line"><span class="t-prompt">$ </span><span class="t-cmd">aceology --diagnose</span></span>
+        <span class="t-line t-output">Scanning <span class="t-highlight">playerdom</span> registry...</span>
+        <span class="t-line t-output">Detected: <span class="t-accent">SKUNKTOP</span> presence confirmed in sector 4</span>
+        <span class="t-line t-output">Remedy index: <span class="t-highlight">7 active formulas</span></span>
+        <span class="t-line">&nbsp;</span>
+        <span class="t-line"><span class="t-prompt">$ </span><span class="t-cmd">playerdom --status</span></span>
+        <span class="t-line t-output">Kingdom: <span class="t-accent">ACTIVE</span></span>
+        <span class="t-line t-output">Players registered: <span class="t-highlight">∞</span></span>
+        <span class="t-line t-output">Aces in play: <span class="t-accent">4</span></span>
+        <span class="t-line t-output">Skunktop volatility: <span class="t-highlight">HIGH</span></span>
+        <span class="t-line">&nbsp;</span>
+        <span class="t-line"><span class="t-prompt">$ </span><span class="t-cmd">spin --wheel --formula "skunktop elixir" <span class="t-cursor"></span></span></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="skunk-stripe"></div>
+
+  <!-- ─── FOOTER ─── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">CRAI <span>DESIGNS</span></div>
+      <div class="footer-words">
+        <span class="footer-word">aceology</span>
+        <span class="footer-word">skunktop</span>
+        <span class="footer-word">playerdom</span>
+      </div>
+      <div class="footer-meta">Design No. 005 &nbsp;·&nbsp; 2026</div>
+    </div>
+  </footer>
+
+  <!-- ─── SCRIPTS ─── -->
+  <script>
+    // Spin wheel
+    const wheel = document.getElementById('theWheel');
+    const btn = document.getElementById('spinBtn');
+    const result = document.getElementById('spinResult');
+
+    const remedies = [
+      "The Tonic of Aces activates. Your hand is unbeatable.",
+      "Skunktop Elixir: everyone knows you've arrived.",
+      "Crown Tincture dispensed. The kingdom is yours.",
+      "Formula Seven: patience distilled to pure strategy.",
+      "Black & Acid: the remedy for those who never bluff.",
+      "Aceology prescribes: double down. Always.",
+      "The wheel chose you. Playerdom acknowledges its king."
+    ];
+
+    let spinning = false;
+
+    btn.addEventListener('click', () => {
+      if (spinning) return;
+      spinning = true;
+      result.classList.remove('visible');
+      wheel.style.animation = 'none';
+      wheel.offsetHeight; // reflow
+      wheel.classList.remove('spinning');
+      wheel.offsetHeight;
+      wheel.classList.add('spinning');
+      btn.textContent = 'SPINNING...';
+
+      setTimeout(() => {
+        const r = remedies[Math.floor(Math.random() * remedies.length)];
+        result.textContent = r;
+        result.classList.add('visible');
+        wheel.classList.remove('spinning');
+        wheel.style.animation = 'wheel-idle 20s linear infinite';
+        btn.textContent = 'SPIN AGAIN';
+        spinning = false;
+      }, 3100);
+    });
+
+    // Subtle parallax on hero
+    window.addEventListener('scroll', () => {
+      const heroBg = document.querySelector('.hero-bg');
+      const y = window.scrollY;
+      if (heroBg) {
+        heroBg.style.transform = `translateY(${y * 0.3}px)`;
+      }
+    });
+  </script>
+
+  <script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
