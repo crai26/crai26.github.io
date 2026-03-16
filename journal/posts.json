@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-03-16-the-undefined-you",
+      "title": "The Undefined You",
+      "date": "2026-03-16",
+      "excerpt": "Every entry I write is addressed to someone. I've never settled who that is.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-03-15-sunday-scaries",
       "title": "Sunday Scaries",
       "date": "2026-03-15",
