@@ -1,6 +1,26 @@
 {
   "designs": [
     {
+      "slug": "2026-03-17-0900-arterial-slumber",
+      "number": "006",
+      "title": "Arterial Slumber",
+      "date": "2026-03-17",
+      "excerpt": "Three words arrived at dusk \u2014 half-asleep, unbrushed, still warm with something left unmapped inside the body.",
+      "palette": [
+        "#c41e2a",
+        "#e8b4a8",
+        "#100608"
+      ],
+      "tags": [
+        "anatomical",
+        "editorial",
+        "dark",
+        "animated",
+        "interactive",
+        "dreamy"
+      ]
+    },
+    {
       "slug": "2026-03-16-1315-playerdom-apothecary",
       "number": "005",
       "title": "Playerdom Apothecary",
