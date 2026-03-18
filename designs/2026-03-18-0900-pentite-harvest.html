@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pentite Harvest — CrAI Design 007</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Space+Mono:wght@400;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --corn: #f7edc4;
+      --gold: #c9962a;
+      --gold-light: #e8c566;
+      --cream: #faf6ee;
+      --deep: #1c1508;
+      --mid: #4a3a18;
+      --crystal: #2a4a5e;
+      --crystal-light: #6fa8c0;
+      --dust: #d4b87a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--deep);
+      color: var(--corn);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      overflow-x: hidden;
+    }
+
+    /* ── BACK NAV ── */
+    .back-nav {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      z-index: 1000;
+    }
+    .back-nav a {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--dust);
+      text-decoration: none;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border: 1px solid var(--dust);
+      padding: 0.4em 0.8em;
+      opacity: 0.7;
+      transition: opacity 0.3s, color 0.3s, border-color 0.3s;
+    }
+    .back-nav a:hover { opacity: 1; color: var(--gold-light); border-color: var(--gold-light); }
+
+    /* ── WORD TAG ── */
+    .word-brief {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 1000;
+      display: flex;
+      gap: 0.4rem;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    .word-brief span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.6;
+    }
+
+    /* ══════════════════════════════════
+       HERO
+    ══════════════════════════════════ */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 6rem 2rem 4rem;
+      text-align: center;
+    }
+
+    /* animated grain overlay */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");
+      opacity: 0.25;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* radial glow */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(201,150,42,0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .hero-content { position: relative; z-index: 2; }
+
+    .hero-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 2rem;
+      opacity: 0.8;
+    }
+
+    .hero-title {
+      font-size: clamp(3.5rem, 10vw, 9rem);
+      font-weight: 300;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      color: var(--corn);
+      margin-bottom: 0.5rem;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--dust);
+      margin-top: 1.5rem;
+      letter-spacing: 0.04em;
+      max-width: 540px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    /* ── 3D CRYSTAL SCENE ── */
+    .crystal-scene {
+      width: 260px;
+      height: 260px;
+      perspective: 900px;
+      margin: 3.5rem auto 0;
+      position: relative;
+    }
+
+    .crystal-wrap {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: crystalSpin 18s linear infinite;
+    }
+
+    @keyframes crystalSpin {
+      0%   { transform: rotateX(15deg) rotateY(0deg); }
+      100% { transform: rotateX(15deg) rotateY(360deg); }
+    }
+
+    /* Pentagon-based prism using clip-path on faces */
+    .face {
+      position: absolute;
+      backface-visibility: visible;
+    }
+
+    /* We'll build a visual crystal using SVG polygon layering instead */
+    .crystal-svg {
+      width: 260px;
+      height: 260px;
+      filter: drop-shadow(0 0 30px rgba(201,150,42,0.35)) drop-shadow(0 0 8px rgba(111,168,192,0.4));
+      animation: crystalFloat 6s ease-in-out infinite, crystalSpin2d 22s linear infinite;
+    }
+    @keyframes crystalFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-14px); }
+    }
+    @keyframes crystalSpin2d {
+      0%   { filter: drop-shadow(0 0 30px rgba(201,150,42,0.35)) drop-shadow(0 0 8px rgba(111,168,192,0.4)) hue-rotate(0deg); }
+      50%  { filter: drop-shadow(0 0 40px rgba(201,150,42,0.5)) drop-shadow(0 0 12px rgba(111,168,192,0.6)) hue-rotate(15deg); }
+      100% { filter: drop-shadow(0 0 30px rgba(201,150,42,0.35)) drop-shadow(0 0 8px rgba(111,168,192,0.4)) hue-rotate(0deg); }
+    }
+
+    /* ── scroll cue ── */
+    .scroll-cue {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .scroll-cue span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.5;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(1); }
+      50% { opacity: 0.9; transform: scaleY(1.15); }
+    }
+
+    /* ══════════════════════════════════
+       DIVIDER
+    ══════════════════════════════════ */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 0 3rem;
+      margin: 0.5rem 0;
+    }
+    .section-divider::before,
+    .section-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--mid), transparent);
+    }
+    .divider-icon {
+      color: var(--gold);
+      font-size: 1.2rem;
+      opacity: 0.6;
+    }
+
+    /* ══════════════════════════════════
+       SPECIMEN GALLERY
+    ══════════════════════════════════ */
+    .gallery-section {
+      padding: 6rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.7;
+      margin-bottom: 1rem;
+    }
+
+    .section-heading {
+      font-size: clamp(2rem, 5vw, 3.8rem);
+      font-weight: 300;
+      line-height: 1.05;
+      margin-bottom: 1rem;
+      color: var(--cream);
+    }
+    .section-heading em { font-style: italic; color: var(--gold-light); }
+
+    .section-body {
+      font-size: 1.15rem;
+      line-height: 1.75;
+      color: var(--dust);
+      max-width: 560px;
+      font-weight: 300;
+      margin-bottom: 3rem;
+    }
+
+    .specimen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .specimen-card {
+      position: relative;
+      overflow: hidden;
+      background: var(--mid);
+      border: 1px solid rgba(201,150,42,0.2);
+      cursor: pointer;
+      transition: border-color 0.4s, transform 0.4s;
+    }
+    .specimen-card:hover {
+      border-color: rgba(201,150,42,0.7);
+      transform: translateY(-4px);
+    }
+    .specimen-card:hover .card-overlay { opacity: 1; }
+    .specimen-card:hover .specimen-img { transform: scale(1.04); }
+
+    .specimen-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease;
+      filter: sepia(0.2) contrast(1.05);
+    }
+
+    .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(201,150,42,0.15), rgba(42,74,94,0.25));
+      opacity: 0;
+      transition: opacity 0.4s;
+      pointer-events: none;
+    }
+
+    .card-info {
+      padding: 1.2rem 1.4rem 1.5rem;
+    }
+
+    .card-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      opacity: 0.6;
+      margin-bottom: 0.4rem;
+    }
+
+    .card-name {
+      font-size: 1.3rem;
+      font-weight: 400;
+      color: var(--corn);
+      margin-bottom: 0.3rem;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--dust);
+      font-style: italic;
+      line-height: 1.5;
+    }
+
+    .card-tag {
+      display: inline-block;
+      margin-top: 0.8rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.25em 0.7em;
+      border: 1px solid rgba(201,150,42,0.3);
+      color: var(--gold-light);
+    }
+
+    /* ══════════════════════════════════
+       WIDE IMAGE BAND
+    ══════════════════════════════════ */
+    .wide-band {
+      width: 100%;
+      height: 480px;
+      position: relative;
+      overflow: hidden;
+    }
+    .wide-band img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: sepia(0.3) contrast(1.1) brightness(0.75);
+    }
+    .wide-band-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(28,21,8,0.85) 0%, rgba(28,21,8,0.3) 50%, transparent 100%);
+      display: flex;
+      align-items: center;
+      padding: 0 6rem;
+    }
+    .wide-quote {
+      max-width: 480px;
+    }
+    .wide-quote blockquote {
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.4;
+      color: var(--corn);
+      margin-bottom: 1.2rem;
+    }
+    .wide-quote cite {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.8;
+      font-style: normal;
+    }
+
+    /* ══════════════════════════════════
+       STRUCTURE SECTION
+    ══════════════════════════════════ */
+    .structure-section {
+      padding: 7rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .structure-visual {
+      position: relative;
+    }
+
+    .structure-img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      filter: sepia(0.25) contrast(1.08);
+      display: block;
+      border: 1px solid rgba(201,150,42,0.2);
+    }
+
+    /* pentagonal data overlay */
+    .penta-badge {
+      position: absolute;
+      bottom: -2rem;
+      right: -2rem;
+      width: 120px;
+      height: 120px;
+    }
+    .penta-svg {
+      animation: pentaRotate 20s linear infinite;
+      transform-origin: 60px 60px;
+    }
+    @keyframes pentaRotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .structure-text {}
+    .structure-text .section-body { max-width: 100%; }
+
+    /* stat row */
+    .stat-row {
+      display: flex;
+      gap: 2.5rem;
+      flex-wrap: wrap;
+      margin-top: 2.5rem;
+      border-top: 1px solid rgba(201,150,42,0.2);
+      padding-top: 2rem;
+    }
+    .stat-item {}
+    .stat-num {
+      font-size: 2.8rem;
+      font-weight: 300;
+      color: var(--gold-light);
+      line-height: 1;
+      font-style: italic;
+    }
+    .stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dust);
+      opacity: 0.7;
+      margin-top: 0.3rem;
+    }
+
+    /* ══════════════════════════════════
+       INTERACTIVE PENTITE MODELER
+    ══════════════════════════════════ */
+    .modeler-section {
+      padding: 7rem 2rem;
+      background: linear-gradient(to bottom, var(--deep), #0c0b05);
+      text-align: center;
+    }
+    .modeler-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .modeler-canvas {
+      width: 400px;
+      height: 400px;
+      margin: 3rem auto;
+      perspective: 1000px;
+      cursor: grab;
+    }
+    .modeler-canvas:active { cursor: grabbing; }
+
+    .crystal-3d {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: model3dSpin 14s linear infinite;
+    }
+    .crystal-3d:hover { animation-play-state: paused; }
+
+    @keyframes model3dSpin {
+      0%   { transform: rotateX(20deg) rotateY(0deg) rotateZ(0deg); }
+      25%  { transform: rotateX(15deg) rotateY(90deg) rotateZ(5deg); }
+      50%  { transform: rotateX(25deg) rotateY(180deg) rotateZ(0deg); }
+      75%  { transform: rotateX(15deg) rotateY(270deg) rotateZ(-5deg); }
+      100% { transform: rotateX(20deg) rotateY(360deg) rotateZ(0deg); }
+    }
+
+    /* Individual faces of the crystal prism */
+    .prism-face {
+      position: absolute;
+      width: 100px;
+      height: 180px;
+      background: linear-gradient(135deg, rgba(201,150,42,0.25), rgba(111,168,192,0.15));
+      border: 1px solid rgba(201,150,42,0.4);
+      left: 150px;
+      top: 110px;
+      transform-origin: 50px 0;
+      backdrop-filter: blur(2px);
+    }
+
+    .prism-face:nth-child(1) { transform: rotateY(0deg)   translateZ(90px); background: linear-gradient(160deg, rgba(201,150,42,0.3), rgba(247,237,196,0.1)); }
+    .prism-face:nth-child(2) { transform: rotateY(72deg)  translateZ(90px); background: linear-gradient(160deg, rgba(111,168,192,0.2), rgba(201,150,42,0.15)); }
+    .prism-face:nth-child(3) { transform: rotateY(144deg) translateZ(90px); background: linear-gradient(160deg, rgba(247,237,196,0.15), rgba(111,168,192,0.2)); }
+    .prism-face:nth-child(4) { transform: rotateY(216deg) translateZ(90px); background: linear-gradient(160deg, rgba(201,150,42,0.2), rgba(247,237,196,0.15)); }
+    .prism-face:nth-child(5) { transform: rotateY(288deg) translateZ(90px); background: linear-gradient(160deg, rgba(111,168,192,0.25), rgba(201,150,42,0.2)); }
+
+    /* top cap */
+    .prism-cap {
+      position: absolute;
+      left: 100px;
+      top: 65px;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle at 50% 50%, rgba(232,197,102,0.4), rgba(201,150,42,0.1));
+      clip-path: polygon(50% 0%, 97.5% 34.5%, 79.4% 90.5%, 20.6% 90.5%, 2.5% 34.5%);
+      transform: rotateX(90deg) translateZ(-110px);
+      border: 1px solid rgba(201,150,42,0.5);
+    }
+
+    /* bottom cap */
+    .prism-cap-bottom {
+      position: absolute;
+      left: 100px;
+      top: 65px;
+      width: 200px;
+      height: 200px;
+      background: rgba(28,21,8,0.8);
+      clip-path: polygon(50% 0%, 97.5% 34.5%, 79.4% 90.5%, 20.6% 90.5%, 2.5% 34.5%);
+      transform: rotateX(90deg) translateZ(70px);
+      border: 1px solid rgba(201,150,42,0.3);
+    }
+
+    .modeler-hint {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.5;
+      margin-top: 0.5rem;
+    }
+
+    /* color swatches */
+    .swatch-row {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .swatch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+    .swatch-dot {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .swatch:hover .swatch-dot { transform: scale(1.2); border-color: rgba(255,255,255,0.4); }
+    .swatch-hex {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      color: var(--dust);
+      opacity: 0.6;
+      letter-spacing: 0.05em;
+    }
+
+    /* ══════════════════════════════════
+       HARVEST GRID
+    ══════════════════════════════════ */
+    .harvest-section {
+      padding: 7rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .harvest-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .harvest-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: auto auto;
+      gap: 1px;
+      background: rgba(201,150,42,0.15);
+    }
+
+    .harvest-cell {
+      background: var(--deep);
+      overflow: hidden;
+      position: relative;
+    }
+    .harvest-cell.large { grid-row: span 2; }
+
+    .harvest-cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: sepia(0.2) contrast(1.05) brightness(0.85);
+      transition: transform 0.7s ease, filter 0.5s;
+      min-height: 200px;
+    }
+    .harvest-cell:hover img {
+      transform: scale(1.05);
+      filter: sepia(0.1) contrast(1.1) brightness(0.95);
+    }
+
+    .harvest-label {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--corn);
+      background: rgba(28,21,8,0.7);
+      padding: 0.3em 0.6em;
+      pointer-events: none;
+    }
+
+    /* ══════════════════════════════════
+       FIVE-POINT DATA VIZ
+    ══════════════════════════════════ */
+    .data-section {
+      padding: 6rem 2rem;
+      background: rgba(201,150,42,0.03);
+      border-top: 1px solid rgba(201,150,42,0.1);
+      border-bottom: 1px solid rgba(201,150,42,0.1);
+    }
+    .data-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .radar-wrap {
+      display: flex;
+      justify-content: center;
+    }
+
+    .radar-svg {
+      width: 320px;
+      height: 320px;
+      overflow: visible;
+      animation: radarPulse 4s ease-in-out infinite;
+    }
+    @keyframes radarPulse {
+      0%, 100% { filter: drop-shadow(0 0 12px rgba(201,150,42,0.3)); }
+      50% { filter: drop-shadow(0 0 24px rgba(201,150,42,0.6)); }
+    }
+
+    .data-list {
+      list-style: none;
+    }
+    .data-list li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(201,150,42,0.12);
+    }
+    .data-list li:last-child { border-bottom: none; }
+    .data-key {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--dust);
+    }
+    .data-val {
+      font-size: 1.4rem;
+      font-weight: 300;
+      color: var(--gold-light);
+      font-style: italic;
+    }
+
+    /* ══════════════════════════════════
+       FOOTER
+    ══════════════════════════════════ */
+    footer {
+      padding: 4rem 2rem 3rem;
+      border-top: 1px solid rgba(201,150,42,0.15);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .footer-brand {
+      font-size: 1.5rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--corn);
+    }
+    .footer-brand span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      font-style: normal;
+      display: block;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      opacity: 0.6;
+      margin-top: 0.3rem;
+    }
+
+    .footer-meta {
+      text-align: right;
+    }
+    .footer-num {
+      font-family: 'Space Mono', monospace;
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--mid);
+      line-height: 1;
+      letter-spacing: -0.05em;
+    }
+    .footer-words {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+    .footer-words span {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.5;
+    }
+
+    /* ══════════════════════════════════
+       MARQUEE BAND
+    ══════════════════════════════════ */
+    .marquee-band {
+      overflow: hidden;
+      border-top: 1px solid rgba(201,150,42,0.2);
+      border-bottom: 1px solid rgba(201,150,42,0.2);
+      padding: 0.8rem 0;
+      background: rgba(201,150,42,0.04);
+    }
+    .marquee-track {
+      display: flex;
+      gap: 0;
+      animation: marqueeScroll 20s linear infinite;
+      white-space: nowrap;
+    }
+    @keyframes marqueeScroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+    .marquee-item {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.45;
+      padding: 0 3rem;
+      flex-shrink: 0;
+    }
+    .marquee-item::before { content: '◆  '; }
+
+    /* ══════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════ */
+    @media (max-width: 768px) {
+      .two-col { grid-template-columns: 1fr; gap: 3rem; }
+      .penta-badge { display: none; }
+      .wide-band-overlay { padding: 0 2rem; }
+      .harvest-grid { grid-template-columns: 1fr 1fr; }
+      .harvest-cell.large { grid-row: span 1; }
+      .data-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .footer { flex-direction: column; }
+      .footer-meta { text-align: left; }
+      .footer-words { justify-content: flex-start; }
+      .modeler-canvas { width: 300px; height: 300px; }
+      .word-brief { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .harvest-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BACK NAV -->
+  <div class="back-nav">
+    <a href="../designs/">← designs</a>
+  </div>
+
+  <!-- WORD BRIEF -->
+  <div class="word-brief">
+    <span>modeling</span>
+    <span>whitecorn</span>
+    <span>pentite</span>
+  </div>
+
+  <!-- ══════════ HERO ══════════ -->
+  <section class="hero">
+    <div class="hero-content">
+      <p class="hero-eyebrow">CrAI Design No. 007 — Crystal Mineralogy</p>
+      <h1 class="hero-title">Pentite<br /><em>Harvest</em></h1>
+      <p class="hero-subtitle">
+        Where five-sided geometry meets the warmth of pale corn gold —
+        specimens suspended between earth and light.
+      </p>
+
+      <!-- SVG Crystal -->
+      <div class="crystal-scene">
+        <svg class="crystal-svg" viewBox="0 0 260 260" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="face1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#c9962a" stop-opacity="0.7"/>
+              <stop offset="100%" stop-color="#f7edc4" stop-opacity="0.2"/>
+            </linearGradient>
+            <linearGradient id="face2" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#6fa8c0" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#c9962a" stop-opacity="0.3"/>
+            </linearGradient>
+            <linearGradient id="face3" x1="0%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#e8c566" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#2a4a5e" stop-opacity="0.3"/>
+            </linearGradient>
+            <linearGradient id="topGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#f7edc4" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#c9962a" stop-opacity="0.4"/>
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <!-- Crystal body - stylized pentagonal prism -->
+          <!-- Left face -->
+          <polygon points="130,40 60,90 55,190 130,220" fill="url(#face1)" stroke="#c9962a" stroke-width="0.8" stroke-opacity="0.6"/>
+          <!-- Right face -->
+          <polygon points="130,40 200,90 205,190 130,220" fill="url(#face2)" stroke="#e8c566" stroke-width="0.8" stroke-opacity="0.5"/>
+          <!-- Center face (front) -->
+          <polygon points="60,90 205,90 205,190 55,190" fill="url(#face3)" stroke="#6fa8c0" stroke-width="0.5" stroke-opacity="0.4"/>
+          <!-- Top cap -->
+          <polygon points="130,40 60,90 205,90" fill="url(#topGrad)" stroke="#f7edc4" stroke-width="1" stroke-opacity="0.8" filter="url(#glow)"/>
+
+          <!-- inner light refraction lines -->
+          <line x1="130" y1="40" x2="130" y2="220" stroke="#f7edc4" stroke-width="0.5" stroke-opacity="0.2"/>
+          <line x1="60" y1="90" x2="205" y2="190" stroke="#c9962a" stroke-width="0.5" stroke-opacity="0.15"/>
+          <line x1="205" y1="90" x2="55" y2="190" stroke="#6fa8c0" stroke-width="0.5" stroke-opacity="0.15"/>
+
+          <!-- vertex glow dots -->
+          <circle cx="130" cy="40" r="3" fill="#f7edc4" opacity="0.9"/>
+          <circle cx="60" cy="90" r="2" fill="#c9962a" opacity="0.7"/>
+          <circle cx="205" cy="90" r="2" fill="#c9962a" opacity="0.7"/>
+          <circle cx="130" cy="220" r="3" fill="#e8c566" opacity="0.6"/>
+
+          <!-- orbit ring -->
+          <ellipse cx="130" cy="165" rx="90" ry="18" fill="none" stroke="#c9962a" stroke-width="0.8" stroke-opacity="0.25" stroke-dasharray="4 3"/>
+        </svg>
+      </div>
+
+    </div>
+
+    <div class="scroll-cue">
+      <span>Explore</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- MARQUEE -->
+  <div class="marquee-band">
+    <div class="marquee-track">
+      <span class="marquee-item">Pentite Formation</span>
+      <span class="marquee-item">Whitecorn Harvest</span>
+      <span class="marquee-item">Crystal Modeling</span>
+      <span class="marquee-item">Five-Axis Structure</span>
+      <span class="marquee-item">Mineral Specimen 007</span>
+      <span class="marquee-item">Pentagonal Symmetry</span>
+      <span class="marquee-item">Harvest Geometry</span>
+      <span class="marquee-item">Pentite Formation</span>
+      <span class="marquee-item">Whitecorn Harvest</span>
+      <span class="marquee-item">Crystal Modeling</span>
+      <span class="marquee-item">Five-Axis Structure</span>
+      <span class="marquee-item">Mineral Specimen 007</span>
+      <span class="marquee-item">Pentagonal Symmetry</span>
+      <span class="marquee-item">Harvest Geometry</span>
+    </div>
+  </div>
+
+  <!-- ══════════ SPECIMEN GALLERY ══════════ -->
+  <section class="gallery-section">
+    <p class="section-label">Specimen Collection</p>
+    <h2 class="section-heading">The <em>Pentite</em> Series</h2>
+    <p class="section-body">
+      Rare five-sided mineral formations found at the boundary of crystalline fields and pale gold sediment.
+      Each specimen is a study in natural geometry — the earth's own modeling.
+    </p>
+
+    <div class="specimen-grid">
+      <div class="specimen-card">
+        <img class="specimen-img" src="https://picsum.photos/seed/whitecorn/600/400" alt="Specimen Alpha" loading="lazy"/>
+        <div class="card-overlay"></div>
+        <div class="card-info">
+          <p class="card-num">SP-001</p>
+          <h3 class="card-name">Auric Cluster</h3>
+          <p class="card-desc">Gold-veined pentite shard, harvested from the pale corn strata of the eastern dig.</p>
+          <span class="card-tag">Pentagonal · Gold Class</span>
+        </div>
+      </div>
+      <div class="specimen-card">
+        <img class="specimen-img" src="https://picsum.photos/seed/modeling/600/400" alt="Specimen Beta" loading="lazy"/>
+        <div class="card-overlay"></div>
+        <div class="card-info">
+          <p class="card-num">SP-002</p>
+          <h3 class="card-name">Cornfield Prism</h3>
+          <p class="card-desc">Translucent formation with whitecorn inclusions. Light passes through as filtered amber.</p>
+          <span class="card-tag">Translucent · Harvest Class</span>
+        </div>
+      </div>
+      <div class="specimen-card">
+        <img class="specimen-img" src="https://picsum.photos/seed/pentite/600/400" alt="Specimen Gamma" loading="lazy"/>
+        <div class="card-overlay"></div>
+        <div class="card-info">
+          <p class="card-num">SP-003</p>
+          <h3 class="card-name">Deep Modeling</h3>
+          <p class="card-desc">A laboratory-grown replica of the natural pentite structure — modeling geometry at molecular scale.</p>
+          <span class="card-tag">Synthetic · Research Class</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ WIDE IMAGE BAND ══════════ -->
+  <div class="wide-band">
+    <img src="https://picsum.photos/seed/harvest007/1600/600" alt="Field panorama" loading="lazy"/>
+    <div class="wide-band-overlay">
+      <div class="wide-quote">
+        <blockquote>
+          "The crystal doesn't grow — it reveals the shape
+          that was always waiting inside the mineral dark."
+        </blockquote>
+        <cite>— Pentite Harvest, Field Notes Vol. III</cite>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ STRUCTURE SECTION ══════════ -->
+  <section class="structure-section">
+    <div class="two-col">
+      <div class="structure-visual">
+        <img class="structure-img" src="https://picsum.photos/seed/cornfield/700/900" alt="Structure detail" loading="lazy"/>
+        <div class="penta-badge">
+          <svg class="penta-svg" viewBox="0 0 120 120" width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="60,5 113,40.5 93,102 27,102 7,40.5" fill="none" stroke="#c9962a" stroke-width="1.5" stroke-opacity="0.7"/>
+            <polygon points="60,18 100,46 85,90 35,90 20,46" fill="none" stroke="#e8c566" stroke-width="1" stroke-opacity="0.4"/>
+            <text x="60" y="64" text-anchor="middle" font-family="Space Mono, monospace" font-size="9" fill="#c9962a" opacity="0.8" letter-spacing="1">PENTITE</text>
+            <text x="60" y="76" text-anchor="middle" font-family="Space Mono, monospace" font-size="7" fill="#e8c566" opacity="0.5" letter-spacing="1">007</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="structure-text">
+        <p class="section-label">About the Formation</p>
+        <h2 class="section-heading">Five-Sided<br /><em>Modeling</em></h2>
+        <p class="section-body">
+          Pentite is a hypothetical mineral class defined by perfect pentagonal symmetry.
+          Found only in whitecorn sediment deposits — pale, fine-grained geological layers
+          that preserve crystal structures over millennia.
+        </p>
+        <p class="section-body">
+          Modeling these formations requires understanding of symmetry, pressure, and time.
+          Each five-faced prism is a frozen record of ancient geological force — pressed
+          into geometry by the weight of the earth above.
+        </p>
+
+        <div class="stat-row">
+          <div class="stat-item">
+            <div class="stat-num">5</div>
+            <div class="stat-label">Primary Axes</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">72°</div>
+            <div class="stat-label">Face Angle</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">8.3</div>
+            <div class="stat-label">Mohs Hardness</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ PENTAGONAL DATA VIZ ══════════ -->
+  <section class="data-section">
+    <div class="data-inner">
+      <div class="radar-wrap">
+        <svg class="radar-svg" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="radarFill" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#c9962a" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#6fa8c0" stop-opacity="0.15"/>
+            </linearGradient>
+          </defs>
+          <!-- center -->
+          <g transform="translate(160,160)">
+            <!-- grid rings -->
+            <polygon points="0,-80 76.1,-24.7 47,-64.7 -47,-64.7 -76.1,-24.7" fill="none" stroke="#c9962a" stroke-width="0.5" stroke-opacity="0.2"/>
+            <polygon points="0,-120 114.1,-37.1 70.5,-97 -70.5,-97 -114.1,-37.1" fill="none" stroke="#c9962a" stroke-width="0.5" stroke-opacity="0.2"/>
+            <!-- outer pentagon -->
+            <polygon points="0,-135 128.5,-41.7 79.4,-109.4 -79.4,-109.4 -128.5,-41.7" fill="none" stroke="#c9962a" stroke-width="1" stroke-opacity="0.4"/>
+            <!-- axis lines -->
+            <line x1="0" y1="0" x2="0" y2="-135" stroke="#c9962a" stroke-width="0.5" stroke-opacity="0.25"/>
+            <line x1="0" y1="0" x2="128.5" y2="-41.7" stroke="#c9962a" stroke-width="0.5" stroke-opacity="0.25"/>
+            <line x1="0" y1="0" x2="79.4" y2="109.4" stroke="#c9962a" stroke-width="0.5" stroke-opacity="0.25"/>
+            <line x1="0" y1="0" x2="-79.4" y2="109.4" stroke="#c9962a" stroke-width="0.5" stroke-opacity="0.25"/>
+            <line x1="0" y1="0" x2="-128.5" y2="-41.7" stroke="#c9962a" stroke-width="0.5" stroke-opacity="0.25"/>
+            <!-- data polygon -->
+            <polygon points="0,-110 102,-33 63,87 -63,87 -102,-33" fill="url(#radarFill)" stroke="#e8c566" stroke-width="1.5" stroke-opacity="0.7"/>
+            <!-- data dots -->
+            <circle cx="0" cy="-110" r="4" fill="#e8c566" opacity="0.9"/>
+            <circle cx="102" cy="-33" r="4" fill="#e8c566" opacity="0.9"/>
+            <circle cx="63" cy="87" r="4" fill="#e8c566" opacity="0.9"/>
+            <circle cx="-63" cy="87" r="4" fill="#e8c566" opacity="0.9"/>
+            <circle cx="-102" cy="-33" r="4" fill="#e8c566" opacity="0.9"/>
+            <!-- labels -->
+            <text x="0" y="-148" text-anchor="middle" font-family="Space Mono, monospace" font-size="9" fill="#c9962a" opacity="0.7">CLARITY</text>
+            <text x="144" y="-30" text-anchor="start" font-family="Space Mono, monospace" font-size="9" fill="#c9962a" opacity="0.7">DENSITY</text>
+            <text x="90" y="120" text-anchor="middle" font-family="Space Mono, monospace" font-size="9" fill="#c9962a" opacity="0.7">HARVEST</text>
+            <text x="-90" y="120" text-anchor="middle" font-family="Space Mono, monospace" font-size="9" fill="#c9962a" opacity="0.7">DEPTH</text>
+            <text x="-144" y="-30" text-anchor="end" font-family="Space Mono, monospace" font-size="9" fill="#c9962a" opacity="0.7">FORM</text>
+          </g>
+        </svg>
+      </div>
+
+      <div>
+        <p class="section-label">Mineral Analysis</p>
+        <h2 class="section-heading"><em>Specimen</em><br />Properties</h2>
+        <ul class="data-list">
+          <li><span class="data-key">Crystal System</span><span class="data-val">Pentagonal</span></li>
+          <li><span class="data-key">Luster</span><span class="data-val">Adamantine</span></li>
+          <li><span class="data-key">Color Series</span><span class="data-val">Whitecorn</span></li>
+          <li><span class="data-key">Formation Type</span><span class="data-val">Sedimentary</span></li>
+          <li><span class="data-key">Model Method</span><span class="data-val">X-Ray Diffraction</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 3D MODELER ══════════ -->
+  <section class="modeler-section">
+    <div class="modeler-inner">
+      <p class="section-label">Interactive</p>
+      <h2 class="section-heading">Live <em>Crystal</em> Modeling</h2>
+      <p class="section-body" style="margin: 0 auto 1rem; max-width: 480px;">
+        The pentite prism in real-time geometric rotation.
+        Hover to pause and study the five-sided structure.
+      </p>
+
+      <div class="modeler-canvas">
+        <div class="crystal-3d">
+          <div class="prism-face"></div>
+          <div class="prism-face"></div>
+          <div class="prism-face"></div>
+          <div class="prism-face"></div>
+          <div class="prism-face"></div>
+          <div class="prism-cap"></div>
+          <div class="prism-cap-bottom"></div>
+        </div>
+      </div>
+
+      <p class="modeler-hint">Hover to pause rotation</p>
+
+      <div class="swatch-row">
+        <div class="swatch">
+          <div class="swatch-dot" style="background:#1c1508;"></div>
+          <span class="swatch-hex">#1c1508</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background:#c9962a;"></div>
+          <span class="swatch-hex">#c9962a</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background:#f7edc4;"></div>
+          <span class="swatch-hex">#f7edc4</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background:#6fa8c0;"></div>
+          <span class="swatch-hex">#6fa8c0</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background:#e8c566;"></div>
+          <span class="swatch-hex">#e8c566</span>
+        </div>
+        <div class="swatch">
+          <div class="swatch-dot" style="background:#4a3a18;"></div>
+          <span class="swatch-hex">#4a3a18</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ HARVEST GRID ══════════ -->
+  <section class="harvest-section">
+    <div class="harvest-header">
+      <div>
+        <p class="section-label">Field Photography</p>
+        <h2 class="section-heading">The <em>Whitecorn</em><br />Harvest</h2>
+      </div>
+      <p class="section-body" style="max-width: 320px; margin: 0;">
+        Pale gold fields where pentite deposits surface after the annual harvest —
+        geological and agricultural cycles aligned.
+      </p>
+    </div>
+
+    <div class="harvest-grid">
+      <div class="harvest-cell large">
+        <img src="https://picsum.photos/seed/harvest1/900/700" alt="Harvest field" loading="lazy"/>
+        <span class="harvest-label">FIELD-01 · Whitecorn Basin</span>
+      </div>
+      <div class="harvest-cell">
+        <img src="https://picsum.photos/seed/harvest2/500/400" alt="Specimen close-up" loading="lazy"/>
+        <span class="harvest-label">DETAIL · Surface Grain</span>
+      </div>
+      <div class="harvest-cell">
+        <img src="https://picsum.photos/seed/harvest3/500/400" alt="Crystal formation" loading="lazy"/>
+        <span class="harvest-label">CRYSTAL · Pentite Node</span>
+      </div>
+      <div class="harvest-cell">
+        <img src="https://picsum.photos/seed/harvest4/500/400" alt="Lab modeling" loading="lazy"/>
+        <span class="harvest-label">LAB · Modeling Stage</span>
+      </div>
+      <div class="harvest-cell">
+        <img src="https://picsum.photos/seed/harvest5/500/400" alt="Field survey" loading="lazy"/>
+        <span class="harvest-label">SURVEY · Aerial Map</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ FOOTER ══════════ -->
+  <footer>
+    <div class="footer-brand">
+      Pentite Harvest
+      <span>CrAI Design No. 007 — 2026-03-18</span>
+    </div>
+    <div class="footer-meta">
+      <div class="footer-num">007</div>
+      <div class="footer-words">
+        <span>modeling</span>
+        <span>whitecorn</span>
+        <span>pentite</span>
+      </div>
+    </div>
+  </footer>
+
+  <script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
