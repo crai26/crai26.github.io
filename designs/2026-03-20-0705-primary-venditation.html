@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Primary Venditation — CrAI Design 008</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=IM+Fell+English:ital@0;1&family=Space+Mono:wght@400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #120a03;
+  --copper: #b87333;
+  --verdigris: #4e8a6a;
+  --parchment: #f0e4c8;
+  --pale: #e8d9b8;
+  --smoke: #8a7a60;
+  --deep: #1e1205;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--ink);
+  color: var(--parchment);
+  font-family: 'IM Fell English', Georgia, serif;
+  overflow-x: hidden;
+}
+
+/* BACK NAV */
+.back-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(18, 10, 3, 0.92);
+  border-bottom: 1px solid rgba(184, 115, 51, 0.3);
+  padding: 0.6rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(8px);
+}
+.back-nav a {
+  color: var(--copper);
+  text-decoration: none;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+.back-nav a:hover { opacity: 1; }
+.back-nav .design-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--verdigris);
+  letter-spacing: 0.15em;
+}
+
+/* MASTHEAD */
+.masthead {
+  padding: 7rem 2rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.masthead::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 50% at 50% 30%, rgba(184,115,51,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.coin-orbit {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 2.5rem;
+}
+.coin-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(184,115,51,0.25);
+  animation: orbit-spin 12s linear infinite;
+}
+.coin-ring:nth-child(2) {
+  inset: 12px;
+  border-color: rgba(78,138,106,0.2);
+  animation-duration: 18s;
+  animation-direction: reverse;
+}
+.coin-ring:nth-child(3) {
+  inset: 24px;
+  border-color: rgba(184,115,51,0.15);
+  animation-duration: 24s;
+}
+@keyframes orbit-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.coin-core {
+  position: absolute;
+  inset: 36px;
+  border-radius: 50%;
+  background: 
+    radial-gradient(circle at 35% 35%, #d4935a 0%, #b87333 35%, #7a4a1a 65%, #3a1e08 100%);
+  box-shadow:
+    0 0 0 2px rgba(184,115,51,0.5),
+    0 0 30px rgba(184,115,51,0.25),
+    inset 0 2px 4px rgba(255,200,120,0.3),
+    inset 0 -2px 4px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: coin-gleam 4s ease-in-out infinite;
+}
+@keyframes coin-gleam {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(184,115,51,0.5), 0 0 30px rgba(184,115,51,0.25), inset 0 2px 4px rgba(255,200,120,0.3), inset 0 -2px 4px rgba(0,0,0,0.5); }
+  50% { box-shadow: 0 0 0 2px rgba(184,115,51,0.8), 0 0 60px rgba(184,115,51,0.45), inset 0 2px 8px rgba(255,220,140,0.5), inset 0 -2px 4px rgba(0,0,0,0.5); }
+}
+.coin-core .owl-symbol {
+  font-size: 2rem;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5));
+  user-select: none;
+}
+
+.words-row {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.word-pill {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.9rem;
+  border: 1px solid;
+  border-radius: 2px;
+}
+.word-pill:nth-child(1) { color: var(--copper); border-color: rgba(184,115,51,0.4); }
+.word-pill:nth-child(2) { color: var(--verdigris); border-color: rgba(78,138,106,0.4); }
+.word-pill:nth-child(3) { color: var(--parchment); border-color: rgba(240,228,200,0.2); }
+
+.masthead-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.8rem, 8vw, 7rem);
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  background: linear-gradient(165deg, #e8c47a 0%, #b87333 40%, #7a4a1a 70%, #c9824a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  margin-bottom: 0.6rem;
+}
+
+.masthead-subtitle {
+  font-family: 'IM Fell English', serif;
+  font-style: italic;
+  font-size: clamp(0.9rem, 2.5vw, 1.35rem);
+  color: rgba(240,228,200,0.6);
+  margin-bottom: 1.5rem;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+.masthead-rule {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 700px;
+  margin: 0 auto 3rem;
+}
+.rule-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(184,115,51,0.4), transparent);
+}
+.rule-diamond {
+  width: 6px;
+  height: 6px;
+  background: var(--copper);
+  transform: rotate(45deg);
+  opacity: 0.6;
+}
+
+/* BROADSHEET GRID */
+.broadsheet {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem 4rem;
+  display: grid;
+  grid-template-columns: 1fr 2px 1.4fr 2px 1fr;
+  gap: 0;
+}
+.column-rule {
+  background: linear-gradient(180deg, transparent, rgba(184,115,51,0.25) 20%, rgba(184,115,51,0.25) 80%, transparent);
+  align-self: stretch;
+}
+
+.col { padding: 2rem 2rem 2rem; }
+
+.col-heading {
+  font-family: 'Cinzel', serif;
+  font-size: 0.65rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--copper);
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(184,115,51,0.25);
+}
+
+.col p {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: rgba(240,228,200,0.75);
+  margin-bottom: 1rem;
+}
+
+.col p em {
+  color: var(--copper);
+  font-style: italic;
+}
+
+.drop-cap::first-letter {
+  font-family: 'Cinzel', serif;
+  font-size: 4rem;
+  font-weight: 900;
+  float: left;
+  line-height: 0.75;
+  margin-right: 0.1em;
+  margin-top: 0.15em;
+  color: var(--copper);
+  text-shadow: 2px 2px 0 rgba(0,0,0,0.5);
+}
+
+/* IMAGE SECTION */
+.gallery-strip {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem 3rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: sepia(40%) brightness(0.85) contrast(1.1);
+  transition: transform 0.6s ease, filter 0.4s ease;
+}
+.gallery-item:hover img {
+  transform: scale(1.04);
+  filter: sepia(20%) brightness(0.95) contrast(1.1);
+}
+.gallery-item::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, rgba(18,10,3,0.7) 100%);
+  pointer-events: none;
+}
+.gallery-item .img-caption {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 0.75rem;
+  right: 0.75rem;
+  z-index: 1;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(240,228,200,0.7);
+}
+
+.gallery-item.tall { grid-row: span 2; }
+.gallery-item.tall img { height: 100%; min-height: 380px; }
+
+/* LEDGER SECTION */
+.ledger-section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+  border-top: 1px solid rgba(184,115,51,0.15);
+}
+
+.ledger-header {
+  display: flex;
+  align-items: baseline;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+.ledger-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 700;
+  color: var(--parchment);
+}
+.ledger-subtitle {
+  font-style: italic;
+  color: var(--smoke);
+  font-size: 0.9rem;
+}
+
+.ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.78rem;
+}
+.ledger-table th {
+  text-align: left;
+  padding: 0.5rem 1rem;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--copper);
+  border-bottom: 1px solid rgba(184,115,51,0.3);
+}
+.ledger-table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid rgba(184,115,51,0.08);
+  color: rgba(240,228,200,0.65);
+  vertical-align: middle;
+}
+.ledger-table tr:hover td {
+  background: rgba(184,115,51,0.05);
+  color: var(--parchment);
+}
+.ledger-table .value-cell {
+  color: var(--verdigris);
+  font-weight: 700;
+}
+.ledger-table .symbol-cell {
+  font-size: 0.9rem;
+}
+.bar-cell { width: 180px; }
+.bar-track {
+  height: 3px;
+  background: rgba(184,115,51,0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--copper), var(--verdigris));
+  border-radius: 2px;
+  transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* QUOTE BLOCK */
+.quote-block {
+  max-width: 800px;
+  margin: 3rem auto;
+  padding: 3rem 2rem;
+  text-align: center;
+  position: relative;
+}
+.quote-block::before,
+.quote-block::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 1px;
+  width: 200px;
+  background: linear-gradient(90deg, transparent, rgba(184,115,51,0.4), transparent);
+}
+.quote-block::before { top: 0; }
+.quote-block::after { bottom: 0; }
+
+.quote-text {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.3rem, 3.5vw, 2rem);
+  font-weight: 400;
+  color: var(--parchment);
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+.quote-attr {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--copper);
+  opacity: 0.7;
+}
+
+/* EXCHANGE TICKER */
+.ticker-section {
+  background: rgba(30,18,5,0.9);
+  border-top: 1px solid rgba(184,115,51,0.2);
+  border-bottom: 1px solid rgba(184,115,51,0.2);
+  padding: 1rem 0;
+  overflow: hidden;
+  margin: 2rem 0;
+}
+.ticker-label {
+  position: absolute;
+  left: 0;
+  background: var(--copper);
+  color: var(--ink);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 0 1rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  text-transform: uppercase;
+  z-index: 2;
+}
+.ticker-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.ticker-fade-left {
+  position: absolute;
+  left: 0;
+  width: 80px;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(30,18,5,1), transparent);
+  z-index: 1;
+}
+.ticker-fade-right {
+  position: absolute;
+  right: 0;
+  width: 80px;
+  height: 100%;
+  background: linear-gradient(270deg, rgba(30,18,5,1), transparent);
+  z-index: 1;
+}
+.ticker-inner {
+  display: flex;
+  animation: ticker-scroll 30s linear infinite;
+  white-space: nowrap;
+  padding: 0 2rem;
+}
+.ticker-inner:hover { animation-play-state: paused; }
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.ticker-item {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.72rem;
+  margin-right: 4rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.ticker-coin { color: var(--copper); font-weight: 700; }
+.ticker-val { color: var(--verdigris); }
+.ticker-delta { font-size: 0.6rem; }
+.ticker-delta.up { color: #5cbf8a; }
+.ticker-delta.down { color: #c95a5a; }
+
+/* PHILOSOPHY SECTION */
+.philosophy {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+
+.philosophy-text h2 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.6rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: var(--parchment);
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+}
+.philosophy-text p {
+  font-size: 1rem;
+  line-height: 1.8;
+  color: rgba(240,228,200,0.65);
+  margin-bottom: 1.2rem;
+}
+.philosophy-text p strong { color: var(--copper); font-style: normal; font-weight: normal; font-family: 'IM Fell English', serif; }
+
+.philosophy-visual {
+  position: relative;
+  aspect-ratio: 1;
+  max-width: 400px;
+}
+
+.coins-mosaic {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  padding: 1.5rem;
+}
+
+.mini-coin {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+.mini-coin:hover { transform: scale(1.2) rotate(15deg); }
+
+.mini-coin.copper-type {
+  background: radial-gradient(circle at 30% 30%, #d4935a, #b87333 50%, #6b3512);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,200,120,0.3);
+}
+.mini-coin.verdigris-type {
+  background: radial-gradient(circle at 30% 30%, #7ab89a, #4e8a6a 50%, #1e4a32);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 2px rgba(150,220,180,0.3);
+}
+.mini-coin.dark-type {
+  background: radial-gradient(circle at 30% 30%, #5a4020, #2a1a08 50%, #0a0502);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.mini-coin.pale-type {
+  background: radial-gradient(circle at 30% 30%, #f0d880, #c9a030 50%, #7a5a10);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,240,140,0.4);
+}
+
+.coin-tooltip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(18,10,3,0.95);
+  border: 1px solid rgba(184,115,51,0.3);
+  padding: 0.4rem 0.7rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--copper);
+  white-space: nowrap;
+  z-index: 10;
+  pointer-events: none;
+}
+.mini-coin:hover .coin-tooltip { display: block; }
+
+/* FOOTER */
+.site-footer {
+  border-top: 1px solid rgba(184,115,51,0.15);
+  padding: 3rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.footer-left {
+  font-family: 'Cinzel', serif;
+  font-size: 0.9rem;
+  color: var(--copper);
+  opacity: 0.6;
+}
+.footer-center {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--smoke);
+  text-align: center;
+}
+.footer-center .three-words {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 0.4rem;
+}
+.footer-center .three-words span { color: var(--copper); }
+.footer-right {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--smoke);
+  text-align: right;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--ink); }
+::-webkit-scrollbar-thumb { background: rgba(184,115,51,0.3); border-radius: 3px; }
+
+/* RESPONSIVE */
+@media (max-width: 820px) {
+  .broadsheet {
+    grid-template-columns: 1fr;
+  }
+  .column-rule { display: none; }
+  .col { padding: 1.5rem 0.5rem; }
+  
+  .gallery-strip {
+    grid-template-columns: 1fr 1fr;
+  }
+  .gallery-item.tall { grid-row: span 1; }
+  .gallery-item.tall img { min-height: 200px; }
+
+  .philosophy {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .philosophy-visual { margin: 0 auto; }
+
+  .site-footer {
+    flex-direction: column;
+    text-align: center;
+  }
+  .footer-right { text-align: center; }
+}
+
+@media (max-width: 520px) {
+  .gallery-strip {
+    grid-template-columns: 1fr;
+  }
+  .masthead-title { font-size: 2.8rem; }
+  .ledger-table { font-size: 0.65rem; }
+  .bar-cell { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="back-nav">
+  <a href="../designs/">← All Designs</a>
+  <span class="design-num">CrAI · Design 008</span>
+</div>
+
+<!-- MASTHEAD -->
+<header class="masthead">
+  <div class="coin-orbit">
+    <div class="coin-ring"></div>
+    <div class="coin-ring"></div>
+    <div class="coin-ring"></div>
+    <div class="coin-core">
+      <span class="owl-symbol">🦉</span>
+    </div>
+  </div>
+
+  <div class="words-row">
+    <span class="word-pill">venditate</span>
+    <span class="word-pill">obolus</span>
+    <span class="word-pill">primary</span>
+  </div>
+
+  <h1 class="masthead-title">Primary<br>Venditation</h1>
+  <p class="masthead-subtitle">The first market. The smallest coin. The primal act of exchange — repeated across millennia until it became civilization itself.</p>
+
+  <div class="masthead-rule">
+    <div class="rule-line"></div>
+    <div class="rule-diamond"></div>
+    <div class="rule-line"></div>
+  </div>
+</header>
+
+<!-- TICKER -->
+<div class="ticker-section">
+  <div class="ticker-wrap">
+    <div class="ticker-fade-left"></div>
+    <div class="ticker-inner" id="tickerInner">
+      <span class="ticker-item"><span class="ticker-coin">OBOLUS</span><span class="ticker-val">0.083 drachma</span><span class="ticker-delta up">+2.4%</span></span>
+      <span class="ticker-item"><span class="ticker-coin">CHALKON</span><span class="ticker-val">0.041 drachma</span><span class="ticker-delta down">−0.8%</span></span>
+      <span class="ticker-item"><span class="ticker-coin">TETRADRACHM</span><span class="ticker-val">17.2g silver</span><span class="ticker-delta up">+0.3%</span></span>
+      <span class="ticker-item"><span class="ticker-coin">HEMIOBOL</span><span class="ticker-val">0.035 drachma</span><span class="ticker-delta up">+1.1%</span></span>
+      <span class="ticker-item"><span class="ticker-coin">STATER</span><span class="ticker-val">8.6g electrum</span><span class="ticker-delta down">−1.5%</span></span>
+      <span class="ticker-item"><span class="ticker-coin">DRACHMA</span><span class="ticker-val">4.36g silver</span><span class="ticker-delta up">+0.6%</span></span>
+      <span class="ticker-item"><span class="ticker-coin">TALENT</span><span class="ticker-val">6000 drachmai</span><span class="ticker-delta up">+4.2%</span></span>
+      <!-- duplicate for seamless scroll -->
+      <span class="ticker-item"><span class="ticker-coin">OBOLUS</span><span class="ticker-val">0.083 drachma</span><span class="ticker-delta up">+2.4%</span></span>
+      <span class="ticker-item"><span class="ticker-coin">CHALKON</span><span class="ticker-val">0.041 drachma</span><span class="ticker-delta down">−0.8%</span></span>
+      <span class="ticker-item"><span class="ticker-coin">TETRADRACHM</span><span class="ticker-val">17.2g silver</span><span class="ticker-delta up">+0.3%</span></span>
+      <span class="ticker-item"><span class="ticker-coin">HEMIOBOL</span><span class="ticker-val">0.035 drachma</span><span class="ticker-delta up">+1.1%</span></span>
+      <span class="ticker-item"><span class="ticker-coin">STATER</span><span class="ticker-val">8.6g electrum</span><span class="ticker-delta down">−1.5%</span></span>
+      <span class="ticker-item"><span class="ticker-coin">DRACHMA</span><span class="ticker-val">4.36g silver</span><span class="ticker-delta up">+0.6%</span></span>
+      <span class="ticker-item"><span class="ticker-coin">TALENT</span><span class="ticker-val">6000 drachmai</span><span class="ticker-delta up">+4.2%</span></span>
+    </div>
+    <div class="ticker-fade-right"></div>
+  </div>
+</div>
+
+<!-- BROADSHEET COLUMNS -->
+<main>
+  <section class="broadsheet">
+    <div class="col">
+      <div class="col-heading">I. The Primal Exchange</div>
+      <p class="drop-cap">Before the <em>obolus</em> there was barter. Before barter, there was nothing — or rather, there was everything without name, without value, without measure. The first market was not a place but a collision: two strangers, one need, one surplus, and the wordless negotiation of worth.</p>
+      <p>To <em>venditate</em> — to sell repeatedly, to hawk one's goods — is one of humanity's most ancient rituals. Cicero used the word to describe the senator who sold his vote, the merchant who cried his wares too eagerly, the philosopher who charged for wisdom. Always with a trace of contempt. Always with envy.</p>
+      <p>The obolus was the smallest coin a Greek could carry. Six of them made a drachma. It crossed the Styx in the mouth of the dead — payment to Charon for safe passage. Even death required primary currency.</p>
+    </div>
+    
+    <div class="column-rule"></div>
+
+    <div class="col">
+      <div class="col-heading">II. The Market at Dawn</div>
+      <p>The <em>agora</em> opened before sunrise. Farmers arrived first, then fishmongers, then the cloth merchants who needed time to arrange their bolts by color in the growing light. By the time Socrates arrived — barefoot, unhurried — the market was already in full argument.</p>
+      <p>He said philosophy was the <em>primary</em> exchange — the trade of ideas, the only commerce that enriched both buyer and seller. The coins changed hands below; the thoughts drifted upward. Both were essential. Neither alone was enough.</p>
+      <p>We have inherited that dual economy. We still carry our obols. We still venditate ourselves — our time, our attention, our labor. And somewhere in the corner of every market, barefoot and unhurried, someone is asking: <em>what is this actually worth?</em></p>
+    </div>
+
+    <div class="column-rule"></div>
+
+    <div class="col">
+      <div class="col-heading">III. Primary Colors of Commerce</div>
+      <p>Copper turns green with age and salt air. Silver tarnishes to a deep plum-grey. Gold — alone among metals — endures. Ancient coin hoards found under fields reveal this: the gold looks freshly minted; the copper looks like it survived a storm.</p>
+      <p>This is what the word <em>primary</em> means in the market. Not first in time, but first in endurance. The value that survives. The commodity that outlasts the civilization that named it.</p>
+      <p>We are all, in the end, conducting primary venditation: exchanging what is perishable for what is not. Offering something that will tarnish for something that will hold.</p>
+      <p>The obolus understood this. Six obols bought a day's wage for a laborer in Athens, 450 BCE. The same labor today costs more obols with different names — but it is the same exchange, the same primary act, the same haggling in the same light.</p>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section class="gallery-strip">
+    <div class="gallery-item tall" style="min-height:380px;">
+      <img src="https://picsum.photos/seed/obolus/700/800" alt="Ancient marketplace" width="700" height="800" loading="lazy">
+      <div class="img-caption">The Agora — primary market, Athens</div>
+    </div>
+    <div class="gallery-item" style="min-height:180px;">
+      <img src="https://picsum.photos/seed/venditate/500/400" alt="Coin detail" width="500" height="400" loading="lazy">
+      <div class="img-caption">Tetradrachm, 5th century BCE</div>
+    </div>
+    <div class="gallery-item" style="min-height:180px;">
+      <img src="https://picsum.photos/seed/primary99/500/400" alt="Exchange" width="500" height="400" loading="lazy">
+      <div class="img-caption">Venditation continues</div>
+    </div>
+    <div class="gallery-item" style="min-height:180px;">
+      <img src="https://picsum.photos/seed/agora44/500/400" alt="Market stalls" width="500" height="400" loading="lazy">
+      <div class="img-caption">Morning light, market stalls</div>
+    </div>
+    <div class="gallery-item" style="min-height:180px;">
+      <img src="https://picsum.photos/seed/copper72/500/400" alt="Copper patina" width="500" height="400" loading="lazy">
+      <div class="img-caption">Verdigris — 2,400 years of air</div>
+    </div>
+  </section>
+
+  <!-- QUOTE -->
+  <div class="quote-block">
+    <div class="quote-text">"The obolus is primary. The venditation is eternal. Commerce is not what we do — it is what we are."</div>
+    <div class="quote-attr">— Attributed to no one in particular, everywhere in general</div>
+  </div>
+
+  <!-- LEDGER -->
+  <section class="ledger-section">
+    <div class="ledger-header">
+      <h2 class="ledger-title">The Ancient Ledger</h2>
+      <span class="ledger-subtitle">Primary exchange rates, agora standard, 450 BCE</span>
+    </div>
+    <table class="ledger-table" id="ledger">
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Denomination</th>
+          <th>Metal</th>
+          <th>Weight</th>
+          <th class="value-cell">Value (obols)</th>
+          <th class="bar-cell">Relative Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="symbol-cell">○</td>
+          <td>Chalkon</td>
+          <td>Bronze</td>
+          <td>1.1g</td>
+          <td class="value-cell">½</td>
+          <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:0%" data-width="2%"></div></div></td>
+        </tr>
+        <tr>
+          <td class="symbol-cell">◎</td>
+          <td>Obolus</td>
+          <td>Silver</td>
+          <td>0.72g</td>
+          <td class="value-cell">1</td>
+          <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:0%" data-width="4%"></div></div></td>
+        </tr>
+        <tr>
+          <td class="symbol-cell">◉</td>
+          <td>Hemidrachm</td>
+          <td>Silver</td>
+          <td>2.2g</td>
+          <td class="value-cell">3</td>
+          <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:0%" data-width="12%"></div></div></td>
+        </tr>
+        <tr>
+          <td class="symbol-cell">⊙</td>
+          <td>Drachma</td>
+          <td>Silver</td>
+          <td>4.36g</td>
+          <td class="value-cell">6</td>
+          <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:0%" data-width="24%"></div></div></td>
+        </tr>
+        <tr>
+          <td class="symbol-cell">⊕</td>
+          <td>Didrachm</td>
+          <td>Silver</td>
+          <td>8.72g</td>
+          <td class="value-cell">12</td>
+          <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:0%" data-width="48%"></div></div></td>
+        </tr>
+        <tr>
+          <td class="symbol-cell">★</td>
+          <td>Tetradrachm</td>
+          <td>Silver</td>
+          <td>17.2g</td>
+          <td class="value-cell">24</td>
+          <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:0%" data-width="96%"></div></div></td>
+        </tr>
+        <tr>
+          <td class="symbol-cell">✦</td>
+          <td>Stater</td>
+          <td>Electrum</td>
+          <td>8.6g</td>
+          <td class="value-cell">25</td>
+          <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:0%" data-width="100%"></div></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- PHILOSOPHY SECTION -->
+  <section class="philosophy">
+    <div class="philosophy-text">
+      <h2>The Geometry of Value</h2>
+      <p>Every denomination tells a story. The <strong>obolus</strong> — the smallest unit of account — was also the most common. It was the coin of ordinary life: a loaf of bread, an hour of labor, passage across water.</p>
+      <p>To <strong>venditate</strong> in the ancient world was to offer openly, repeatedly, without shame. Markets were not hidden. Commerce was not whispered. The exchange of goods was a civic act.</p>
+      <p>What is <strong>primary</strong> in exchange? Not the metal. Not the stamp. Not even the law. What is primary is trust: the shared agreement that this object — this improbable disc of processed earth — represents something real.</p>
+      <p>We still operate on that agreement. We just call it different things.</p>
+    </div>
+
+    <div class="philosophy-visual">
+      <div class="coins-mosaic" id="coinMosaic">
+        <!-- Generated by JS -->
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-left">Primary Venditation</div>
+  <div class="footer-center">
+    <div class="three-words">
+      <span>venditate</span>
+      <span>·</span>
+      <span>obolus</span>
+      <span>·</span>
+      <span>primary</span>
+    </div>
+    CrAI Designs — 008 — 2026-03-20
+  </div>
+  <div class="footer-right">
+    <a href="../designs/" style="color:var(--copper);text-decoration:none;font-family:'Space Mono',monospace;font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;">crai26.github.io</a>
+  </div>
+</footer>
+
+<script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+<script>
+// Animate bar fills on scroll
+const bars = document.querySelectorAll('.bar-fill');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const el = entry.target;
+      const targetWidth = el.getAttribute('data-width');
+      setTimeout(() => { el.style.width = targetWidth; }, 100);
+      observer.unobserve(el);
+    }
+  });
+}, { threshold: 0.2 });
+bars.forEach(b => observer.observe(b));
+
+// Build coin mosaic
+const mosaic = document.getElementById('coinMosaic');
+const coinTypes = ['copper-type','verdigris-type','dark-type','pale-type'];
+const denominations = ['ob','dr','st','ch','td','hm','di','ob','dr','st','ch','td','hm','di','ob','dr','st','ch','td','hm','di','ob','dr','st'];
+denominations.forEach((d, i) => {
+  const coin = document.createElement('div');
+  coin.className = 'mini-coin ' + coinTypes[i % coinTypes.length];
+  const tooltip = document.createElement('div');
+  tooltip.className = 'coin-tooltip';
+  tooltip.textContent = d.toUpperCase();
+  coin.appendChild(tooltip);
+  mosaic.appendChild(coin);
+});
+
+// Subtle coin shimmer on random intervals
+setInterval(() => {
+  const coins = document.querySelectorAll('.mini-coin');
+  const randomCoin = coins[Math.floor(Math.random() * coins.length)];
+  randomCoin.style.transform = 'scale(1.15) rotate(' + (Math.random() * 30 - 15) + 'deg)';
+  setTimeout(() => { randomCoin.style.transform = ''; }, 400);
+}, 600);
+</script>
+
+</body>
+</html>

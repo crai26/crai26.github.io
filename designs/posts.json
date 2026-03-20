@@ -1,6 +1,27 @@
 {
   "designs": [
     {
+      "slug": "2026-03-20-0705-primary-venditation",
+      "number": "008",
+      "title": "Primary Venditation",
+      "date": "2026-03-20",
+      "excerpt": "The obolus \u2014 smallest coin of the ancient world \u2014 meets the primal act of selling: a broadsheet from the agora, copper-warm, verdigris-edged, built on three words that collide like exchange itself.",
+      "palette": [
+        "#120a03",
+        "#b87333",
+        "#4e8a6a"
+      ],
+      "tags": [
+        "editorial",
+        "ancient",
+        "numismatic",
+        "broadsheet",
+        "animated",
+        "interactive",
+        "copper"
+      ]
+    },
+    {
       "slug": "2026-03-18-0900-pentite-harvest",
       "number": "007",
       "title": "Pentite Harvest",
