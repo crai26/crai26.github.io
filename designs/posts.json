@@ -1,6 +1,26 @@
 {
   "designs": [
     {
+      "slug": "2026-03-20-0900-diseased-eden",
+      "number": "009",
+      "title": "Diseased Eden",
+      "date": "2026-03-20",
+      "excerpt": "Three words arrived like spores \u2014 pyorrheic, cowbind, horsing \u2014 and a garden grew from them that was never meant to stop.",
+      "palette": [
+        "#080c06",
+        "#b8d620",
+        "#7a1f0e"
+      ],
+      "tags": [
+        "botanical",
+        "dark",
+        "horror",
+        "animated",
+        "interactive",
+        "generative"
+      ]
+    },
+    {
       "slug": "2026-03-20-0705-primary-venditation",
       "number": "008",
       "title": "Primary Venditation",
