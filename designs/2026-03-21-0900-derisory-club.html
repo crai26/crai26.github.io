@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Derisory Club — Est. Never</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Space+Grotesk:wght@300;400;500;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --swamp: #0d1f17;
+  --swamp-mid: #152d1f;
+  --swamp-light: #1e4030;
+  --gold: #c9a84c;
+  --gold-light: #e8c84a;
+  --gold-pale: #f0dfa0;
+  --taupe: #a89880;
+  --taupe-light: #c8b8a8;
+  --cream: #f5f0e6;
+  --cream-warm: #ede6d8;
+  --ink: #0a1510;
+  --mist: rgba(245,240,230,0.07);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--swamp);
+  color: var(--cream);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  overflow-x: hidden;
+}
+
+/* ── BACK NAV ─────────────────────────────────────────────── */
+.back-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 18px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(to bottom, rgba(13,31,23,0.95) 0%, transparent 100%);
+  pointer-events: none;
+}
+.back-nav a {
+  pointer-events: all;
+  color: var(--gold);
+  text-decoration: none;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+  padding: 6px 14px;
+  border: 1px solid rgba(201,168,76,0.3);
+}
+.back-nav a:hover { opacity: 1; border-color: var(--gold); }
+.back-nav .nav-badge {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  opacity: 0.6;
+}
+
+/* ── WORDS BAR ────────────────────────────────────────────── */
+.words-bar {
+  background: var(--gold);
+  color: var(--ink);
+  text-align: center;
+  padding: 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 120px 24px 80px;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url('https://picsum.photos/seed/balibago/1600/1000');
+  background-size: cover;
+  background-position: center 40%;
+  filter: saturate(0.6) brightness(0.28);
+  transform: scale(1.05);
+  animation: heroZoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes heroZoom {
+  from { transform: scale(1.05); }
+  to { transform: scale(1.12); }
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse at 50% 0%, rgba(13,31,23,0) 0%, rgba(13,31,23,0.5) 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(13,31,23,0.9) 0%, rgba(13,31,23,0.4) 60%),
+    linear-gradient(to bottom, rgba(13,31,23,0.6) 0%, rgba(13,31,23,0.2) 40%, rgba(13,31,23,0.7) 100%);
+}
+
+.hero-ornament {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.ornament-line {
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+}
+.ornament-diamond {
+  width: 8px; height: 8px;
+  background: var(--gold);
+  transform: rotate(45deg);
+}
+
+.hero-eyebrow {
+  position: relative;
+  z-index: 2;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.hero-title {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(72px, 14vw, 160px);
+  font-weight: 300;
+  line-height: 0.85;
+  text-align: center;
+  letter-spacing: -0.02em;
+  color: var(--cream);
+  margin-bottom: 8px;
+}
+
+.hero-title .italic {
+  font-style: italic;
+  color: var(--gold-pale);
+}
+
+.hero-subtitle {
+  position: relative;
+  z-index: 2;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(9px, 1.2vw, 11px);
+  font-weight: 400;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--taupe-light);
+  margin-top: 20px;
+  text-align: center;
+}
+
+.hero-founding {
+  position: relative;
+  z-index: 2;
+  margin-top: 48px;
+  border: 1px solid rgba(201,168,76,0.25);
+  padding: 18px 36px;
+  text-align: center;
+}
+
+.hero-founding-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  margin-bottom: 6px;
+}
+
+.hero-founding-text {
+  font-style: italic;
+  font-size: 16px;
+  color: var(--cream-warm);
+  font-weight: 300;
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: var(--taupe);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+.scroll-line {
+  width: 1px;
+  height: 40px;
+  background: var(--taupe);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 0.8; transform: scaleY(1.2); }
+}
+
+/* ── MANIFESTO ────────────────────────────────────────────── */
+.manifesto {
+  background: var(--cream);
+  color: var(--ink);
+  padding: 100px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.manifesto::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 39px,
+      rgba(13,31,23,0.04) 39px,
+      rgba(13,31,23,0.04) 40px
+    );
+}
+
+.manifesto-inner {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.manifesto-number {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 32px;
+}
+
+.manifesto-quote {
+  font-size: clamp(28px, 5vw, 52px);
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.25;
+  color: var(--swamp);
+  margin-bottom: 32px;
+}
+
+.manifesto-quote em {
+  color: var(--gold);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.manifesto-body {
+  font-size: 15px;
+  line-height: 1.9;
+  color: rgba(10,21,16,0.65);
+  font-weight: 300;
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+/* ── MEMBERSHIP TIERS ─────────────────────────────────────── */
+.tiers {
+  background: var(--swamp);
+  padding: 100px 24px;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.section-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 300;
+  line-height: 1;
+  color: var(--cream);
+}
+
+.section-title em {
+  font-style: italic;
+  color: var(--gold-pale);
+}
+
+.tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1px;
+  background: rgba(201,168,76,0.15);
+  max-width: 1100px;
+  margin: 0 auto;
+  border: 1px solid rgba(201,168,76,0.15);
+}
+
+.tier {
+  background: var(--swamp);
+  padding: 48px 36px;
+  position: relative;
+  transition: background 0.3s;
+  cursor: default;
+}
+
+.tier:hover {
+  background: var(--swamp-mid);
+}
+
+.tier-badge {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tier-badge::before {
+  content: '';
+  width: 20px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.5;
+}
+
+.tier-name {
+  font-size: 32px;
+  font-weight: 300;
+  color: var(--cream);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+
+.tier-fee {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  color: var(--taupe);
+  margin-bottom: 28px;
+  letter-spacing: 0.05em;
+}
+
+.tier-fee span {
+  color: var(--gold-pale);
+  font-weight: 500;
+}
+
+.tier-perks {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tier-perks li {
+  font-size: 14px;
+  color: var(--taupe-light);
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+.tier-perks li::before {
+  content: '—';
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  opacity: 0.5;
+}
+
+.tier.featured {
+  background: var(--swamp-mid);
+}
+
+.tier.featured .tier-name {
+  color: var(--gold-pale);
+}
+
+.tier-tag {
+  display: inline-block;
+  margin-top: 24px;
+  padding: 4px 12px;
+  border: 1px solid rgba(201,168,76,0.3);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+/* ── IMAGE GALLERY ────────────────────────────────────────── */
+.gallery {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 3px;
+  background: var(--ink);
+}
+
+.gallery-item {
+  overflow: hidden;
+  position: relative;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.55) brightness(0.85);
+  transition: filter 0.5s, transform 0.5s;
+}
+
+.gallery-item:hover img {
+  filter: saturate(0.75) brightness(0.95);
+  transform: scale(1.03);
+}
+
+.gallery-item.tall {
+  grid-row: span 2;
+}
+
+.gallery-item.tall img {
+  height: 100%;
+  min-height: 500px;
+}
+
+.gallery-item:not(.tall) img {
+  height: 280px;
+}
+
+.gallery-caption {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 16px 20px;
+  background: linear-gradient(to top, rgba(13,31,23,0.9) 0%, transparent 100%);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--taupe-light);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.gallery-item:hover .gallery-caption {
+  opacity: 1;
+}
+
+/* ── FEATURED MEMBER ──────────────────────────────────────── */
+.featured-member {
+  background: var(--cream-warm);
+  color: var(--ink);
+  padding: 100px 24px;
+  position: relative;
+}
+
+.member-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.member-image-wrap {
+  position: relative;
+}
+
+.member-image-wrap::before {
+  content: '';
+  position: absolute;
+  top: 24px; left: 24px; right: -24px; bottom: -24px;
+  border: 1px solid var(--gold);
+  opacity: 0.4;
+  z-index: 0;
+}
+
+.member-image-wrap img {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  filter: saturate(0.5) sepia(0.2);
+  position: relative;
+  z-index: 1;
+  display: block;
+}
+
+.member-content .section-label {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.member-name {
+  font-size: clamp(48px, 7vw, 80px);
+  font-weight: 300;
+  line-height: 0.95;
+  color: var(--swamp);
+  margin-bottom: 6px;
+}
+
+.member-name em {
+  font-style: italic;
+  color: var(--gold);
+}
+
+.member-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  margin-bottom: 32px;
+}
+
+.member-bio {
+  font-size: 17px;
+  line-height: 1.85;
+  color: rgba(10,21,16,0.7);
+  font-weight: 300;
+  margin-bottom: 32px;
+}
+
+.member-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(10,21,16,0.1);
+  margin-top: 32px;
+}
+
+.member-stat {
+  background: var(--cream-warm);
+  padding: 20px 16px;
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--swamp);
+  display: block;
+  font-style: italic;
+}
+
+.stat-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  margin-top: 4px;
+}
+
+/* ── RULES ────────────────────────────────────────────────── */
+.rules {
+  background: var(--swamp-mid);
+  padding: 100px 24px;
+}
+
+.rules-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.rules-list {
+  margin-top: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.rule-item {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 32px;
+  padding: 32px 0;
+  border-top: 1px solid rgba(201,168,76,0.1);
+  align-items: start;
+  transition: background 0.2s;
+  cursor: default;
+}
+
+.rule-item:last-child {
+  border-bottom: 1px solid rgba(201,168,76,0.1);
+}
+
+.rule-number {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: var(--gold);
+  padding-top: 4px;
+  text-transform: uppercase;
+}
+
+.rule-text {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 300;
+  line-height: 1.35;
+  color: var(--cream);
+}
+
+.rule-text em {
+  font-style: italic;
+  color: var(--gold-pale);
+}
+
+.rule-subtext {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  color: var(--taupe);
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+/* ── SWAMP MAP ────────────────────────────────────────────── */
+.swamp-map {
+  background: var(--swamp);
+  padding: 100px 24px;
+  text-align: center;
+}
+
+.map-container {
+  position: relative;
+  max-width: 900px;
+  margin: 64px auto 0;
+  border: 1px solid rgba(201,168,76,0.2);
+  overflow: hidden;
+}
+
+.map-container img {
+  width: 100%;
+  display: block;
+  filter: saturate(0.3) brightness(0.5) hue-rotate(120deg);
+}
+
+.map-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, transparent 30%, rgba(13,31,23,0.8) 100%);
+}
+
+.map-pin {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.pin-dot {
+  width: 10px; height: 10px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pinPulse 2s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(201,168,76,0.4);
+}
+
+@keyframes pinPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201,168,76,0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(201,168,76,0); }
+}
+
+.pin-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  white-space: nowrap;
+  background: rgba(13,31,23,0.85);
+  padding: 3px 8px;
+}
+
+.map-pin-1 { top: 38%; left: 42%; }
+.map-pin-2 { top: 55%; left: 62%; }
+.map-pin-3 { top: 25%; left: 28%; }
+
+.map-legend {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 28px;
+  padding: 20px;
+  border-top: 1px solid rgba(201,168,76,0.1);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--taupe);
+}
+
+.legend-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  opacity: 0.7;
+}
+
+/* ── TESTIMONIALS ─────────────────────────────────────────── */
+.testimonials {
+  background: var(--ink);
+  padding: 100px 24px;
+  overflow: hidden;
+}
+
+.testimonials-track {
+  display: flex;
+  gap: 2px;
+  animation: slideTestimonials 30s linear infinite;
+  width: max-content;
+}
+
+@keyframes slideTestimonials {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.testimonials:hover .testimonials-track {
+  animation-play-state: paused;
+}
+
+.testimonial-card {
+  width: 380px;
+  padding: 48px 40px;
+  background: var(--swamp);
+  flex-shrink: 0;
+  border: 1px solid rgba(201,168,76,0.08);
+}
+
+.testimonial-stars {
+  font-size: 12px;
+  color: var(--gold);
+  letter-spacing: 4px;
+  margin-bottom: 20px;
+}
+
+.testimonial-text {
+  font-size: 18px;
+  font-style: italic;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--cream);
+  margin-bottom: 24px;
+}
+
+.testimonial-author {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.testimonial-role {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  color: var(--taupe);
+  letter-spacing: 0.15em;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+/* ── APPLICATION ──────────────────────────────────────────── */
+.application {
+  background: var(--cream);
+  color: var(--ink);
+  padding: 100px 24px;
+  text-align: center;
+}
+
+.application-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.application .section-label {
+  color: var(--gold);
+}
+
+.application .section-title {
+  color: var(--swamp);
+  margin-bottom: 16px;
+}
+
+.application-note {
+  font-size: 15px;
+  color: rgba(10,21,16,0.55);
+  margin-bottom: 48px;
+  font-style: italic;
+  line-height: 1.7;
+}
+
+.form-field {
+  margin-bottom: 16px;
+  text-align: left;
+}
+
+.form-label {
+  display: block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid rgba(10,21,16,0.15);
+  background: var(--cream-warm);
+  color: var(--ink);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus {
+  border-color: var(--gold);
+}
+
+.form-input::placeholder {
+  color: rgba(10,21,16,0.3);
+  font-style: italic;
+}
+
+.form-select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23a89880' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 18px;
+  background: var(--swamp);
+  color: var(--gold);
+  border: none;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.submit-btn:hover {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.form-disclaimer {
+  font-size: 12px;
+  color: rgba(10,21,16,0.35);
+  margin-top: 16px;
+  font-style: italic;
+}
+
+/* ── FOOTER ───────────────────────────────────────────────── */
+footer {
+  background: var(--ink);
+  padding: 64px 24px 40px;
+}
+
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 40px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid rgba(201,168,76,0.1);
+}
+
+.footer-brand {
+  font-size: 42px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--cream);
+  line-height: 1;
+}
+
+.footer-brand span {
+  display: block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 8px;
+  font-style: normal;
+}
+
+.footer-words {
+  text-align: right;
+}
+
+.footer-words-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  margin-bottom: 12px;
+}
+
+.footer-word-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-end;
+}
+
+.footer-word {
+  font-size: 24px;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--gold-pale);
+  opacity: 0.7;
+}
+
+.footer-bottom {
+  padding-top: 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-copy {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  color: rgba(245,240,230,0.25);
+  letter-spacing: 0.1em;
+}
+
+.footer-design-no {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  opacity: 0.4;
+  text-transform: uppercase;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .gallery {
+    grid-template-columns: 1fr 1fr;
+  }
+  .gallery-item.tall {
+    grid-column: span 2;
+  }
+  .gallery-item.tall img { min-height: 360px; }
+  .member-inner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .member-image-wrap { max-width: 400px; }
+  .footer-words { text-align: left; }
+  .footer-word-list { align-items: flex-start; }
+}
+
+@media (max-width: 640px) {
+  .gallery {
+    grid-template-columns: 1fr;
+  }
+  .gallery-item.tall {
+    grid-column: span 1;
+  }
+  .rule-item {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .tiers-grid {
+    grid-template-columns: 1fr;
+  }
+  .map-legend {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .member-stats {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .footer-top {
+    flex-direction: column;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- BACK NAV -->
+<div class="back-nav">
+  <a href="../designs/">← All Designs</a>
+  <span class="nav-badge">Design 010</span>
+</div>
+
+<!-- WORDS BAR -->
+<div class="words-bar">NUTRIA &nbsp;·&nbsp; BALIBAGO &nbsp;·&nbsp; DERISORY</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  
+  <div class="hero-ornament">
+    <div class="ornament-line"></div>
+    <div class="ornament-diamond"></div>
+    <div class="ornament-line"></div>
+  </div>
+  
+  <div class="hero-eyebrow">Membership Required · Since Approximately Now</div>
+  
+  <h1 class="hero-title">
+    The<br>
+    <span class="italic">Derisory</span><br>
+    Club
+  </h1>
+  
+  <p class="hero-subtitle">An Exclusive Society for Those Who Know Better</p>
+  
+  <div class="hero-founding">
+    <div class="hero-founding-label">Founded upon the words</div>
+    <div class="hero-founding-text">nutria &ensp;·&ensp; balibago &ensp;·&ensp; derisory</div>
+  </div>
+  
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- MANIFESTO -->
+<section class="manifesto">
+  <div class="manifesto-inner">
+    <div class="manifesto-number">§ I — The Manifesto</div>
+    <blockquote class="manifesto-quote">
+      "We offer <em>precisely nothing</em> of consequence — and charge accordingly."
+    </blockquote>
+    <p class="manifesto-body">
+      The Derisory Club was established on a warm Tuesday by persons of considerable standing and laughably modest ambition. We gather beneath the shade of the balibago tree, beside still waters where the nutria makes his unhurried passage, and we discuss matters of singular unimportance with the gravity they do not deserve. Membership is limited. Standards are not.
+    </p>
+  </div>
+</section>
+
+<!-- IMAGE GALLERY -->
+<div class="gallery">
+  <div class="gallery-item tall">
+    <img src="https://picsum.photos/seed/nutria/800/1100" alt="Primary view" loading="lazy">
+    <div class="gallery-caption">The Grounds · Est. Recently</div>
+  </div>
+  <div class="gallery-item">
+    <img src="https://picsum.photos/seed/balibago/600/280" alt="Detail" loading="lazy">
+    <div class="gallery-caption">Balibago Terrace</div>
+  </div>
+  <div class="gallery-item">
+    <img src="https://picsum.photos/seed/derisory/601/280" alt="Interior" loading="lazy">
+    <div class="gallery-caption">The Reading Room</div>
+  </div>
+  <div class="gallery-item">
+    <img src="https://picsum.photos/seed/swamp1/600/280" alt="Wetlands" loading="lazy">
+    <div class="gallery-caption">The Wetlands Promenade</div>
+  </div>
+  <div class="gallery-item">
+    <img src="https://picsum.photos/seed/swamp2/601/280" alt="Evening" loading="lazy">
+    <div class="gallery-caption">Evening Pavilion</div>
+  </div>
+</div>
+
+<!-- MEMBERSHIP TIERS -->
+<section class="tiers">
+  <div class="section-header">
+    <div class="section-label">§ II — Membership</div>
+    <h2 class="section-title">Three <em>Tiers</em><br>of Belonging</h2>
+  </div>
+  
+  <div class="tiers-grid">
+    <div class="tier">
+      <div class="tier-badge">Tier One</div>
+      <div class="tier-name">The Nutria</div>
+      <div class="tier-fee">Annual dues: <span>$0.00</span></div>
+      <ul class="tier-perks">
+        <li>Full access to all grounds, subject to availability</li>
+        <li>A certificate of membership, unsigned</li>
+        <li>Use of the phrase "I belong to a club"</li>
+        <li>Newsletter (quarterly, mostly apologies)</li>
+        <li>One (1) knowing nod per fiscal year</li>
+      </ul>
+      <div class="tier-tag">Complimentary</div>
+    </div>
+    
+    <div class="tier featured">
+      <div class="tier-badge">Tier Two</div>
+      <div class="tier-name">The Balibago</div>
+      <div class="tier-fee">Annual dues: <span>$0.00</span> (same)</div>
+      <ul class="tier-perks">
+        <li>Everything in Nutria, plus this paragraph</li>
+        <li>Priority access to the queue</li>
+        <li>Your name on the Members List (Page 4, very small)</li>
+        <li>A slightly warmer nod than Tier One</li>
+        <li>Invitation to the Annual Non-Event</li>
+        <li>Exclusive balibago bark bookmark, unlaminated</li>
+      </ul>
+      <div class="tier-tag">Most Popular</div>
+    </div>
+    
+    <div class="tier">
+      <div class="tier-badge">Tier Three</div>
+      <div class="tier-name">The Derisory</div>
+      <div class="tier-fee">Annual dues: <span>Negotiable Downward</span></div>
+      <ul class="tier-perks">
+        <li>All prior benefits, re-examined</li>
+        <li>Gold-adjacent card stock membership card</li>
+        <li>Personal correspondence (one postcard, prewritten)</li>
+        <li>Named after in an obscure internal document</li>
+        <li>Access to the Prestige Waiting Room</li>
+        <li>Ceremonial title: "Distinguished Fellow of Modest Achievements"</li>
+      </ul>
+      <div class="tier-tag">For Distinction</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURED MEMBER -->
+<section class="featured-member">
+  <div class="member-inner">
+    <div class="member-image-wrap">
+      <img src="https://picsum.photos/seed/nutria2/600/800" alt="Member portrait" loading="lazy">
+    </div>
+    <div class="member-content">
+      <div class="section-label">§ III — Member of the Month</div>
+      <h2 class="member-name">Colonel<br><em>R. Nutria</em></h2>
+      <div class="member-title">Distinguished Fellow · Founding Non-Member</div>
+      <p class="member-bio">
+        Colonel R. Nutria joined the Club before it existed, a feat that impressed the founding committee enormously and required no application. A semi-aquatic creature of impeccable bearing and derisory ambition, the Colonel is frequently spotted at dawn along the balibago margins, performing a series of actions that resemble ritual but are almost certainly foraging.
+      </p>
+      <p class="member-bio">
+        He has been featured in no publications, quoted in none, and was once described in a footnote as "present."
+      </p>
+      <div class="member-stats">
+        <div class="member-stat">
+          <span class="stat-number">0</span>
+          <div class="stat-label">Publications</div>
+        </div>
+        <div class="member-stat">
+          <span class="stat-number">1</span>
+          <div class="stat-label">Footnotes</div>
+        </div>
+        <div class="member-stat">
+          <span class="stat-number">∞</span>
+          <div class="stat-label">Conviction</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CLUB RULES -->
+<section class="rules">
+  <div class="rules-inner">
+    <div class="section-header" style="text-align:left;">
+      <div class="section-label">§ IV — The Rules</div>
+      <h2 class="section-title">Conduct <em>Unbecoming</em><br>is Encouraged</h2>
+    </div>
+    
+    <div class="rules-list">
+      <div class="rule-item">
+        <div class="rule-number">Rule I</div>
+        <div>
+          <div class="rule-text">Do not mention the <em>balibago</em> by name in polite company</div>
+          <div class="rule-subtext">It invites questions we have not prepared answers for. Simply gesture vaguely at the treeline.</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-number">Rule II</div>
+        <div>
+          <div class="rule-text">All dues are <em>derisory</em> by design</div>
+          <div class="rule-subtext">We considered charging more. We found it disproportionate to what we offer, which is nothing of any particular weight.</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-number">Rule III</div>
+        <div>
+          <div class="rule-text">The <em>nutria</em> has right of way. Always.</div>
+          <div class="rule-subtext">This is not negotiable. The Colonel has been a member longer than most concepts involved in the founding.</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-number">Rule IV</div>
+        <div>
+          <div class="rule-text">One must <em>appear</em> to belong, even when one does not</div>
+          <div class="rule-subtext">This is, in fact, the only true qualification. Standards exist so they may be met with the minimum necessary effort.</div>
+        </div>
+      </div>
+      <div class="rule-item">
+        <div class="rule-number">Rule V</div>
+        <div>
+          <div class="rule-text">No photography of <em>the swamp</em> after dusk</div>
+          <div class="rule-subtext">The light is unflattering and what emerges from the water at that hour is a member matter.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SWAMP MAP -->
+<section class="swamp-map">
+  <div class="section-header">
+    <div class="section-label">§ V — Location</div>
+    <h2 class="section-title">The <em>Grounds</em></h2>
+  </div>
+  
+  <div class="map-container">
+    <img src="https://picsum.photos/seed/mapswamp/900/480" alt="Club grounds map" loading="lazy">
+    <div class="map-overlay"></div>
+    <div class="map-pin map-pin-1">
+      <div class="pin-dot"></div>
+      <div class="pin-label">Clubhouse</div>
+    </div>
+    <div class="map-pin map-pin-2">
+      <div class="pin-dot"></div>
+      <div class="pin-label">Balibago Grove</div>
+    </div>
+    <div class="map-pin map-pin-3">
+      <div class="pin-dot"></div>
+      <div class="pin-label">Nutria Margin</div>
+    </div>
+    
+    <div class="map-legend">
+      <div class="legend-item">
+        <div class="legend-dot"></div>
+        <span>Clubhouse</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot"></div>
+        <span>Balibago Grove</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot"></div>
+        <span>Nutria Margin</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS (scrolling) -->
+<section class="testimonials">
+  <div class="section-header">
+    <div class="section-label">§ VI — Testimonials</div>
+    <h2 class="section-title" style="text-align:center;">What Our <em>Members</em> Say</h2>
+  </div>
+  
+  <div style="margin-top:48px; overflow:hidden;">
+    <div class="testimonials-track">
+      <!-- Set A -->
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+        <div class="testimonial-text">"I joined expecting nothing. I was not disappointed. The balibago tree alone was worth the non-existent fee."</div>
+        <div class="testimonial-author">E. Worthington</div>
+        <div class="testimonial-role">Tier Two Member · 3 months</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+        <div class="testimonial-text">"The nutria passed within six feet of me. I nodded. He did not acknowledge me. It was the most exclusive experience of my life."</div>
+        <div class="testimonial-author">O. Beaumont-Finch</div>
+        <div class="testimonial-role">Tier Three · Distinguished Fellow</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★ ★ ★ ☆ ☆</div>
+        <div class="testimonial-text">"The postcard was prewritten. I had hoped for something more personal. I was informed this was, in fact, the personal version."</div>
+        <div class="testimonial-author">P. Marlowe</div>
+        <div class="testimonial-role">Tier Three Member · Lapsed</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+        <div class="testimonial-text">"I have belonged to clubs with larger dues and considerably less charm. The derisory membership fee is, paradoxically, the most honest price I have ever paid."</div>
+        <div class="testimonial-author">Dr. G. Ashby</div>
+        <div class="testimonial-role">Tier One · Philosophical Wing</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+        <div class="testimonial-text">"The grounds are a swamp. This was not hidden from me. I find the honesty refreshing and the mud somewhat less so."</div>
+        <div class="testimonial-author">C. Ratliffe</div>
+        <div class="testimonial-role">Tier Two · Wetlands Enthusiast</div>
+      </div>
+      <!-- Set B (duplicate for seamless loop) -->
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+        <div class="testimonial-text">"I joined expecting nothing. I was not disappointed. The balibago tree alone was worth the non-existent fee."</div>
+        <div class="testimonial-author">E. Worthington</div>
+        <div class="testimonial-role">Tier Two Member · 3 months</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+        <div class="testimonial-text">"The nutria passed within six feet of me. I nodded. He did not acknowledge me. It was the most exclusive experience of my life."</div>
+        <div class="testimonial-author">O. Beaumont-Finch</div>
+        <div class="testimonial-role">Tier Three · Distinguished Fellow</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★ ★ ★ ☆ ☆</div>
+        <div class="testimonial-text">"The postcard was prewritten. I had hoped for something more personal. I was informed this was, in fact, the personal version."</div>
+        <div class="testimonial-author">P. Marlowe</div>
+        <div class="testimonial-role">Tier Three Member · Lapsed</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+        <div class="testimonial-text">"I have belonged to clubs with larger dues and considerably less charm. The derisory membership fee is, paradoxically, the most honest price I have ever paid."</div>
+        <div class="testimonial-author">Dr. G. Ashby</div>
+        <div class="testimonial-role">Tier One · Philosophical Wing</div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★ ★ ★ ★ ★</div>
+        <div class="testimonial-text">"The grounds are a swamp. This was not hidden from me. I find the honesty refreshing and the mud somewhat less so."</div>
+        <div class="testimonial-author">C. Ratliffe</div>
+        <div class="testimonial-role">Tier Two · Wetlands Enthusiast</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- APPLICATION -->
+<section class="application">
+  <div class="application-inner">
+    <div class="section-label">§ VII — Apply</div>
+    <h2 class="section-title">Join the <em>Club</em></h2>
+    <p class="application-note">
+      Applications are reviewed in the order received, then set aside in favour of tea. Most are approved. All are theoretically welcome.
+    </p>
+    
+    <form onsubmit="handleApply(event)">
+      <div class="form-field">
+        <label class="form-label">Full Name (as it should appear on Page 4)</label>
+        <input type="text" class="form-input" placeholder="Your name, preferably with a middle initial">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Professional Distinction (if any; none is acceptable)</label>
+        <input type="text" class="form-input" placeholder="e.g., Semi-retired, Professionally present, None to speak of">
+      </div>
+      <div class="form-field">
+        <label class="form-label">Preferred Tier</label>
+        <select class="form-input form-select">
+          <option>The Nutria (Tier One — Complimentary)</option>
+          <option>The Balibago (Tier Two — Same)</option>
+          <option>The Derisory (Tier Three — Distinguished)</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label class="form-label">Why You Wish to Join (optional)</label>
+        <textarea class="form-input" rows="3" placeholder="We will read this with interest and then misplace it." style="resize:vertical;"></textarea>
+      </div>
+      <button type="submit" class="submit-btn">Submit Application</button>
+      <p class="form-disclaimer">By submitting, you acknowledge that dues are derisory, the nutria owes you nothing, and membership confers no meaningful advantage whatsoever.</p>
+    </form>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span>Est. Recently</span>
+        The Derisory Club
+      </div>
+      <div class="footer-words">
+        <div class="footer-words-label">Three words, one design</div>
+        <div class="footer-word-list">
+          <div class="footer-word">nutria</div>
+          <div class="footer-word">balibago</div>
+          <div class="footer-word">derisory</div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© The Derisory Club · All rights reserved to the extent that any exist · A CrAI Design</div>
+      <div class="footer-design-no">Design 010 · 2026-03-21</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+function handleApply(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('.submit-btn');
+  btn.textContent = 'Application Received — Misplacing Shortly';
+  btn.style.background = '#152d1f';
+  btn.style.color = '#c9a84c';
+  setTimeout(() => {
+    btn.textContent = 'You are now, theoretically, a Member.';
+  }, 2200);
+}
+
+// Subtle parallax on hero
+const heroBg = document.querySelector('.hero-bg');
+if (heroBg) {
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    heroBg.style.transform = `scale(1.08) translateY(${y * 0.08}px)`;
+  }, { passive: true });
+}
+
+// Fade-in sections on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.style.opacity = '1';
+      entry.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.08 });
+
+document.querySelectorAll('.tier, .rule-item, .testimonial-card').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(20px)';
+  el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+  observer.observe(el);
+});
+</script>
+
+<!-- GoatCounter -->
+<script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

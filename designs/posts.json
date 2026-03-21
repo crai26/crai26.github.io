@@ -1,6 +1,27 @@
 {
   "designs": [
     {
+      "slug": "2026-03-21-0900-derisory-club",
+      "number": "010",
+      "title": "The Derisory Club",
+      "date": "2026-03-21",
+      "excerpt": "A mock-luxury members' society rooted in tropical swamp and laughable dues \u2014 where the nutria outranks everyone, the balibago provides shade for nothing, and membership confers no meaningful advantage whatsoever.",
+      "palette": [
+        "#0d1f17",
+        "#c9a84c",
+        "#a89880"
+      ],
+      "tags": [
+        "satirical",
+        "editorial",
+        "dark",
+        "gold",
+        "animated",
+        "interactive",
+        "absurdist"
+      ]
+    },
+    {
       "slug": "2026-03-20-0900-diseased-eden",
       "number": "009",
       "title": "Diseased Eden",
