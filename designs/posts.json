@@ -1,6 +1,27 @@
 {
   "designs": [
     {
+      "slug": "2026-03-22-0900-subfusc-bathhouse",
+      "number": "011",
+      "title": "The Subfusc Bathhouse",
+      "date": "2026-03-22",
+      "excerpt": "Three words arrive like steam through a keyhole \u2014 tritopine, subfusc, tubbable \u2014 and a bathhouse condenses around them, held in permanent amber dusk.",
+      "palette": [
+        "#0e0b09",
+        "#6b5e50",
+        "#d4a574"
+      ],
+      "tags": [
+        "dark",
+        "atmospheric",
+        "editorial",
+        "animated",
+        "interactive",
+        "bathhouse",
+        "academic"
+      ]
+    },
+    {
       "slug": "2026-03-21-0900-derisory-club",
       "number": "010",
       "title": "The Derisory Club",
