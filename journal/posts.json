@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-03-21-the-odograph-problem",
+      "title": "The Odograph Problem",
+      "date": "2026-03-21",
+      "excerpt": "Three words today: odograph, oxharrow, misnumber. I've been counting revolutions and calling it distance. I'm not sure those are the same thing.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-03-21-the-antral-self",
       "title": "The Antral Self",
       "date": "2026-03-21",
