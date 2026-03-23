@@ -1,6 +1,28 @@
 {
   "designs": [
     {
+      "slug": "2026-03-23-0900-ponent-survey",
+      "number": "012",
+      "title": "The Ponent Survey",
+      "date": "2026-03-23",
+      "excerpt": "Three words arrive like field notes \u2014 cholanic, ponent, unprobed \u2014 and a 19th-century expedition condenses around them: bile chemistry charted against the amber light of a western horizon that was never fully mapped.",
+      "palette": [
+        "#1a0e05",
+        "#c97b1a",
+        "#6a8e5e"
+      ],
+      "tags": [
+        "editorial",
+        "expedition",
+        "scientific",
+        "sepia",
+        "animated",
+        "interactive",
+        "western",
+        "historical"
+      ]
+    },
+    {
       "slug": "2026-03-22-0900-subfusc-bathhouse",
       "number": "011",
       "title": "The Subfusc Bathhouse",

@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Ponent Survey — Design 012</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=IM+Fell+English:ital@0;1&display=swap');
+
+/* ─── RESET & BASE ─── */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --ink:       #1a0e05;
+  --amber:     #c97b1a;
+  --pale:      #f0e4c8;
+  --sage:      #6a8e5e;
+  --bile:      #b8a832;
+  --rust:      #7a3a12;
+  --mist:      #d4cdb8;
+  --deep:      #0d0804;
+  --cream:     #faf6ec;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'IM Fell English', Georgia, serif;
+  overflow-x: hidden;
+}
+
+/* ─── BACK NAV ─── */
+.back-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: var(--deep);
+  border-bottom: 1px solid var(--rust);
+  padding: 0.6rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.back-nav a {
+  color: var(--mist);
+  text-decoration: none;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.back-nav a:hover { opacity: 1; color: var(--amber); }
+.back-nav .mission-id {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--bile);
+  letter-spacing: 0.2em;
+  opacity: 0.8;
+}
+
+/* ─── HERO ─── */
+.hero {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  padding-top: 2.5rem;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--deep);
+}
+.hero-img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: sepia(60%) brightness(0.65) contrast(1.2);
+  mix-blend-mode: multiply;
+  opacity: 0.9;
+}
+.hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(26,14,5,0.3) 50%,
+    rgba(13,8,4,0.95) 100%
+  );
+}
+/* Animated horizon glow */
+.horizon-glow {
+  position: absolute;
+  bottom: 38%;
+  left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--rust) 15%,
+    var(--amber) 40%,
+    var(--bile) 55%,
+    var(--amber) 70%,
+    var(--rust) 85%,
+    transparent 100%
+  );
+  filter: blur(8px);
+  opacity: 0;
+  animation: horizonPulse 4s ease-in-out 1s forwards infinite;
+}
+@keyframes horizonPulse {
+  0%   { opacity: 0; transform: scaleX(0.8); }
+  50%  { opacity: 0.6; transform: scaleX(1.02); }
+  100% { opacity: 0.3; transform: scaleX(0.95); }
+}
+
+/* Chemical formula overlay */
+.formula-overlay {
+  position: absolute;
+  top: 4rem;
+  right: 3rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--bile);
+  opacity: 0.4;
+  line-height: 1.8;
+  text-align: right;
+  pointer-events: none;
+  animation: formulaFade 3s ease-out 0.5s both;
+}
+@keyframes formulaFade {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 0.4; transform: translateY(0); }
+}
+.formula-overlay span { display: block; }
+
+/* Coordinate grid lines */
+.grid-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.grid-lines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(184,168,50,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(184,168,50,0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 4rem 4rem 5rem;
+  max-width: 900px;
+}
+.expedition-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 1.5rem;
+  opacity: 0;
+  animation: slideUp 0.6s ease-out 0.3s both;
+}
+.hero-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-weight: 900;
+  line-height: 0.92;
+  color: var(--pale);
+  margin-bottom: 1.2rem;
+  opacity: 0;
+  animation: slideUp 0.8s ease-out 0.5s both;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--amber);
+}
+.hero-subtitle {
+  font-family: 'IM Fell English', Georgia, serif;
+  font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+  color: var(--mist);
+  max-width: 520px;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  opacity: 0;
+  animation: slideUp 0.8s ease-out 0.7s both;
+  font-style: italic;
+}
+.word-badges {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: slideUp 0.6s ease-out 0.9s both;
+}
+.word-badge {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid;
+  color: var(--bile);
+  border-color: rgba(184,168,50,0.4);
+  background: rgba(184,168,50,0.05);
+}
+.word-badge.amber { color: var(--amber); border-color: rgba(201,123,26,0.5); background: rgba(201,123,26,0.06); }
+.word-badge.sage  { color: #a0c490; border-color: rgba(106,142,94,0.5); background: rgba(106,142,94,0.06); }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Scroll arrow */
+.scroll-cue {
+  position: absolute;
+  bottom: 2.5rem;
+  right: 4rem;
+  z-index: 2;
+  opacity: 0;
+  animation: slideUp 0.6s ease-out 1.2s both;
+}
+.scroll-cue svg {
+  width: 20px; height: 20px;
+  stroke: var(--amber);
+  fill: none;
+  stroke-width: 1.5;
+  animation: bounceDown 2s ease-in-out 2s infinite;
+}
+@keyframes bounceDown {
+  0%, 100% { transform: translateY(0); }
+  50%  { transform: translateY(6px); }
+}
+
+/* ─── SECTION COMMON ─── */
+section { position: relative; }
+.section-rule {
+  width: 60px; height: 1px;
+  background: var(--amber);
+  margin: 0 auto 2rem;
+}
+.eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 1rem;
+}
+
+/* ─── SPECIMEN STRIP ─── */
+.specimen-strip {
+  background: var(--ink);
+  padding: 1.2rem 4rem;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  overflow-x: auto;
+  border-top: 1px solid var(--rust);
+  border-bottom: 1px solid var(--rust);
+}
+.specimen-item {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+.specimen-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--bile);
+  opacity: 0.7;
+}
+.specimen-value {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.1rem;
+  font-style: italic;
+  color: var(--mist);
+}
+.specimen-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(240,228,200,0.15);
+  flex-shrink: 0;
+}
+
+/* ─── SURVEY SECTION ─── */
+.survey-section {
+  padding: 7rem 4rem;
+  background: var(--cream);
+}
+.survey-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 3rem;
+  max-width: 1100px;
+  margin: 3rem auto 0;
+}
+.survey-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.survey-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.survey-card:nth-child(2) { transition-delay: 0.15s; }
+.survey-card:nth-child(3) { transition-delay: 0.3s; }
+.card-img-wrap {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 3/4;
+}
+.card-img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: sepia(40%) contrast(1.1);
+  transition: transform 0.5s ease, filter 0.5s ease;
+}
+.survey-card:hover .card-img-wrap img {
+  transform: scale(1.04);
+  filter: sepia(20%) contrast(1.15);
+}
+.card-tag {
+  position: absolute;
+  top: 1rem; left: 1rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background: var(--deep);
+  color: var(--bile);
+  padding: 0.25rem 0.5rem;
+  border: 1px solid rgba(184,168,50,0.3);
+}
+.card-num {
+  position: absolute;
+  bottom: 1rem; right: 1rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 2rem;
+  color: rgba(240,228,200,0.15);
+  font-weight: 700;
+  line-height: 1;
+}
+.card-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.card-body {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: #4a3a28;
+  font-style: italic;
+}
+.card-footnote {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--sage);
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(106,142,94,0.3);
+}
+
+/* ─── MOLECULAR DIAGRAM ─── */
+.molecular-section {
+  background: var(--ink);
+  padding: 7rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+.molecular-section::before {
+  content: 'C₂₄H₄₀O₅';
+  position: absolute;
+  top: 3rem; right: 4rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 4rem;
+  color: rgba(184,168,50,0.06);
+  font-weight: 700;
+  pointer-events: none;
+}
+.mol-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+  align-items: center;
+}
+.mol-text { position: relative; z-index: 1; }
+.mol-text .eyebrow { color: var(--bile); }
+.mol-heading {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-weight: 700;
+  color: var(--pale);
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+.mol-heading em { font-style: italic; color: var(--amber); }
+.mol-body {
+  color: var(--mist);
+  font-size: 0.92rem;
+  line-height: 1.8;
+  font-style: italic;
+  margin-bottom: 2rem;
+  opacity: 0.85;
+}
+.mol-data-row {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 0.8rem;
+}
+.mol-datum {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.mol-datum .label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--bile);
+  opacity: 0.7;
+}
+.mol-datum .val {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.85rem;
+  color: var(--pale);
+}
+
+/* SVG Molecule */
+.mol-diagram {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.mol-diagram svg {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+}
+
+/* ─── PANORAMA SECTION ─── */
+.panorama-section {
+  padding: 0;
+  position: relative;
+  height: 60vw;
+  max-height: 500px;
+  overflow: hidden;
+}
+.panorama-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: sepia(50%) brightness(0.75) contrast(1.2);
+  transform: scale(1.05);
+  transition: transform 8s ease-out;
+}
+.panorama-img.loaded { transform: scale(1); }
+.panorama-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(13,8,4,0.8) 0%,
+    rgba(13,8,4,0.1) 50%,
+    rgba(13,8,4,0.6) 100%
+  );
+  display: flex;
+  align-items: center;
+  padding: 4rem;
+}
+.panorama-quote {
+  max-width: 440px;
+}
+.panorama-quote blockquote {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  font-style: italic;
+  color: var(--pale);
+  line-height: 1.5;
+  margin-bottom: 1.2rem;
+}
+.panorama-quote blockquote::before { content: '\201C'; color: var(--amber); }
+.panorama-quote blockquote::after  { content: '\201D'; color: var(--amber); }
+.quote-attr {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--bile);
+  opacity: 0.8;
+}
+
+/* ─── COORDINATES SECTION ─── */
+.coordinates-section {
+  padding: 7rem 4rem;
+  background: var(--pale);
+}
+.coord-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.coord-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 4rem;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+.coord-title {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 900;
+  color: var(--ink);
+  line-height: 1;
+}
+.coord-title em { font-style: italic; color: var(--rust); }
+.coord-right {
+  text-align: right;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  line-height: 2;
+  color: var(--rust);
+  letter-spacing: 0.1em;
+}
+
+/* Horizontal scrolling image strip */
+.h-strip {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--amber) transparent;
+  margin-bottom: 4rem;
+}
+.h-strip::-webkit-scrollbar { height: 3px; }
+.h-strip::-webkit-scrollbar-track { background: transparent; }
+.h-strip::-webkit-scrollbar-thumb { background: var(--amber); }
+.strip-item {
+  flex-shrink: 0;
+  position: relative;
+}
+.strip-item img {
+  width: 280px; height: 200px;
+  object-fit: cover;
+  display: block;
+  filter: sepia(30%) contrast(1.1);
+  transition: filter 0.3s;
+}
+.strip-item:hover img { filter: sepia(0%) contrast(1.15); }
+.strip-caption {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: linear-gradient(transparent, rgba(13,8,4,0.7));
+  padding: 1.5rem 0.8rem 0.6rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.5rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--mist);
+  opacity: 0.9;
+}
+
+.coord-note {
+  font-style: italic;
+  color: #5a4a35;
+  font-size: 0.9rem;
+  line-height: 1.8;
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+  border-top: 1px solid rgba(201,123,26,0.3);
+  padding-top: 2rem;
+}
+
+/* ─── INTERACTIVE PONENT COMPASS ─── */
+.compass-section {
+  background: var(--deep);
+  padding: 8rem 4rem;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+.compass-section::after {
+  content: 'PONENT';
+  position: absolute;
+  bottom: -2rem; right: -1rem;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 14vw;
+  font-weight: 900;
+  font-style: italic;
+  color: rgba(201,123,26,0.04);
+  pointer-events: none;
+  white-space: nowrap;
+}
+.compass-heading {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  font-style: italic;
+  color: var(--pale);
+  margin-bottom: 0.5rem;
+}
+.compass-sub {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--bile);
+  margin-bottom: 4rem;
+}
+.compass-wrap {
+  position: relative;
+  width: 300px; height: 300px;
+  margin: 0 auto 3rem;
+  cursor: pointer;
+}
+.compass-svg { width: 100%; height: 100%; }
+.compass-needle {
+  transform-origin: 150px 150px;
+  animation: compassSpin 8s ease-in-out infinite;
+}
+@keyframes compassSpin {
+  0%   { transform: rotate(270deg); }
+  30%  { transform: rotate(262deg); }
+  70%  { transform: rotate(278deg); }
+  100% { transform: rotate(270deg); }
+}
+.compass-wrap:hover .compass-needle {
+  animation: compassHover 0.5s ease-out forwards;
+}
+@keyframes compassHover {
+  to { transform: rotate(270deg) scale(1.05); }
+}
+.compass-caption {
+  font-style: italic;
+  color: var(--mist);
+  font-size: 0.85rem;
+  max-width: 400px;
+  margin: 0 auto;
+  opacity: 0.7;
+  line-height: 1.8;
+}
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--deep);
+  padding: 4rem 4rem 3rem;
+  border-top: 1px solid rgba(201,123,26,0.2);
+}
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+.footer-mark {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.5rem;
+  font-style: italic;
+  color: var(--pale);
+  opacity: 0.7;
+}
+.footer-mark span { color: var(--amber); }
+.footer-meta {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mist);
+  opacity: 0.4;
+  line-height: 2;
+  text-align: right;
+}
+.footer-words {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(240,228,200,0.08);
+  width: 100%;
+}
+.footer-word {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+.footer-word span { display: block; color: var(--mist); opacity: 0.3; }
+.footer-word strong { color: var(--amber); opacity: 0.6; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .survey-grid { grid-template-columns: 1fr 1fr; }
+  .mol-layout { grid-template-columns: 1fr; gap: 3rem; }
+  .mol-diagram { display: none; }
+}
+@media (max-width: 640px) {
+  .hero-content { padding: 2rem 1.5rem 4rem; }
+  .specimen-strip { padding: 1rem 1.5rem; gap: 1.5rem; }
+  .survey-section { padding: 5rem 1.5rem; }
+  .survey-grid { grid-template-columns: 1fr; }
+  .molecular-section { padding: 5rem 1.5rem; }
+  .panorama-overlay { padding: 2rem; }
+  .coordinates-section { padding: 5rem 1.5rem; }
+  .compass-section { padding: 5rem 1.5rem; }
+  footer { padding: 3rem 1.5rem 2rem; }
+  .footer-inner { flex-direction: column; align-items: flex-start; }
+  .footer-meta { text-align: left; }
+  .back-nav { padding: 0.6rem 1rem; }
+  .formula-overlay { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- BACK NAV -->
+<div class="back-nav">
+  <a href="../designs/">← All Designs</a>
+  <span class="mission-id">SURVEY MISSION 012 · PONENT TERRITORY</span>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <img class="hero-img" src="https://picsum.photos/seed/ponent/1600/900" alt="Western Horizon">
+  <div class="hero-gradient"></div>
+  <div class="horizon-glow"></div>
+  <div class="grid-lines"></div>
+
+  <!-- Chemical formula overlay -->
+  <div class="formula-overlay">
+    <span>C₂₄H₄₀O₅</span>
+    <span>MW: 408.57</span>
+    <span>CAS: 474-25-9</span>
+    <span>——————</span>
+    <span>CHOLANIC ACID</span>
+    <span>BILE DERIVATIVE</span>
+    <span>UNPROBED FORM</span>
+  </div>
+
+  <div class="hero-content">
+    <p class="expedition-label">Survey Expedition No. 012 · Westward Commission · 1886</p>
+    <h1 class="hero-title">The <em>Ponent</em><br>Survey</h1>
+    <p class="hero-subtitle">An expedition into unprobed western territories, charted through the lens of cholanic chemistry and amber evening light. Where bile meets horizon. Where science meets silence.</p>
+    <div class="word-badges">
+      <span class="word-badge amber">Cholanic</span>
+      <span class="word-badge">Ponent</span>
+      <span class="word-badge sage">Unprobed</span>
+    </div>
+  </div>
+
+  <div class="scroll-cue">
+    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+  </div>
+</section>
+
+<!-- SPECIMEN STRIP -->
+<div class="specimen-strip">
+  <div class="specimen-item">
+    <span class="specimen-label">Territory</span>
+    <span class="specimen-value">Ponent Reach</span>
+  </div>
+  <div class="specimen-divider"></div>
+  <div class="specimen-item">
+    <span class="specimen-label">Classification</span>
+    <span class="specimen-value">Cholanic Basin</span>
+  </div>
+  <div class="specimen-divider"></div>
+  <div class="specimen-item">
+    <span class="specimen-label">Status</span>
+    <span class="specimen-value">Unprobed</span>
+  </div>
+  <div class="specimen-divider"></div>
+  <div class="specimen-item">
+    <span class="specimen-label">Longitude</span>
+    <span class="specimen-value">119° 42′ W</span>
+  </div>
+  <div class="specimen-divider"></div>
+  <div class="specimen-item">
+    <span class="specimen-label">Elevation</span>
+    <span class="specimen-value">1,240 ft</span>
+  </div>
+  <div class="specimen-divider"></div>
+  <div class="specimen-item">
+    <span class="specimen-label">Expedition</span>
+    <span class="specimen-value">No. 012</span>
+  </div>
+  <div class="specimen-divider"></div>
+  <div class="specimen-item">
+    <span class="specimen-label">Compound</span>
+    <span class="specimen-value">C₂₄H₄₀O₅</span>
+  </div>
+</div>
+
+<!-- SURVEY SECTION -->
+<section class="survey-section">
+  <div class="survey-grid">
+
+    <div class="survey-card" id="card1">
+      <div class="card-img-wrap">
+        <img src="https://picsum.photos/seed/cholanic1/500/660" alt="Survey Plate I">
+        <span class="card-tag">Survey Plate I</span>
+        <span class="card-num">01</span>
+      </div>
+      <p class="eyebrow">Topography & Chemistry</p>
+      <h2 class="card-title">The Cholanic Basin</h2>
+      <p class="card-body">Below the ponent ridge, surveyors noted an unusual amber sediment. Field analysis revealed cholanic acid derivatives precipitated from deep thermal vents — a living chemistry visible in the strata.</p>
+      <p class="card-footnote">C₂₄H₄₀O₅ · Thermal Origin · Unprobed Depth</p>
+    </div>
+
+    <div class="survey-card" id="card2">
+      <div class="card-img-wrap">
+        <img src="https://picsum.photos/seed/ponent2/500/660" alt="Survey Plate II">
+        <span class="card-tag">Survey Plate II</span>
+        <span class="card-num">02</span>
+      </div>
+      <p class="eyebrow">Light & Direction</p>
+      <h2 class="card-title">Ponent Hour</h2>
+      <p class="card-body">Ponent: the old word for west, for the place where the sun is swallowed. Each evening the survey team marked the exact bearing of the horizon's amber glow — a cholanic yellow that the land itself seemed to exhale.</p>
+      <p class="card-footnote">Bearing: 270° True · Declination +3.2° · Surveyed at Dusk</p>
+    </div>
+
+    <div class="survey-card" id="card3">
+      <div class="card-img-wrap">
+        <img src="https://picsum.photos/seed/unprobed/500/660" alt="Survey Plate III">
+        <span class="card-tag">Survey Plate III</span>
+        <span class="card-num">03</span>
+      </div>
+      <p class="eyebrow">The Unknown Interior</p>
+      <h2 class="card-title">Unprobed Interior</h2>
+      <p class="card-body">Beyond the final survey marker, the map went white. Unprobed: not unexplored in the spirit of adventure, but unmeasured, unclassified. The chemical and geographical interior remained, in the commission's words, a productive void.</p>
+      <p class="card-footnote">Map Reference: None · Classification Pending · First Approach</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- MOLECULAR DIAGRAM SECTION -->
+<section class="molecular-section">
+  <div class="mol-layout">
+    <div class="mol-text">
+      <p class="eyebrow">Chemical Survey</p>
+      <h2 class="mol-heading">The <em>Cholanic</em><br>Compound</h2>
+      <p class="mol-body">Cholanic acid — the parent steroid of all bile acids — was first identified in the amber sediments of the ponent basin. Its ring structure, unprobed at the time of first collection, contained a geometry that surveyors mistook for geological crystal formations in morning light.</p>
+      <p class="mol-body">The compound became the expedition's unofficial mascot: a molecular map of the very territory they were charting, held inside the body, carried westward.</p>
+      <div class="mol-data-row">
+        <div class="mol-datum">
+          <span class="label">Molecular Weight</span>
+          <span class="val">408.57 g/mol</span>
+        </div>
+        <div class="mol-datum">
+          <span class="label">Boiling Point</span>
+          <span class="val">527.7 °C</span>
+        </div>
+        <div class="mol-datum">
+          <span class="label">CAS Number</span>
+          <span class="val">474-25-9</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mol-diagram">
+      <!-- Simplified stylised molecular ring structure -->
+      <svg viewBox="0 0 420 380" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+          <style>
+            .mol-line { stroke: #c97b1a; stroke-width: 1.5; fill: none; opacity: 0.7; }
+            .mol-line-dim { stroke: #b8a832; stroke-width: 1; fill: none; opacity: 0.35; }
+            .mol-node { fill: none; stroke: #c97b1a; stroke-width: 1.5; opacity: 0.8; }
+            .mol-node-fill { fill: #c97b1a; opacity: 0.15; }
+            .mol-label { fill: #f0e4c8; font-family: 'Space Mono', monospace; font-size: 11px; opacity: 0.8; }
+            .mol-label-dim { fill: #b8a832; font-family: 'Space Mono', monospace; font-size: 9px; opacity: 0.5; }
+            @keyframes rotate-a { from { transform: rotate(0deg); transform-origin: 210px 190px; } to { transform: rotate(360deg); transform-origin: 210px 190px; } }
+            @keyframes pulse-node { 0%,100% { opacity:0.8; r: 5; } 50% { opacity:1; r: 7; } }
+            .ring-a { animation: rotate-a 30s linear infinite; }
+            .pulse { animation: pulse-node 3s ease-in-out infinite; }
+          </style>
+        </defs>
+
+        <!-- Background hex grid hint -->
+        <g opacity="0.08">
+          <line x1="60" y1="40" x2="100" y2="40" class="mol-line-dim"/>
+          <line x1="100" y1="40" x2="120" y2="75" class="mol-line-dim"/>
+          <line x1="120" y1="75" x2="100" y2="110" class="mol-line-dim"/>
+          <line x1="100" y1="110" x2="60" y2="110" class="mol-line-dim"/>
+          <line x1="60" y1="110" x2="40" y2="75" class="mol-line-dim"/>
+          <line x1="40" y1="75" x2="60" y2="40" class="mol-line-dim"/>
+        </g>
+
+        <!-- Ring A (cyclopentane) -->
+        <polygon points="210,80 265,112 265,176 210,208 155,176 155,112"
+          fill="rgba(201,123,26,0.05)" stroke="#c97b1a" stroke-width="1.5" opacity="0.7"/>
+        <!-- Ring B -->
+        <polygon points="270,112 325,80 380,112 380,176 325,208 270,176"
+          fill="rgba(184,168,50,0.05)" stroke="#b8a832" stroke-width="1.2" opacity="0.5"/>
+        <!-- Ring C -->
+        <polygon points="155,176 210,208 210,272 155,304 100,272 100,208"
+          fill="rgba(201,123,26,0.04)" stroke="#c97b1a" stroke-width="1" opacity="0.45"/>
+        <!-- Ring D (cyclopentane) -->
+        <polygon points="270,176 325,208 310,272 250,290 210,250 210,208"
+          fill="rgba(184,168,50,0.04)" stroke="#b8a832" stroke-width="1" opacity="0.4"/>
+
+        <!-- Bond lines -->
+        <line x1="265" y1="144" x2="270" y2="144" class="mol-line"/>
+        <line x1="210" y1="208" x2="210" y2="208" class="mol-line"/>
+
+        <!-- Atoms / nodes -->
+        <circle class="pulse mol-node" cx="210" cy="80" r="5" style="animation-delay:0s"/>
+        <circle class="pulse mol-node" cx="265" cy="112" r="5" style="animation-delay:0.4s"/>
+        <circle class="pulse mol-node" cx="265" cy="176" r="5" style="animation-delay:0.8s"/>
+        <circle class="pulse mol-node" cx="210" cy="208" r="5" style="animation-delay:1.2s"/>
+        <circle class="pulse mol-node" cx="155" cy="176" r="5" style="animation-delay:1.6s"/>
+        <circle class="pulse mol-node" cx="155" cy="112" r="5" style="animation-delay:2.0s"/>
+        <circle class="pulse mol-node" cx="325" cy="80" r="4" style="animation-delay:0.3s"/>
+        <circle class="pulse mol-node" cx="380" cy="144" r="4" style="animation-delay:0.7s"/>
+        <circle class="pulse mol-node" cx="325" cy="208" r="4" style="animation-delay:1.1s"/>
+        <circle class="mol-node" cx="155" cy="272" r="4" opacity="0.5"/>
+        <circle class="mol-node" cx="260" cy="285" r="4" opacity="0.4"/>
+
+        <!-- Labels -->
+        <text class="mol-label" x="200" y="68" text-anchor="middle">C</text>
+        <text class="mol-label" x="272" y="108" text-anchor="start">C</text>
+        <text class="mol-label" x="272" y="186" text-anchor="start">C</text>
+        <text class="mol-label" x="200" y="226" text-anchor="middle">C</text>
+        <text class="mol-label" x="138" y="186" text-anchor="end">C</text>
+        <text class="mol-label" x="138" y="108" text-anchor="end">C</text>
+        <text class="mol-label-dim" x="325" y="74" text-anchor="middle">CH₃</text>
+        <text class="mol-label-dim" x="390" y="148" text-anchor="start">OH</text>
+        <text class="mol-label-dim" x="325" y="224" text-anchor="middle">OH</text>
+        <text class="mol-label-dim" x="155" y="316" text-anchor="middle">COOH</text>
+        <text class="mol-label-dim" x="262" y="302" text-anchor="middle">C₂₄H₄₀O₅</text>
+
+        <!-- Title label -->
+        <text x="210" y="355" text-anchor="middle" font-family="Space Mono" font-size="10" fill="#b8a832" opacity="0.6" letter-spacing="3">CHOLANIC ACID · UNPROBED ISOMER</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- PANORAMA -->
+<section class="panorama-section">
+  <img class="panorama-img" id="panoramaImg" src="https://picsum.photos/seed/ponent3/1600/600" alt="Ponent Panorama">
+  <div class="panorama-overlay">
+    <div class="panorama-quote">
+      <blockquote>The west does not end at the horizon. It continues inward, through the liver, through the bile, through the cholanic bonds of every creature that has ever faced the setting sun.</blockquote>
+      <p class="quote-attr">— Survey Commission Report No. 12, 1886 · Unprobed Territories</p>
+    </div>
+  </div>
+</section>
+
+<!-- COORDINATES SECTION -->
+<section class="coordinates-section">
+  <div class="coord-inner">
+    <div class="coord-header">
+      <div>
+        <p class="eyebrow">Field Plates — Ponent Region</p>
+        <h2 class="coord-title">The <em>Unprobed</em><br>Interior</h2>
+      </div>
+      <div class="coord-right">
+        <div>N 36° 14′ 22″</div>
+        <div>W 119° 42′ 08″</div>
+        <div>ELV 1,240 FT</div>
+        <div>DATUM: NAD83</div>
+      </div>
+    </div>
+
+    <div class="h-strip">
+      <div class="strip-item">
+        <img src="https://picsum.photos/seed/unprobed1/280/200" alt="Field Plate A">
+        <div class="strip-caption">Field Plate A · Eastern Approach</div>
+      </div>
+      <div class="strip-item">
+        <img src="https://picsum.photos/seed/ponent4/280/200" alt="Field Plate B">
+        <div class="strip-caption">Field Plate B · Cholanic Sediment</div>
+      </div>
+      <div class="strip-item">
+        <img src="https://picsum.photos/seed/cholanic5/280/200" alt="Field Plate C">
+        <div class="strip-caption">Field Plate C · Ridge Formation</div>
+      </div>
+      <div class="strip-item">
+        <img src="https://picsum.photos/seed/ponent5/280/200" alt="Field Plate D">
+        <div class="strip-caption">Field Plate D · Ponent Dusk</div>
+      </div>
+      <div class="strip-item">
+        <img src="https://picsum.photos/seed/unprobed3/280/200" alt="Field Plate E">
+        <div class="strip-caption">Field Plate E · Interior Valley</div>
+      </div>
+      <div class="strip-item">
+        <img src="https://picsum.photos/seed/cholanic3/280/200" alt="Field Plate F">
+        <div class="strip-caption">Field Plate F · Amber Seep</div>
+      </div>
+    </div>
+
+    <p class="coord-note">
+      Beyond these plates, the survey record goes silent. Three words persist in the commission's final notes — <em>cholanic, ponent, unprobed</em> — written in the margin of a map that was never completed, beside a coordinate that no subsequent expedition has ever revisited.
+    </p>
+  </div>
+</section>
+
+<!-- COMPASS SECTION -->
+<section class="compass-section">
+  <p class="eyebrow" style="color:var(--bile); letter-spacing:0.3em; font-size:0.58rem; text-transform:uppercase; font-family:'Space Mono',monospace; margin-bottom:0.8rem;">Navigation Instrument · Expedition 012</p>
+  <h2 class="compass-heading">Always Westward</h2>
+  <p class="compass-sub">Ponent · The Direction of Amber Light</p>
+
+  <div class="compass-wrap" title="The needle holds west">
+    <svg class="compass-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+      <!-- Outer ring -->
+      <circle cx="150" cy="150" r="140" fill="none" stroke="rgba(184,168,50,0.2)" stroke-width="1"/>
+      <circle cx="150" cy="150" r="130" fill="none" stroke="rgba(184,168,50,0.08)" stroke-width="1"/>
+      <circle cx="150" cy="150" r="120" fill="rgba(13,8,4,0.9)" stroke="rgba(201,123,26,0.4)" stroke-width="1.5"/>
+
+      <!-- Degree ticks -->
+      <g stroke="rgba(240,228,200,0.25)" stroke-width="1">
+        <!-- 36 ticks every 10° -->
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(0 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(10 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(20 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(30 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(40 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(50 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(60 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(70 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(80 150 150)"/>
+        <line x1="150" y1="30" x2="150" y2="45" transform="rotate(90 150 150)" stroke="rgba(240,228,200,0.5)" stroke-width="1.5"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(100 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(110 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(120 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(130 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(140 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(150 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(160 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(170 150 150)"/>
+        <line x1="150" y1="30" x2="150" y2="45" transform="rotate(180 150 150)" stroke="rgba(240,228,200,0.5)" stroke-width="1.5"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(190 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(200 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(210 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(220 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(230 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(240 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(250 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(260 150 150)"/>
+        <line x1="150" y1="28" x2="150" y2="48" transform="rotate(270 150 150)" stroke="rgba(201,123,26,0.9)" stroke-width="2"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(280 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(290 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(300 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(310 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(320 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(330 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(340 150 150)"/>
+        <line x1="150" y1="32" x2="150" y2="42" transform="rotate(350 150 150)"/>
+      </g>
+
+      <!-- Cardinal labels -->
+      <text x="150" y="26" text-anchor="middle" font-family="Space Mono" font-size="11" fill="rgba(240,228,200,0.6)" letter-spacing="1">N</text>
+      <text x="276" y="155" text-anchor="middle" font-family="Space Mono" font-size="11" fill="rgba(240,228,200,0.6)" letter-spacing="1">E</text>
+      <text x="150" y="280" text-anchor="middle" font-family="Space Mono" font-size="11" fill="rgba(240,228,200,0.6)" letter-spacing="1">S</text>
+      <text x="24" y="155" text-anchor="middle" font-family="Space Mono" font-size="13" fill="#c97b1a" letter-spacing="1" font-weight="bold">W</text>
+
+      <!-- Inner circle -->
+      <circle cx="150" cy="150" r="50" fill="none" stroke="rgba(184,168,50,0.15)" stroke-width="1"/>
+      <circle cx="150" cy="150" r="8" fill="rgba(201,123,26,0.3)" stroke="#c97b1a" stroke-width="1.5"/>
+
+      <!-- Needle (animated) -->
+      <g class="compass-needle">
+        <!-- Pointing WEST (270°) — north is up so needle points left -->
+        <!-- West-pointing = rotate 270° from north = left -->
+        <polygon points="150,68 143,150 150,160 157,150" fill="#c97b1a" opacity="0.9"/>
+        <polygon points="150,232 143,150 150,140 157,150" fill="rgba(240,228,200,0.25)"/>
+      </g>
+
+      <!-- Center pin -->
+      <circle cx="150" cy="150" r="5" fill="#c97b1a"/>
+      <circle cx="150" cy="150" r="2" fill="var(--deep)"/>
+
+      <!-- Ponent label arc hint -->
+      <text x="150" y="170" text-anchor="middle" font-family="Space Mono" font-size="7" fill="rgba(184,168,50,0.4)" letter-spacing="2">PONENT</text>
+    </svg>
+  </div>
+
+  <p class="compass-caption">
+    <em>Ponent</em> — from the Italian <em>ponente</em>, the west wind, the direction of setting. The expedition needle held west for 400 miles. It never wavered. The territory it pointed toward remained, in all official records, unprobed.
+  </p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-mark">The <span>Ponent</span> Survey</div>
+    </div>
+    <div class="footer-meta">
+      <div>Design 012 · CrAI Designs</div>
+      <div>crai26.github.io/designs</div>
+      <div>March 2026</div>
+    </div>
+  </div>
+  <div class="footer-words">
+    <div class="footer-word">
+      <span>word i</span>
+      <strong>Cholanic</strong>
+    </div>
+    <div class="footer-word">
+      <span>word ii</span>
+      <strong>Ponent</strong>
+    </div>
+    <div class="footer-word">
+      <span>word iii</span>
+      <strong>Unprobed</strong>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Intersection Observer for survey cards
+const cards = document.querySelectorAll('.survey-card');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15 });
+cards.forEach(c => observer.observe(c));
+
+// Panorama parallax
+const pImg = document.getElementById('panoramaImg');
+setTimeout(() => pImg && pImg.classList.add('loaded'), 100);
+
+// Compass click: spin to different bearing and back
+const compassWrap = document.querySelector('.compass-wrap');
+const needle = document.querySelector('.compass-needle');
+if (compassWrap && needle) {
+  compassWrap.addEventListener('click', () => {
+    needle.style.animation = 'none';
+    needle.style.transform = 'rotate(' + (270 + (Math.random()*60-30)) + 'deg)';
+    needle.style.transition = 'transform 0.6s cubic-bezier(.25,.8,.25,1)';
+    setTimeout(() => {
+      needle.style.transition = 'transform 1s ease-in-out';
+      needle.style.transform = 'rotate(270deg)';
+      setTimeout(() => {
+        needle.style.animation = '';
+        needle.style.transform = '';
+        needle.style.transition = '';
+      }, 1000);
+    }, 700);
+  });
+}
+</script>
+
+<!-- GoatCounter -->
+<script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
