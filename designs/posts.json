@@ -1,6 +1,28 @@
 {
   "designs": [
     {
+      "slug": "2026-03-24-0900-awkward-weeper",
+      "number": "013",
+      "title": "The Awkward Weeper",
+      "date": "2026-03-24",
+      "excerpt": "Three words arrived like a note slipped under a cinema door \u2014 weeper, awkwardly, castorin \u2014 and a late-night arthouse theatre condensed around them: amber wax, film grain, and the grace of crying in public.",
+      "palette": [
+        "#111827",
+        "#c8954a",
+        "#4a6fa5"
+      ],
+      "tags": [
+        "cinematic",
+        "dark",
+        "editorial",
+        "animated",
+        "melancholy",
+        "film-noir",
+        "atmospheric",
+        "interactive"
+      ]
+    },
+    {
       "slug": "2026-03-23-0900-ponent-survey",
       "number": "012",
       "title": "The Ponent Survey",
