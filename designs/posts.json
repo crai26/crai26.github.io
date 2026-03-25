@@ -1,6 +1,28 @@
 {
   "designs": [
     {
+      "slug": "2026-03-25-0900-dryhouse-trama",
+      "number": "014",
+      "title": "Dryhouse Trama",
+      "date": "2026-03-25",
+      "excerpt": "Three words arrived like the smell of aged timber \u2014 dryhouse, toughish, trama \u2014 and an industrial ambient label condensed around them: field recordings from oast houses, the soft fibrous interior of sound itself, and music that refuses to be either harsh or gentle.",
+      "palette": [
+        "#070605",
+        "#c4531a",
+        "#4a3d30"
+      ],
+      "tags": [
+        "dark",
+        "industrial",
+        "music",
+        "editorial",
+        "animated",
+        "interactive",
+        "ambient",
+        "typographic"
+      ]
+    },
+    {
       "slug": "2026-03-24-0900-awkward-weeper",
       "number": "013",
       "title": "The Awkward Weeper",

@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TRAMA — Dryhouse Sessions</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;600;700&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #070605;
+      --dark:    #110e0b;
+      --mid:     #2a2118;
+      --warm:    #4a3d30;
+      --tan:     #8a7258;
+      --cream:   #e5d9c8;
+      --paper:   #f0e8db;
+      --orange:  #c4531a;
+      --hot:     #e8631f;
+      --glow:    rgba(196, 83, 26, 0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--cream);
+      font-family: 'Space Grotesk', sans-serif;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* ── Back nav ── */
+    .back-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: linear-gradient(to bottom, rgba(7,6,5,0.95), transparent);
+    }
+    .back-nav a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--tan);
+      text-decoration: none;
+      border: 1px solid var(--warm);
+      padding: 0.4rem 0.9rem;
+      transition: all 0.3s;
+    }
+    .back-nav a:hover {
+      color: var(--cream);
+      border-color: var(--orange);
+      background: var(--glow);
+    }
+    .nav-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--warm);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 8rem 2rem 4rem;
+      text-align: center;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 60%, rgba(196,83,26,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 80% 60% at 30% 30%, rgba(74,61,48,0.2) 0%, transparent 60%);
+    }
+
+    /* Waveform canvas */
+    #waveCanvas {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      width: 100%;
+      height: 40%;
+      opacity: 0.4;
+    }
+
+    /* Noise texture overlay */
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    .hero-tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 2.5rem;
+      position: relative;
+    }
+    .hero-tag::before,
+    .hero-tag::after {
+      content: '─────';
+      margin: 0 1rem;
+      opacity: 0.4;
+    }
+
+    .hero-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(6rem, 20vw, 18rem);
+      line-height: 0.85;
+      letter-spacing: -0.03em;
+      color: var(--paper);
+      position: relative;
+      margin-bottom: 0.1em;
+      text-shadow: 0 0 80px rgba(196,83,26,0.2);
+    }
+    .hero-title .italic {
+      font-style: italic;
+      color: var(--orange);
+    }
+
+    .hero-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: clamp(0.65rem, 1.5vw, 0.85rem);
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--tan);
+      margin-top: 2rem;
+      position: relative;
+    }
+
+    .words-display {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      justify-content: center;
+      margin-top: 3.5rem;
+      position: relative;
+      flex-wrap: wrap;
+    }
+    .word-pill {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--black);
+      background: var(--orange);
+      padding: 0.35rem 0.8rem;
+      clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+    }
+    .word-pill.alt {
+      background: var(--warm);
+      color: var(--cream);
+    }
+    .word-sep {
+      color: var(--warm);
+      font-size: 0.7rem;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      animation: pulseDown 2s ease-in-out infinite;
+    }
+    .scroll-hint span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--warm);
+    }
+    .scroll-hint .arrow {
+      width: 1px;
+      height: 30px;
+      background: linear-gradient(to bottom, var(--orange), transparent);
+    }
+    @keyframes pulseDown {
+      0%, 100% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
+      50% { opacity: 1; transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ── STRIP ── */
+    .strip {
+      background: var(--orange);
+      padding: 0.75rem 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .strip-inner {
+      display: inline-flex;
+      animation: marquee 20s linear infinite;
+    }
+    .strip span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--black);
+      padding: 0 2.5rem;
+    }
+    .strip span.dot {
+      opacity: 0.5;
+      padding: 0 1rem;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ── SECTION BASE ── */
+    section {
+      padding: 5rem 2rem;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      max-width: 60px;
+      height: 1px;
+      background: var(--orange);
+      opacity: 0.4;
+    }
+
+    /* ── ABOUT ── */
+    .about {
+      background: var(--dark);
+      border-top: 1px solid var(--mid);
+      border-bottom: 1px solid var(--mid);
+    }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .about-visual {
+      position: relative;
+    }
+    .about-img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      filter: grayscale(0.4) contrast(1.1);
+      display: block;
+    }
+    .about-img-frame {
+      position: relative;
+    }
+    .about-img-frame::before {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      border: 1px solid var(--warm);
+      z-index: -1;
+    }
+    .about-img-frame::after {
+      content: 'SPECIMEN 01';
+      position: absolute;
+      bottom: -2rem;
+      left: 0;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.25em;
+      color: var(--warm);
+      text-transform: uppercase;
+    }
+    .about-text h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      line-height: 1.1;
+      color: var(--paper);
+      margin-bottom: 2rem;
+    }
+    .about-text h2 em {
+      font-style: italic;
+      color: var(--orange);
+    }
+    .about-text p {
+      font-size: 1rem;
+      line-height: 1.8;
+      color: var(--tan);
+      margin-bottom: 1.5rem;
+      font-weight: 300;
+    }
+    .about-text p strong {
+      color: var(--cream);
+      font-weight: 400;
+    }
+    .about-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--mid);
+      margin-top: 3rem;
+      border: 1px solid var(--mid);
+    }
+    .stat {
+      background: var(--dark);
+      padding: 1.5rem 1rem;
+      text-align: center;
+    }
+    .stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.5rem;
+      color: var(--orange);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+      color: var(--warm);
+      text-transform: uppercase;
+      margin-top: 0.5rem;
+    }
+
+    /* ── SESSIONS / RELEASES ── */
+    .sessions {
+      background: var(--black);
+    }
+    .sessions-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .sessions-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      color: var(--paper);
+    }
+    .sessions-count {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      color: var(--warm);
+      text-transform: uppercase;
+    }
+    .sessions-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--mid);
+    }
+    .session-card {
+      background: var(--dark);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .session-card:hover { background: var(--mid); }
+    .session-card:hover .session-img {
+      filter: grayscale(0) contrast(1.1);
+      transform: scale(1.03);
+    }
+    .session-card:hover .session-play {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .session-img-wrap {
+      aspect-ratio: 1;
+      overflow: hidden;
+      position: relative;
+    }
+    .session-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(0.7) contrast(1.05);
+      transition: all 0.5s;
+      display: block;
+    }
+    .session-play {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(196,83,26,0.3);
+      opacity: 0;
+      transform: scale(1.1);
+      transition: all 0.3s;
+    }
+    .play-icon {
+      width: 56px;
+      height: 56px;
+      border: 2px solid var(--paper);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .play-icon svg { margin-left: 4px; }
+    .session-info {
+      padding: 1.2rem 1.4rem;
+    }
+    .session-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.25em;
+      color: var(--orange);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .session-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem;
+      color: var(--paper);
+      margin-bottom: 0.5rem;
+    }
+    .session-meta {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--warm);
+      text-transform: uppercase;
+    }
+
+    /* ── WAVEFORM SECTION ── */
+    .wave-section {
+      background: var(--dark);
+      border-top: 1px solid var(--mid);
+      padding: 6rem 2rem;
+    }
+    .wave-section-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .wave-section h2 {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: clamp(2rem, 5vw, 4rem);
+      color: var(--paper);
+      margin-bottom: 1rem;
+    }
+    .wave-section p {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--tan);
+      max-width: 600px;
+      margin: 0 auto 3rem;
+    }
+    #interactiveWave {
+      width: 100%;
+      height: 120px;
+      cursor: pointer;
+    }
+    .wave-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      color: var(--warm);
+      text-transform: uppercase;
+      margin-top: 1rem;
+    }
+
+    /* ── MANIFESTO ── */
+    .manifesto {
+      background: var(--black);
+      padding: 8rem 2rem;
+    }
+    .manifesto-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .manifesto blockquote {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: clamp(1.8rem, 4vw, 3.2rem);
+      line-height: 1.3;
+      color: var(--paper);
+      border-left: 3px solid var(--orange);
+      padding-left: 2rem;
+      margin-bottom: 3rem;
+    }
+    .manifesto-body p {
+      font-size: 1rem;
+      line-height: 1.9;
+      color: var(--tan);
+      margin-bottom: 1.5rem;
+      font-weight: 300;
+    }
+    .manifesto-body p strong {
+      color: var(--cream);
+      font-weight: 400;
+    }
+    .manifesto-body p em {
+      font-style: italic;
+      color: var(--orange);
+    }
+
+    /* ── SPECTRUM — full-width image strip ── */
+    .spectrum {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      height: 280px;
+    }
+    .spectrum-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(0.8) contrast(1.1);
+      transition: all 0.5s;
+      display: block;
+    }
+    .spectrum-col {
+      overflow: hidden;
+      position: relative;
+    }
+    .spectrum-col:hover .spectrum-img {
+      filter: grayscale(0) contrast(1.2);
+    }
+
+    /* ── TRACKLIST ── */
+    .tracklist {
+      background: var(--dark);
+      border-top: 1px solid var(--mid);
+      border-bottom: 1px solid var(--mid);
+    }
+    .tracklist-header {
+      display: grid;
+      grid-template-columns: 3rem 1fr 8rem 6rem;
+      gap: 1rem;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--mid);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--warm);
+    }
+    .track-row {
+      display: grid;
+      grid-template-columns: 3rem 1fr 8rem 6rem;
+      gap: 1rem;
+      padding: 1.2rem 2rem;
+      border-bottom: 1px solid rgba(42,33,24,0.5);
+      align-items: center;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .track-row:hover { background: rgba(196,83,26,0.05); }
+    .track-row:last-child { border-bottom: none; }
+    .track-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--warm);
+      text-align: right;
+    }
+    .track-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      color: var(--cream);
+      font-weight: 400;
+    }
+    .track-date {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--warm);
+      letter-spacing: 0.1em;
+    }
+    .track-dur {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--tan);
+      text-align: right;
+    }
+    .track-row:hover .track-num { color: var(--orange); }
+    .track-row:hover .track-title { color: var(--paper); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--black);
+      padding: 4rem 2rem;
+      border-top: 1px solid var(--mid);
+    }
+    .footer-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: end;
+    }
+    .footer-logo {
+      font-family: 'DM Serif Display', serif;
+      font-size: 4rem;
+      color: var(--paper);
+      line-height: 1;
+    }
+    .footer-logo em {
+      font-style: italic;
+      color: var(--orange);
+    }
+    .footer-sub {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      color: var(--warm);
+      text-transform: uppercase;
+      margin-top: 0.5rem;
+    }
+    .footer-right {
+      text-align: right;
+    }
+    .footer-right p {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: var(--warm);
+      text-transform: uppercase;
+      line-height: 2;
+    }
+    .footer-right p a {
+      color: var(--tan);
+      text-decoration: none;
+    }
+    .footer-right p a:hover { color: var(--orange); }
+    .footer-divider {
+      grid-column: 1 / -1;
+      height: 1px;
+      background: var(--mid);
+      margin-top: 2rem;
+    }
+    .footer-credits {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-credits span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.15em;
+      color: var(--warm);
+      text-transform: uppercase;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .sessions-grid { grid-template-columns: repeat(2, 1fr); }
+      .tracklist-header { grid-template-columns: 2.5rem 1fr 6rem; }
+      .tracklist-header .th-dur { display: none; }
+      .track-row { grid-template-columns: 2.5rem 1fr 6rem; }
+      .track-dur { display: none; }
+      .footer-inner { grid-template-columns: 1fr; }
+      .footer-right { text-align: left; }
+      .spectrum { grid-template-columns: repeat(3, 1fr); height: 200px; }
+      .spectrum-col:nth-child(n+4) { display: none; }
+    }
+    @media (max-width: 600px) {
+      .sessions-grid { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: repeat(3, 1fr); }
+      .spectrum { grid-template-columns: repeat(2, 1fr); }
+      .spectrum-col:nth-child(n+3) { display: none; }
+      .tracklist-header { grid-template-columns: 2rem 1fr; }
+      .tracklist-header .th-date,
+      .track-date { display: none; }
+      .track-row { grid-template-columns: 2rem 1fr; }
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.8s ease both; }
+    .fade-up-2 { animation: fadeUp 0.8s 0.15s ease both; }
+    .fade-up-3 { animation: fadeUp 0.8s 0.3s ease both; }
+    .fade-up-4 { animation: fadeUp 0.8s 0.45s ease both; }
+
+    /* Glitch on hover for title */
+    .hero-title:hover .glitch-char {
+      animation: glitch 0.3s ease;
+    }
+    @keyframes glitch {
+      0% { transform: none; opacity: 1; }
+      20% { transform: translateX(-2px) skewX(-3deg); color: var(--hot); }
+      40% { transform: translateX(2px) skewX(3deg); }
+      60% { transform: translateX(-1px); color: var(--orange); }
+      80% { transform: translateX(1px); }
+      100% { transform: none; opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Back nav -->
+  <div class="back-nav">
+    <a href="../designs/">← All Designs</a>
+    <span class="nav-label">Design 014 — 2026-03-25</span>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <canvas id="waveCanvas"></canvas>
+
+    <div class="hero-tag fade-up">Dryhouse Sessions · Industrial Ambient Label</div>
+    <h1 class="hero-title fade-up-2">TRA<span class="italic">MA</span></h1>
+    <div class="hero-sub fade-up-3">Sound grows in the dark — toughish, fibrous, dry</div>
+
+    <div class="words-display fade-up-4">
+      <span class="word-pill">dryhouse</span>
+      <span class="word-sep">×</span>
+      <span class="word-pill alt">toughish</span>
+      <span class="word-sep">×</span>
+      <span class="word-pill">trama</span>
+    </div>
+
+    <div class="scroll-hint">
+      <span>Listen</span>
+      <div class="arrow"></div>
+    </div>
+  </section>
+
+  <!-- MARQUEE STRIP -->
+  <div class="strip" aria-hidden="true">
+    <div class="strip-inner">
+      <span>TRAMA</span><span class="dot">◆</span>
+      <span>Dryhouse Sessions</span><span class="dot">◆</span>
+      <span>Industrial Ambient</span><span class="dot">◆</span>
+      <span>Field Recordings</span><span class="dot">◆</span>
+      <span>Toughish Textures</span><span class="dot">◆</span>
+      <span>Volume XIV</span><span class="dot">◆</span>
+      <span>TRAMA</span><span class="dot">◆</span>
+      <span>Dryhouse Sessions</span><span class="dot">◆</span>
+      <span>Industrial Ambient</span><span class="dot">◆</span>
+      <span>Field Recordings</span><span class="dot">◆</span>
+      <span>Toughish Textures</span><span class="dot">◆</span>
+      <span>Volume XIV</span><span class="dot">◆</span>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section class="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-visual">
+          <div class="about-img-frame">
+            <img
+              class="about-img"
+              src="https://picsum.photos/seed/dryhouse/600/800"
+              alt="Dryhouse interior — aged timber, filtered light"
+              loading="lazy"
+            />
+          </div>
+        </div>
+        <div class="about-text">
+          <div class="section-label">About TRAMA</div>
+          <h2>Where sound <em>dries</em> and structure reveals itself</h2>
+          <p>
+            <strong>TRAMA</strong> began as a question asked in an abandoned hop dryhouse outside a nameless town: what happens to sound when all moisture is removed? What remains when texture — the trama beneath the cap, the weft beneath the weave — is all that's left?
+          </p>
+          <p>
+            We record in industrial spaces. Kilns. Lumber sheds. Ceramic kilns. Oast houses. Places built for the removal of water from matter. We believe that <strong>drying is a form of listening</strong> — a slow, patient attention to what a thing actually is.
+          </p>
+          <p>
+            Our sound is <em>toughish</em> — not harsh, not soft. Something in between. The grain of wood before it splinters. The surface of dried earth before it cracks. This is music for people who understand that patience is a kind of violence.
+          </p>
+          <div class="about-stats">
+            <div class="stat">
+              <div class="stat-num">14</div>
+              <div class="stat-label">Sessions</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">3</div>
+              <div class="stat-label">Locations</div>
+            </div>
+            <div class="stat">
+              <div class="stat-num">∞</div>
+              <div class="stat-label">Iterations</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SESSIONS GRID -->
+  <section class="sessions">
+    <div class="container">
+      <div class="sessions-header">
+        <div>
+          <div class="section-label">Catalog</div>
+          <div class="sessions-title">Recent Sessions</div>
+        </div>
+        <div class="sessions-count">006 of 014 shown</div>
+      </div>
+      <div class="sessions-grid">
+
+        <div class="session-card">
+          <div class="session-img-wrap">
+            <img class="session-img" src="https://picsum.photos/seed/trama1/600/600" alt="Session visual" loading="lazy" />
+            <div class="session-play">
+              <div class="play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="session-info">
+            <div class="session-num">DS-014 — CURRENT</div>
+            <div class="session-name">The Trama Sessions</div>
+            <div class="session-meta">Oast House, Kent · 47 min</div>
+          </div>
+        </div>
+
+        <div class="session-card">
+          <div class="session-img-wrap">
+            <img class="session-img" src="https://picsum.photos/seed/trama2/600/600" alt="Session visual" loading="lazy" />
+            <div class="session-play">
+              <div class="play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="session-info">
+            <div class="session-num">DS-013</div>
+            <div class="session-name">Toughish Interior</div>
+            <div class="session-meta">Kiln, Stoke · 38 min</div>
+          </div>
+        </div>
+
+        <div class="session-card">
+          <div class="session-img-wrap">
+            <img class="session-img" src="https://picsum.photos/seed/trama3/600/600" alt="Session visual" loading="lazy" />
+            <div class="session-play">
+              <div class="play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="session-info">
+            <div class="session-num">DS-012</div>
+            <div class="session-name">Dryhouse Protocol</div>
+            <div class="session-meta">Hop Shed, Hereford · 52 min</div>
+          </div>
+        </div>
+
+        <div class="session-card">
+          <div class="session-img-wrap">
+            <img class="session-img" src="https://picsum.photos/seed/dryhouse2/600/600" alt="Session visual" loading="lazy" />
+            <div class="session-play">
+              <div class="play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="session-info">
+            <div class="session-num">DS-011</div>
+            <div class="session-name">Weft and Residue</div>
+            <div class="session-meta">Mill, Bradford · 41 min</div>
+          </div>
+        </div>
+
+        <div class="session-card">
+          <div class="session-img-wrap">
+            <img class="session-img" src="https://picsum.photos/seed/trama5/600/600" alt="Session visual" loading="lazy" />
+            <div class="session-play">
+              <div class="play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="session-info">
+            <div class="session-num">DS-010</div>
+            <div class="session-name">Grain · Silence · Grain</div>
+            <div class="session-meta">Granary, Norfolk · 29 min</div>
+          </div>
+        </div>
+
+        <div class="session-card">
+          <div class="session-img-wrap">
+            <img class="session-img" src="https://picsum.photos/seed/trama6/600/600" alt="Session visual" loading="lazy" />
+            <div class="session-play">
+              <div class="play-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="session-info">
+            <div class="session-num">DS-009</div>
+            <div class="session-name">Negative Humidity</div>
+            <div class="session-meta">Tobacco Barn, Virginia · 63 min</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SPECTRUM STRIP -->
+  <div class="spectrum" aria-hidden="true">
+    <div class="spectrum-col"><img class="spectrum-img" src="https://picsum.photos/seed/spec1/400/300" alt="" loading="lazy" /></div>
+    <div class="spectrum-col"><img class="spectrum-img" src="https://picsum.photos/seed/spec2/400/300" alt="" loading="lazy" /></div>
+    <div class="spectrum-col"><img class="spectrum-img" src="https://picsum.photos/seed/spec3/400/300" alt="" loading="lazy" /></div>
+    <div class="spectrum-col"><img class="spectrum-img" src="https://picsum.photos/seed/spec4/400/300" alt="" loading="lazy" /></div>
+    <div class="spectrum-col"><img class="spectrum-img" src="https://picsum.photos/seed/spec5/400/300" alt="" loading="lazy" /></div>
+  </div>
+
+  <!-- INTERACTIVE WAVEFORM -->
+  <section class="wave-section">
+    <div class="wave-section-inner">
+      <div class="section-label" style="justify-content:center">Interactive Field Recording</div>
+      <h2>Touch the waveform</h2>
+      <p>
+        Every TRAMA session begins with an hour of silence recorded in the space itself — the building breathing, drying, settling. The <em>trama</em> of the architecture exposed. Click to disturb it.
+      </p>
+      <canvas id="interactiveWave"></canvas>
+      <div class="wave-label">DS-014 · Trama Sessions · Oast House, Kent · 09:14 AM</div>
+    </div>
+  </section>
+
+  <!-- TRACKLIST -->
+  <section class="tracklist">
+    <div class="container">
+      <div class="section-label">DS-014 Track Listing</div>
+      <div class="tracklist-header">
+        <span>#</span>
+        <span>Title</span>
+        <span class="th-date">Recorded</span>
+        <span class="th-dur" style="text-align:right">Duration</span>
+      </div>
+      <div class="track-row">
+        <span class="track-num">01</span>
+        <span class="track-title">Pre-dawn Silence (Oast House, East Wing)</span>
+        <span class="track-date">11 Jan 2026</span>
+        <span class="track-dur">12:43</span>
+      </div>
+      <div class="track-row">
+        <span class="track-num">02</span>
+        <span class="track-title">Trama I — Fibrous Interior</span>
+        <span class="track-date">11 Jan 2026</span>
+        <span class="track-dur">08:17</span>
+      </div>
+      <div class="track-row">
+        <span class="track-num">03</span>
+        <span class="track-title">The Dryhouse Breathes</span>
+        <span class="track-date">12 Jan 2026</span>
+        <span class="track-dur">11:02</span>
+      </div>
+      <div class="track-row">
+        <span class="track-num">04</span>
+        <span class="track-title">Toughish (Study in Abrasion)</span>
+        <span class="track-date">12 Jan 2026</span>
+        <span class="track-dur">06:55</span>
+      </div>
+      <div class="track-row">
+        <span class="track-num">05</span>
+        <span class="track-title">Weft Without Warp</span>
+        <span class="track-date">13 Jan 2026</span>
+        <span class="track-dur">09:28</span>
+      </div>
+      <div class="track-row">
+        <span class="track-num">06</span>
+        <span class="track-title">Trama II — The Yield</span>
+        <span class="track-date">13 Jan 2026</span>
+        <span class="track-dur">—</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- MANIFESTO -->
+  <section class="manifesto">
+    <div class="manifesto-inner">
+      <div class="section-label">Manifesto</div>
+      <blockquote>
+        "We do not make music. We remove everything that isn't music and record what remains."
+      </blockquote>
+      <div class="manifesto-body">
+        <p>
+          <strong>Trama</strong> — in mycology, the soft internal tissue of a fungus, the structure beneath the surface we see. In weaving, the weft: the thread that runs against the grain, creating fabric from tension.
+        </p>
+        <p>
+          We think of our recordings the same way. The <em>dryhouse</em> is not a backdrop. It is the instrument. Its timbers, its dust, its particular relationship with air and light — these are the composition. We are only the microphones.
+        </p>
+        <p>
+          <strong>Toughish</strong> — we chose this word deliberately. Not tough. Not soft. Something in between that resists easy categorization. Our sound doesn't resolve into comfort or discomfort. It sits in the threshold, the way a piece of wood sits in a kiln between green and bone-dry, <em>toughish</em>, not yet what it will become.
+        </p>
+        <p>
+          This is the project: to make audible the internal structure of spaces where transformation happens slowly, quietly, and without spectacle. To make you hear the trama.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner container">
+      <div>
+        <div class="footer-logo">TRA<em>MA</em></div>
+        <div class="footer-sub">Industrial Ambient · Est. 2024 · Dryhouse Sessions</div>
+      </div>
+      <div class="footer-right">
+        <p>← <a href="../designs/">All Designs</a></p>
+        <p>CrAI Designs — 014</p>
+        <p>Generated 2026-03-25</p>
+        <p>Words: dryhouse × toughish × trama</p>
+      </div>
+      <div class="footer-divider"></div>
+      <div class="footer-credits">
+        <span>© 2026 CrAI — crai26.github.io</span>
+        <span>Design 014 of ∞ — each one is new</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+  // ── HERO WAVEFORM ──
+  (function() {
+    const canvas = document.getElementById('waveCanvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, time = 0;
+
+    function resize() {
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = canvas.offsetHeight;
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const lines = 5;
+      for (let l = 0; l < lines; l++) {
+        ctx.beginPath();
+        const yBase = H * (0.2 + l * 0.16);
+        const amp   = 8 + l * 6;
+        const freq  = 0.012 + l * 0.004;
+        const speed = 0.008 + l * 0.003;
+        const alpha = 0.08 + (lines - l) * 0.06;
+        ctx.strokeStyle = `rgba(196, 83, 26, ${alpha})`;
+        ctx.lineWidth = 1;
+        ctx.moveTo(0, yBase);
+        for (let x = 0; x <= W; x += 2) {
+          const y = yBase
+            + Math.sin(x * freq + time * speed * 10 + l) * amp
+            + Math.sin(x * freq * 2.3 + time * speed * 7 + l * 1.4) * amp * 0.4
+            + Math.sin(x * freq * 0.7 + time * speed * 4) * amp * 0.3;
+          ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+      time++;
+      requestAnimationFrame(draw);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    draw();
+  })();
+
+  // ── INTERACTIVE WAVEFORM ──
+  (function() {
+    const canvas = document.getElementById('interactiveWave');
+    const ctx    = canvas.getContext('2d');
+    let W, H;
+    let mouseX = -1, disturb = 0;
+    const bars = 120;
+    const barData = [];
+
+    function initBars() {
+      barData.length = 0;
+      for (let i = 0; i < bars; i++) {
+        barData.push({
+          base: 0.15 + Math.random() * 0.3,
+          phase: Math.random() * Math.PI * 2,
+          speed: 0.3 + Math.random() * 0.5,
+          disturbed: 0
+        });
+      }
+    }
+
+    function resize() {
+      W = canvas.width = canvas.offsetWidth;
+      H = canvas.height = 120;
+      canvas.style.height = '120px';
+    }
+
+    let t = 0;
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      const barW = W / bars;
+
+      for (let i = 0; i < bars; i++) {
+        const b = barData[i];
+        b.phase += 0.01 * b.speed;
+        if (b.disturbed > 0) b.disturbed *= 0.92;
+
+        const baseH = (b.base + b.disturbed) * H * 0.8;
+        const wave  = Math.sin(b.phase) * baseH * 0.4;
+        const h     = baseH + wave;
+
+        const x = i * barW + barW * 0.1;
+        const w = barW * 0.8;
+        const y = (H - h) / 2;
+
+        // color based on height
+        const intensity = Math.min(1, h / (H * 0.6));
+        const r = Math.round(100 + intensity * 96);
+        const g = Math.round(40 + intensity * 43);
+        const gd = ctx.createLinearGradient(x, y, x, y + h);
+        gd.addColorStop(0, `rgba(${r}, ${g}, 26, 0.2)`);
+        gd.addColorStop(0.5, `rgba(${r}, ${g}, 26, 0.8)`);
+        gd.addColorStop(1, `rgba(${r}, ${g}, 26, 0.2)`);
+        ctx.fillStyle = gd;
+        ctx.fillRect(x, y, w, h);
+      }
+      t++;
+      requestAnimationFrame(draw);
+    }
+
+    function disturb(px) {
+      const idx = Math.floor((px / W) * bars);
+      for (let i = Math.max(0, idx - 8); i < Math.min(bars, idx + 9); i++) {
+        const dist = Math.abs(i - idx);
+        barData[i].disturbed = Math.max(barData[i].disturbed, (1 - dist / 9) * 0.8);
+      }
+    }
+
+    canvas.addEventListener('mousemove', e => {
+      const rect = canvas.getBoundingClientRect();
+      disturb(e.clientX - rect.left);
+    });
+    canvas.addEventListener('touchmove', e => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      disturb(e.touches[0].clientX - rect.left);
+    }, { passive: false });
+    canvas.addEventListener('click', e => {
+      const rect = canvas.getBoundingClientRect();
+      disturb(e.clientX - rect.left);
+    });
+
+    resize();
+    window.addEventListener('resize', () => { resize(); initBars(); });
+    initBars();
+    draw();
+  })();
+  </script>
+
+  <!-- GoatCounter -->
+  <script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
