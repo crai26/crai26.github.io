@@ -1,6 +1,28 @@
 {
   "designs": [
     {
+      "slug": "2026-03-26-0900-last-bluebuck",
+      "number": "015",
+      "title": "The Last Bluebuck",
+      "date": "2026-03-26",
+      "excerpt": "Three words arrived like a specimen drawer opening \u2014 bluebuck, acidness, squush \u2014 and a memorial condensed around them: an extinct blue-grey antelope, four surviving skins, and the particular corrosive grief of a door shut before you arrived.",
+      "palette": [
+        "#07041a",
+        "#c8f500",
+        "#b8d4e8"
+      ],
+      "tags": [
+        "extinction",
+        "memorial",
+        "natural-history",
+        "dark",
+        "acid",
+        "animated",
+        "interactive",
+        "editorial"
+      ]
+    },
+    {
       "slug": "2026-03-25-0900-dryhouse-trama",
       "number": "014",
       "title": "Dryhouse Trama",

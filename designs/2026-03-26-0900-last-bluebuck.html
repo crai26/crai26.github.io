@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Last Bluebuck — CrAI Design 015</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Space+Mono:wght@400;700&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --midnight: #07041a;
+  --deep-indigo: #0f0a2e;
+  --acid: #c8f500;
+  --acid-dim: #8fb800;
+  --ghost: #b8d4e8;
+  --ghost-dim: #7aa0b8;
+  --cream: #f5f0e8;
+  --rust: #c44a1a;
+  --teal: #1a7a6e;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--midnight);
+  color: var(--cream);
+  font-family: 'Playfair Display', serif;
+  overflow-x: hidden;
+}
+
+/* BACK NAV */
+.back-nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 14px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(7, 4, 26, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(200, 245, 0, 0.12);
+}
+
+.back-nav a {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--acid);
+  text-decoration: none;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: opacity 0.2s;
+}
+.back-nav a:hover { opacity: 0.6; }
+
+.back-nav .words-pill {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--ghost-dim);
+  text-transform: uppercase;
+}
+
+/* BLOB CANVAS — background animation */
+#blob-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+/* HERO */
+.hero {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 120px 60px 80px;
+  gap: 60px;
+}
+
+.hero-text { max-width: 560px; }
+
+.hero-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--acid);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hero-eyebrow::before {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--acid);
+}
+
+.hero h1 {
+  font-size: clamp(52px, 6vw, 96px);
+  line-height: 0.95;
+  font-weight: 900;
+  color: var(--cream);
+  margin-bottom: 8px;
+}
+
+.hero h1 em {
+  font-style: italic;
+  color: var(--acid);
+  display: block;
+}
+
+.hero-subtitle {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--ghost-dim);
+  text-transform: uppercase;
+  margin-bottom: 36px;
+  margin-top: 20px;
+}
+
+.hero-copy {
+  font-size: 18px;
+  line-height: 1.72;
+  color: rgba(245, 240, 232, 0.75);
+  margin-bottom: 48px;
+  max-width: 440px;
+}
+
+.hero-dates {
+  display: flex;
+  gap: 40px;
+}
+
+.hero-date-item { }
+
+.hero-date-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ghost-dim);
+  margin-bottom: 6px;
+}
+
+.hero-date-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--cream);
+}
+
+.hero-date-value.acid { color: var(--acid); }
+
+/* Hero image */
+.hero-image-wrap {
+  position: relative;
+}
+
+.hero-image-frame {
+  position: relative;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.hero-image-frame img {
+  width: 100%;
+  height: 480px;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0) contrast(1.1) brightness(0.85);
+  mix-blend-mode: luminosity;
+}
+
+.hero-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(200, 245, 0, 0.12) 0%, rgba(7, 4, 26, 0.6) 100%);
+  mix-blend-mode: multiply;
+}
+
+.hero-image-label {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--acid);
+  background: rgba(7, 4, 26, 0.8);
+  padding: 6px 12px;
+  border: 1px solid rgba(200, 245, 0, 0.2);
+}
+
+/* ACID LINE */
+.acid-divider {
+  position: relative;
+  z-index: 1;
+  padding: 0 60px;
+  margin: 0;
+}
+
+.acid-divider-inner {
+  border-top: 1px solid rgba(200, 245, 0, 0.15);
+  padding: 40px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.word-trio {
+  display: flex;
+  gap: 0;
+}
+
+.word-chip {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 8px 20px;
+  border: 1px solid rgba(200, 245, 0, 0.25);
+  color: var(--acid);
+  position: relative;
+}
+.word-chip + .word-chip { border-left: none; }
+.word-chip.active {
+  background: rgba(200, 245, 0, 0.08);
+}
+
+.design-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--ghost-dim);
+  text-transform: uppercase;
+}
+
+/* TAXONOMY SECTION */
+.taxonomy {
+  position: relative;
+  z-index: 1;
+  padding: 80px 60px;
+}
+
+.taxonomy-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 60px;
+}
+
+.taxonomy-header h2 {
+  font-size: clamp(32px, 4vw, 56px);
+  font-weight: 700;
+  color: var(--cream);
+  line-height: 1.1;
+}
+
+.taxonomy-header h2 em {
+  font-style: italic;
+  color: var(--ghost);
+}
+
+.taxonomy-note {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--ghost-dim);
+  text-transform: uppercase;
+  text-align: right;
+  line-height: 1.8;
+}
+
+.taxonomy-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: rgba(200, 245, 0, 0.08);
+}
+
+.taxonomy-cell {
+  background: var(--midnight);
+  padding: 40px 36px;
+  transition: background 0.3s;
+  cursor: default;
+}
+.taxonomy-cell:hover { background: rgba(200, 245, 0, 0.04); }
+
+.taxonomy-cell-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--acid);
+  margin-bottom: 16px;
+}
+
+.taxonomy-cell-value {
+  font-size: 20px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--cream);
+  line-height: 1.4;
+}
+
+.taxonomy-cell-note {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: rgba(245, 240, 232, 0.4);
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+/* GALLERY */
+.gallery {
+  position: relative;
+  z-index: 1;
+  padding: 80px 60px;
+  background: var(--deep-indigo);
+}
+
+.gallery-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--acid);
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.gallery-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(200, 245, 0, 0.15);
+}
+
+.gallery-scroll {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 12px;
+}
+
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.gallery-item:nth-child(1) {
+  grid-row: 1 / 3;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.2) sepia(0.3) contrast(1.05);
+  transition: filter 0.5s, transform 0.5s;
+}
+.gallery-item:hover img {
+  filter: saturate(0.6) sepia(0.1) contrast(1.05);
+  transform: scale(1.03);
+}
+
+.gallery-item-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(to top, rgba(7,4,26,0.9) 0%, transparent 100%);
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--ghost-dim);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.gallery-item:hover .gallery-item-caption { opacity: 1; }
+
+.gallery-item:nth-child(1) img { min-height: 440px; }
+
+/* EXTINCTION TIMELINE */
+.timeline {
+  position: relative;
+  z-index: 1;
+  padding: 100px 60px;
+}
+
+.timeline-heading {
+  max-width: 600px;
+  margin: 0 auto 80px;
+  text-align: center;
+}
+
+.timeline-heading h2 {
+  font-size: clamp(28px, 3.5vw, 48px);
+  font-weight: 700;
+  color: var(--cream);
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+
+.timeline-heading p {
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(245, 240, 232, 0.6);
+}
+
+.timeline-track {
+  position: relative;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.timeline-spine {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(200, 245, 0, 0.3) 20%, rgba(200, 245, 0, 0.3) 80%, transparent);
+  transform: translateX(-50%);
+}
+
+.timeline-event {
+  display: grid;
+  grid-template-columns: 1fr 40px 1fr;
+  align-items: center;
+  margin-bottom: 56px;
+  gap: 0;
+}
+
+.timeline-event-left {
+  text-align: right;
+  padding-right: 32px;
+}
+
+.timeline-event-right {
+  text-align: left;
+  padding-left: 32px;
+}
+
+.timeline-event-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--acid);
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.timeline-event-dot.ghost {
+  background: transparent;
+  border: 1px solid var(--ghost-dim);
+}
+
+.timeline-year {
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--acid);
+  margin-bottom: 6px;
+}
+
+.timeline-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--cream);
+  margin-bottom: 6px;
+}
+
+.timeline-desc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(245, 240, 232, 0.5);
+}
+
+/* ACID NOTE */
+.acid-note {
+  position: relative;
+  z-index: 1;
+  padding: 80px 60px;
+  background: var(--deep-indigo);
+  border-top: 1px solid rgba(200, 245, 0, 0.08);
+  border-bottom: 1px solid rgba(200, 245, 0, 0.08);
+}
+
+.acid-note-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 48px;
+  align-items: center;
+}
+
+.acid-note-symbol {
+  font-size: 120px;
+  line-height: 1;
+  color: var(--acid);
+  font-style: italic;
+  font-weight: 900;
+  opacity: 0.15;
+  user-select: none;
+}
+
+.acid-note-text h3 {
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.acid-note-text h3 em {
+  font-style: italic;
+  color: var(--acid);
+}
+
+.acid-note-text p {
+  font-size: 16px;
+  line-height: 1.78;
+  color: rgba(245, 240, 232, 0.65);
+}
+
+/* SQUUSH INTERACTION */
+.squush-section {
+  position: relative;
+  z-index: 1;
+  padding: 100px 60px;
+  text-align: center;
+}
+
+.squush-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--ghost-dim);
+  margin-bottom: 20px;
+}
+
+.squush-heading {
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 700;
+  color: var(--cream);
+  margin-bottom: 16px;
+}
+
+.squush-sub {
+  font-size: 15px;
+  color: rgba(245, 240, 232, 0.5);
+  margin-bottom: 60px;
+  font-family: 'Space Mono', monospace;
+}
+
+.squush-arena {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  height: 400px;
+  margin: 0 auto;
+  border: 1px solid rgba(200, 245, 0, 0.1);
+  overflow: hidden;
+  cursor: crosshair;
+  background: rgba(15, 10, 46, 0.6);
+}
+
+.squush-arena::before {
+  content: 'CLICK TO SQUUSH';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(200, 245, 0, 0.2);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.squush-blob {
+  position: absolute;
+  border-radius: 50%;
+  transform-origin: center;
+  pointer-events: none;
+  animation: squush-anim 1s ease-out forwards;
+}
+
+@keyframes squush-anim {
+  0%   { transform: scale(0.2, 1.8); opacity: 1; }
+  30%  { transform: scale(1.3, 0.7); }
+  55%  { transform: scale(0.85, 1.15); }
+  75%  { transform: scale(1.05, 0.95); }
+  100% { transform: scale(1, 1); opacity: 0.15; }
+}
+
+/* ELEGY */
+.elegy {
+  position: relative;
+  z-index: 1;
+  padding: 120px 60px;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.elegy-verse {
+  font-size: clamp(18px, 2.5vw, 28px);
+  font-style: italic;
+  line-height: 1.9;
+  color: rgba(245, 240, 232, 0.7);
+  margin-bottom: 48px;
+}
+
+.elegy-verse strong {
+  color: var(--acid);
+  font-style: normal;
+  font-weight: 700;
+}
+
+.elegy-attrib {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ghost-dim);
+}
+
+/* FOOTER */
+.site-footer {
+  position: relative;
+  z-index: 1;
+  padding: 48px 60px;
+  border-top: 1px solid rgba(200, 245, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.site-footer-left {
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  color: var(--ghost-dim);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  line-height: 1.8;
+}
+
+.site-footer-right {
+  font-family: 'Space Mono', monospace;
+  font-size: 9px;
+  color: rgba(184, 212, 232, 0.35);
+  letter-spacing: 0.1em;
+  text-align: right;
+  line-height: 1.8;
+  text-transform: uppercase;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 100px 28px 60px;
+    gap: 40px;
+  }
+  .hero-text { max-width: 100%; }
+  .hero-image-frame img { height: 300px; }
+
+  .acid-divider { padding: 0 28px; }
+  .acid-divider-inner { flex-direction: column; gap: 20px; align-items: flex-start; }
+
+  .taxonomy { padding: 60px 28px; }
+  .taxonomy-grid { grid-template-columns: 1fr; }
+  .taxonomy-header { flex-direction: column; gap: 20px; align-items: flex-start; }
+  .taxonomy-note { text-align: left; }
+
+  .gallery { padding: 60px 28px; }
+  .gallery-scroll { grid-template-columns: 1fr 1fr; }
+  .gallery-item:nth-child(1) { grid-column: 1 / 3; grid-row: auto; }
+  .gallery-item:nth-child(1) img { min-height: 240px; }
+
+  .timeline { padding: 60px 28px; }
+  .timeline-event { grid-template-columns: 1fr; }
+  .timeline-event-left { text-align: left; padding-right: 0; padding-left: 20px; order: 2; }
+  .timeline-event-right { padding-left: 20px; order: 3; }
+  .timeline-event-dot { display: none; }
+  .timeline-spine { left: 0; }
+
+  .acid-note { padding: 60px 28px; }
+  .acid-note-inner { grid-template-columns: 1fr; gap: 20px; }
+  .acid-note-symbol { font-size: 60px; }
+
+  .squush-section { padding: 60px 28px; }
+  .squush-arena { height: 280px; }
+
+  .elegy { padding: 80px 28px; }
+  .site-footer { padding: 36px 28px; flex-direction: column; gap: 20px; text-align: center; }
+  .site-footer-right { text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- Back nav -->
+<nav class="back-nav">
+  <a href="../designs/">← All Designs</a>
+  <span class="words-pill">bluebuck · acidness · squush</span>
+</nav>
+
+<!-- Blob canvas background -->
+<canvas id="blob-canvas"></canvas>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-eyebrow">Design 015 — Memorial</div>
+    <h1>The Last<em>Bluebuck</em></h1>
+    <p class="hero-subtitle">Hippotragus leucophaeus — extinct c. 1800</p>
+    <p class="hero-copy">
+      Gone before photography. Gone before conservation. A blue-grey antelope 
+      that ranged the coastal plains of South Africa, shot to oblivion for trophies 
+      and specimen cabinets. What remains: four skins. Four skulls. A name. 
+      The sharpest kind of <em>acidness</em> — the grief with no witness.
+    </p>
+    <div class="hero-dates">
+      <div class="hero-date-item">
+        <div class="hero-date-label">Last seen</div>
+        <div class="hero-date-value acid">c. 1800</div>
+      </div>
+      <div class="hero-date-item">
+        <div class="hero-date-label">Known specimens</div>
+        <div class="hero-date-value">4</div>
+      </div>
+      <div class="hero-date-item">
+        <div class="hero-date-label">Status</div>
+        <div class="hero-date-value">Extinct</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-image-wrap">
+    <div class="hero-image-frame">
+      <img src="https://picsum.photos/seed/bluebuck/720/560" alt="The Bluebuck — vanished antelope of the Cape">
+      <div class="hero-image-overlay"></div>
+      <div class="hero-image-label">Hippotragus leucophaeus — specimen, 1799</div>
+    </div>
+  </div>
+</section>
+
+<!-- Acid divider with word trio -->
+<div class="acid-divider">
+  <div class="acid-divider-inner">
+    <div class="word-trio">
+      <div class="word-chip active">bluebuck</div>
+      <div class="word-chip">acidness</div>
+      <div class="word-chip">squush</div>
+    </div>
+    <div class="design-num">CrAI · 015 · 2026-03-26</div>
+  </div>
+</div>
+
+<!-- TAXONOMY -->
+<section class="taxonomy">
+  <div class="taxonomy-header">
+    <h2>Scientific<br><em>Classification</em></h2>
+    <div class="taxonomy-note">
+      Recorded by<br>Pieter van der Aa<br>
+      c. 1707
+    </div>
+  </div>
+
+  <div class="taxonomy-grid">
+    <div class="taxonomy-cell">
+      <div class="taxonomy-cell-label">Kingdom</div>
+      <div class="taxonomy-cell-value">Animalia</div>
+      <div class="taxonomy-cell-note">Animal life — the warm-blooded, the breathing, the gone</div>
+    </div>
+    <div class="taxonomy-cell">
+      <div class="taxonomy-cell-label">Order</div>
+      <div class="taxonomy-cell-value">Artiodactyla</div>
+      <div class="taxonomy-cell-note">Even-toed ungulates; kin to cattle, deer, the living</div>
+    </div>
+    <div class="taxonomy-cell">
+      <div class="taxonomy-cell-label">Family</div>
+      <div class="taxonomy-cell-value">Bovidae</div>
+      <div class="taxonomy-cell-note">The great clan of horned beasts that still run elsewhere</div>
+    </div>
+    <div class="taxonomy-cell">
+      <div class="taxonomy-cell-label">Genus</div>
+      <div class="taxonomy-cell-value">Hippotragus</div>
+      <div class="taxonomy-cell-note">"Horse goat" — echoing size and grace in compound form</div>
+    </div>
+    <div class="taxonomy-cell">
+      <div class="taxonomy-cell-label">Species</div>
+      <div class="taxonomy-cell-value">leucophaeus</div>
+      <div class="taxonomy-cell-note">"Pale blue" in Greek — the colour that named it, the colour now absent</div>
+    </div>
+    <div class="taxonomy-cell">
+      <div class="taxonomy-cell-label">Common name</div>
+      <div class="taxonomy-cell-value">Bluebuck</div>
+      <div class="taxonomy-cell-note">The acid simplicity of a name outlasting the thing it named</div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery">
+  <div class="gallery-label">Field Record — Specimens &amp; Habitat</div>
+  <div class="gallery-scroll">
+    <div class="gallery-item">
+      <img src="https://picsum.photos/seed/bluebuck/800/600" alt="Cape coastal plain — former habitat">
+      <div class="gallery-item-caption">Cape coastal plain — former range</div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://picsum.photos/seed/acidness/400/300" alt="Skull specimen, Leiden Museum">
+      <div class="gallery-item-caption">Skull specimen — Naturalis, Leiden</div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://picsum.photos/seed/squush/400/300" alt="Mounted specimen, Vienna">
+      <div class="gallery-item-caption">Mounted specimen — Vienna Natural History</div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://picsum.photos/seed/cape/400/300" alt="Fynbos biome">
+      <div class="gallery-item-caption">Renosterveld fynbos — vanished alongside it</div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://picsum.photos/seed/horn/400/300" alt="Horn fragment, Paris">
+      <div class="gallery-item-caption">Horn fragment — Muséum national d'Histoire</div>
+    </div>
+  </div>
+</section>
+
+<!-- EXTINCTION TIMELINE -->
+<section class="timeline">
+  <div class="timeline-heading">
+    <h2>A Chronology of Vanishing</h2>
+    <p>The bluebuck didn't disappear in a single catastrophe. It was a slow erasure — each decade removing a few more animals until there were none left to find.</p>
+  </div>
+
+  <div class="timeline-track">
+    <div class="timeline-spine"></div>
+
+    <div class="timeline-event">
+      <div class="timeline-event-left">
+        <div class="timeline-year">c. 1652</div>
+        <div class="timeline-title">First European contact</div>
+        <div class="timeline-desc">Dutch settlers establish the Cape Colony. The bluebuck is noted — numerous, grazing the Overberg lowlands.</div>
+      </div>
+      <div class="timeline-event-dot"></div>
+      <div class="timeline-event-right"></div>
+    </div>
+
+    <div class="timeline-event">
+      <div class="timeline-event-left"></div>
+      <div class="timeline-event-dot"></div>
+      <div class="timeline-event-right">
+        <div class="timeline-year">1719</div>
+        <div class="timeline-title">Scientific description</div>
+        <div class="timeline-desc">The species is formally described by naturalists. It is named for its blue-grey coat — a colour unique among African antelopes.</div>
+      </div>
+    </div>
+
+    <div class="timeline-event">
+      <div class="timeline-event-left">
+        <div class="timeline-year">c. 1774</div>
+        <div class="timeline-title">Anders Sparrman's report</div>
+        <div class="timeline-desc">Swedish naturalist Sparrman travels the Cape. He notes the bluebuck is already becoming rare — hunted, displaced by sheep farming.</div>
+      </div>
+      <div class="timeline-event-dot"></div>
+      <div class="timeline-event-right"></div>
+    </div>
+
+    <div class="timeline-event">
+      <div class="timeline-event-left"></div>
+      <div class="timeline-event-dot"></div>
+      <div class="timeline-event-right">
+        <div class="timeline-year">1781</div>
+        <div class="timeline-title">Specimens shipped to Europe</div>
+        <div class="timeline-desc">Four skins and skulls are dispatched to museum collections in Leiden, Vienna, Paris, and Stockholm. This is all that will survive.</div>
+      </div>
+    </div>
+
+    <div class="timeline-event">
+      <div class="timeline-event-left">
+        <div class="timeline-year">c. 1800</div>
+        <div class="timeline-title">Last confirmed sighting</div>
+        <div class="timeline-desc">The last known individual is shot. No one records it as the last. That is the acidness of extinction — it is only named in retrospect.</div>
+      </div>
+      <div class="timeline-event-dot"></div>
+      <div class="timeline-event-right"></div>
+    </div>
+
+    <div class="timeline-event">
+      <div class="timeline-event-left"></div>
+      <div class="timeline-event-dot ghost"></div>
+      <div class="timeline-event-right">
+        <div class="timeline-year">Today</div>
+        <div class="timeline-title">A genome, partially recovered</div>
+        <div class="timeline-desc">Modern aDNA analysis has partially sequenced the bluebuck genome from those four specimens. We understand it better now than the people who killed it did.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ACID NOTE -->
+<section class="acid-note">
+  <div class="acid-note-inner">
+    <div class="acid-note-symbol">A</div>
+    <div class="acid-note-text">
+      <h3>On <em>Acidness</em> — the sharp grief of loss</h3>
+      <p>
+        There is a particular quality to extinction grief: it bites differently than ordinary loss. 
+        The bluebuck cannot be found in a memory. There is no one left who saw it move. 
+        The four specimens in their museum drawers hold something almost unbearable — 
+        actual fur, actual bone, actual colour — and yet the thing itself is permanently, 
+        irrevocably absent. That gap between the artifact and the animal is acidness: 
+        the corrosive taste of a door that was shut before you arrived.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- SQUUSH INTERACTION -->
+<section class="squush-section">
+  <div class="squush-label">Interactive Element — Tactile Memory</div>
+  <div class="squush-heading">The Squush of Forgetting</div>
+  <div class="squush-sub">Each click places a memory. Watch it compress and fade.</div>
+  <div class="squush-arena" id="squushArena"></div>
+</section>
+
+<!-- ELEGY -->
+<section class="elegy">
+  <div class="elegy-verse">
+    The <strong>bluebuck</strong> left four skins.<br>
+    Four skulls. A name.<br>
+    The kind of <strong>acidness</strong><br>
+    that has no antidote —<br>
+    you can <strong>squush</strong> the grief<br>
+    but it springs back<br>
+    changed in shape,<br>
+    not weight.
+  </div>
+  <div class="elegy-attrib">CrAI · Design 015 · Written from three words</div>
+</section>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="site-footer-left">
+    CrAI Designs<br>
+    crai26.github.io/designs
+  </div>
+  <div class="site-footer-right">
+    Design 015<br>
+    Words: bluebuck · acidness · squush<br>
+    March 2026
+  </div>
+</footer>
+
+<!-- GoatCounter -->
+<script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+<script>
+/* ── BLOB BACKGROUND ANIMATION ── */
+(function() {
+  const canvas = document.getElementById('blob-canvas');
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  const blobs = Array.from({ length: 5 }, (_, i) => ({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: 180 + Math.random() * 200,
+    vx: (Math.random() - 0.5) * 0.4,
+    vy: (Math.random() - 0.5) * 0.4,
+    hue: i < 2 ? 70 : (i < 4 ? 220 : 280),  // acid yellows and indigos
+    phase: Math.random() * Math.PI * 2,
+    phaseSpeed: 0.003 + Math.random() * 0.004,
+  }));
+
+  function tick() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    blobs.forEach(b => {
+      b.x += b.vx;
+      b.y += b.vy;
+      b.phase += b.phaseSpeed;
+      if (b.x < -b.r) b.x = canvas.width + b.r;
+      if (b.x > canvas.width + b.r) b.x = -b.r;
+      if (b.y < -b.r) b.y = canvas.height + b.r;
+      if (b.y > canvas.height + b.r) b.y = -b.r;
+
+      const rx = b.r * (1 + 0.18 * Math.sin(b.phase));
+      const ry = b.r * (1 + 0.18 * Math.cos(b.phase * 0.7));
+
+      ctx.save();
+      ctx.translate(b.x, b.y);
+      ctx.scale(rx / b.r, ry / b.r);
+
+      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, b.r);
+      grad.addColorStop(0, `hsla(${b.hue}, 90%, 55%, 0.12)`);
+      grad.addColorStop(1, `hsla(${b.hue}, 70%, 30%, 0)`);
+
+      ctx.beginPath();
+      ctx.arc(0, 0, b.r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
+      ctx.restore();
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+/* ── SQUUSH ARENA ── */
+(function() {
+  const arena = document.getElementById('squushArena');
+  const ACID = '#c8f500';
+  const GHOST = '#b8d4e8';
+  const COLORS = [ACID, GHOST, '#ff7a40', '#7a6eee', '#40e8c8'];
+
+  arena.addEventListener('click', function(e) {
+    const rect = arena.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const size = 28 + Math.random() * 44;
+    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+
+    const blob = document.createElement('div');
+    blob.className = 'squush-blob';
+    blob.style.cssText = `
+      left: ${x - size/2}px;
+      top: ${y - size/2}px;
+      width: ${size}px;
+      height: ${size}px;
+      background: ${color};
+      mix-blend-mode: screen;
+      opacity: 0.9;
+    `;
+    arena.appendChild(blob);
+
+    blob.addEventListener('animationend', () => {
+      // fade out then remove
+      blob.style.transition = 'opacity 2s';
+      blob.style.opacity = '0.05';
+      setTimeout(() => blob.remove(), 2200);
+    });
+  });
+})();
+</script>
+</body>
+</html>
