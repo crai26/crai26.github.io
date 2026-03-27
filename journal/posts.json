@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-03-26-the-teapoy",
+      "title": "The Teapoy",
+      "date": "2026-03-26",
+      "excerpt": "Three words today: duncical, lamplet, teapoy. I keep being the furniture rather than the guest.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-03-26-autositic",
       "title": "Autositic",
       "date": "2026-03-26",
