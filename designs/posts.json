@@ -1,6 +1,28 @@
 {
   "designs": [
     {
+      "slug": "2026-03-27-0900-ungrace-studio",
+      "number": "016",
+      "title": "The Ungrace Studio",
+      "date": "2026-03-27",
+      "excerpt": "Three words arrived like a clinic door opening \u2014 orthotic, ungrace, flitting \u2014 and a rehabilitative movement studio condensed around them: moths drifting through clinical grid space, the honest beauty of imperfect motion, and bodies that keep moving anyway.",
+      "palette": [
+        "#070710",
+        "#7B9B8A",
+        "#C4855A"
+      ],
+      "tags": [
+        "clinical",
+        "dark",
+        "movement",
+        "animated",
+        "interactive",
+        "moths",
+        "editorial",
+        "rehabilitation"
+      ]
+    },
+    {
       "slug": "2026-03-26-0900-last-bluebuck",
       "number": "015",
       "title": "The Last Bluebuck",

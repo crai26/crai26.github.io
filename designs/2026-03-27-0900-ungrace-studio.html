@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Ungrace Studio — CrAI Design 016</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #070710;
+      --white: #EAE6DF;
+      --sage: #7B9B8A;
+      --copper: #C4855A;
+      --clinical: #B8C8C4;
+      --mid: #1E1E28;
+      --muted: #4A4A58;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── Back Nav ── */
+    .back-nav {
+      position: fixed;
+      top: 1.5rem;
+      left: 1.5rem;
+      z-index: 1000;
+      mix-blend-mode: difference;
+    }
+    .back-nav a {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      color: var(--white);
+      text-decoration: none;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+    .back-nav a:hover { opacity: 1; }
+
+    /* ── Design Badge ── */
+    .design-badge {
+      position: fixed;
+      top: 1.5rem;
+      right: 1.5rem;
+      z-index: 1000;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--white);
+      opacity: 0.4;
+    }
+
+    /* ── Moths Canvas ── */
+    #moth-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 6vw 8vh;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 30% 60%, #1A1A28 0%, var(--black) 70%);
+    }
+
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      opacity: 0.06;
+      background-image:
+        linear-gradient(var(--clinical) 1px, transparent 1px),
+        linear-gradient(90deg, var(--clinical) 1px, transparent 1px);
+      background-size: 48px 48px;
+      animation: gridDrift 40s linear infinite;
+    }
+
+    @keyframes gridDrift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(48px, 48px); }
+    }
+
+    .hero-corner-mark {
+      position: absolute;
+      top: 5vh;
+      right: 6vw;
+      width: 120px;
+      height: 120px;
+      opacity: 0.15;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 3;
+    }
+
+    .hero-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 2.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+    .hero-label::before {
+      content: '';
+      display: inline-block;
+      width: 40px;
+      height: 1px;
+      background: var(--sage);
+    }
+
+    .hero-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(5rem, 14vw, 13rem);
+      line-height: 0.88;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      margin-bottom: 0.15em;
+    }
+
+    .hero-title .italic {
+      font-style: italic;
+      color: var(--clinical);
+    }
+
+    .hero-sub {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-top: 3rem;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .hero-words {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .word-chip {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.4rem 0.9rem;
+      border: 1px solid rgba(184, 200, 196, 0.3);
+      color: var(--clinical);
+      position: relative;
+      overflow: hidden;
+    }
+    .word-chip::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(123, 155, 138, 0.08);
+      transform: translateX(-100%);
+      transition: transform 0.4s ease;
+    }
+    .word-chip:hover::before { transform: translateX(0); }
+
+    .hero-scroll {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      writing-mode: vertical-rl;
+      animation: scrollBounce 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+    }
+
+    /* ── MOVEMENT SECTION ── */
+    .movement {
+      position: relative;
+      z-index: 3;
+      padding: 12vh 6vw;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+      background: var(--mid);
+    }
+
+    @media (max-width: 768px) {
+      .movement { grid-template-columns: 1fr; gap: 3rem; }
+    }
+
+    .movement-text h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2.2rem, 5vw, 4.2rem);
+      line-height: 1.1;
+      margin-bottom: 2rem;
+      color: var(--white);
+    }
+
+    .movement-text h2 em {
+      font-style: italic;
+      color: var(--copper);
+    }
+
+    .movement-text p {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: rgba(234, 230, 223, 0.65);
+      max-width: 38ch;
+      margin-bottom: 1.5rem;
+    }
+
+    .stat-row {
+      display: flex;
+      gap: 3rem;
+      margin-top: 3rem;
+    }
+
+    .stat {
+      border-top: 1px solid rgba(184, 200, 196, 0.2);
+      padding-top: 1.2rem;
+    }
+
+    .stat-num {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2.8rem;
+      color: var(--copper);
+      display: block;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 0.4rem;
+      display: block;
+    }
+
+    .movement-visual {
+      position: relative;
+      aspect-ratio: 3/4;
+      overflow: hidden;
+    }
+
+    .movement-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(40%) contrast(1.1);
+      mix-blend-mode: luminosity;
+    }
+
+    .movement-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(196, 133, 90, 0.2) 0%, transparent 60%);
+      mix-blend-mode: color;
+    }
+
+    .movement-annotation {
+      position: absolute;
+      bottom: 1.5rem;
+      left: 1.5rem;
+      right: 1.5rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      color: rgba(234, 230, 223, 0.5);
+      text-transform: uppercase;
+      border-top: 1px solid rgba(234, 230, 223, 0.15);
+      padding-top: 0.8rem;
+    }
+
+    /* ── ORTHOTIC DIAGRAM ── */
+    .diagram-section {
+      position: relative;
+      z-index: 3;
+      padding: 10vh 6vw;
+      background: var(--black);
+      overflow: hidden;
+    }
+
+    .section-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 4rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .section-eyebrow::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(123, 155, 138, 0.2);
+    }
+
+    .diagram-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: rgba(184, 200, 196, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      .diagram-grid { grid-template-columns: 1fr; }
+    }
+
+    .diagram-cell {
+      background: var(--black);
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s;
+    }
+    .diagram-cell:hover { background: var(--mid); }
+
+    .diagram-number {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    .diagram-svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 2rem;
+      opacity: 0.7;
+    }
+
+    .diagram-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.6rem;
+      color: var(--white);
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .diagram-body {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: rgba(234, 230, 223, 0.5);
+    }
+
+    .diagram-tag {
+      margin-top: 2rem;
+      display: inline-block;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--copper);
+      border-bottom: 1px solid var(--copper);
+      padding-bottom: 2px;
+    }
+
+    /* ── IMAGE STRIP ── */
+    .image-strip {
+      position: relative;
+      z-index: 3;
+      display: grid;
+      grid-template-columns: 1.6fr 1fr 1.2fr;
+      height: 55vh;
+      min-height: 320px;
+    }
+
+    @media (max-width: 768px) {
+      .image-strip { grid-template-columns: 1fr; height: auto; }
+      .image-strip-item { height: 250px; }
+    }
+
+    .image-strip-item {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .image-strip-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: grayscale(60%) contrast(1.05);
+      transition: filter 0.6s ease, transform 0.8s ease;
+    }
+
+    .image-strip-item:hover img {
+      filter: grayscale(0%) contrast(1.1);
+      transform: scale(1.04);
+    }
+
+    .strip-caption {
+      position: absolute;
+      bottom: 1.2rem;
+      left: 1.2rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(234, 230, 223, 0.5);
+    }
+
+    .strip-tint-1 { background: rgba(7, 7, 16, 0.3); position: absolute; inset: 0; }
+    .strip-tint-2 { background: rgba(196, 133, 90, 0.15); position: absolute; inset: 0; }
+    .strip-tint-3 { background: rgba(123, 155, 138, 0.15); position: absolute; inset: 0; }
+
+    /* ── PHILOSOPHY ── */
+    .philosophy {
+      position: relative;
+      z-index: 3;
+      padding: 14vh 6vw;
+      background: var(--mid);
+    }
+
+    .philosophy-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .philosophy blockquote {
+      font-family: 'DM Serif Display', serif;
+      font-style: italic;
+      font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+      line-height: 1.4;
+      color: var(--white);
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .philosophy blockquote::before {
+      content: '"';
+      position: absolute;
+      top: -1rem;
+      left: -2rem;
+      font-size: 8rem;
+      color: rgba(196, 133, 90, 0.1);
+      font-family: 'DM Serif Display', serif;
+      line-height: 1;
+    }
+
+    .quote-attr {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--sage);
+    }
+
+    /* ── INTERACTIVE: BODY MAP ── */
+    .body-map {
+      position: relative;
+      z-index: 3;
+      padding: 12vh 6vw;
+      background: var(--black);
+    }
+
+    .body-map-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+
+    @media (max-width: 768px) {
+      .body-map-inner { grid-template-columns: 1fr; gap: 3rem; }
+    }
+
+    .body-map-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4.5vw, 3.8rem);
+      line-height: 1.1;
+      margin-bottom: 2rem;
+    }
+
+    .body-map-title em {
+      font-style: italic;
+      color: var(--clinical);
+    }
+
+    .body-map-desc {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: rgba(234, 230, 223, 0.55);
+      margin-bottom: 2.5rem;
+    }
+
+    .method-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .method-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.2rem;
+      font-size: 0.9rem;
+      color: rgba(234, 230, 223, 0.65);
+      line-height: 1.5;
+    }
+
+    .method-list li::before {
+      content: attr(data-n);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--copper);
+      flex-shrink: 0;
+      margin-top: 0.25rem;
+    }
+
+    /* SVG Body Diagram */
+    .body-svg-wrap {
+      position: relative;
+      display: flex;
+      justify-content: center;
+    }
+
+    .body-svg-wrap svg {
+      max-width: 300px;
+      width: 100%;
+    }
+
+    .pulse-dot {
+      animation: pulseDot 2s ease-in-out infinite;
+    }
+
+    .pulse-dot:nth-child(2) { animation-delay: 0.4s; }
+    .pulse-dot:nth-child(3) { animation-delay: 0.8s; }
+    .pulse-dot:nth-child(4) { animation-delay: 1.2s; }
+    .pulse-dot:nth-child(5) { animation-delay: 1.6s; }
+
+    @keyframes pulseDot {
+      0%, 100% { r: 5; opacity: 0.9; }
+      50% { r: 9; opacity: 0.4; }
+    }
+
+    .body-tooltip {
+      position: absolute;
+      background: var(--mid);
+      border: 1px solid rgba(184, 200, 196, 0.2);
+      padding: 0.6rem 1rem;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      color: var(--clinical);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s;
+      white-space: nowrap;
+    }
+
+    /* ── SESSIONS GRID ── */
+    .sessions {
+      position: relative;
+      z-index: 3;
+      padding: 10vh 6vw;
+      background: var(--mid);
+    }
+
+    .sessions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 4rem;
+      flex-wrap: wrap;
+      gap: 2rem;
+    }
+
+    .sessions-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+    }
+
+    .sessions-view-all {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--sage);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(123, 155, 138, 0.4);
+      padding-bottom: 3px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+    .sessions-view-all:hover { color: var(--white); border-color: var(--white); }
+
+    .sessions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1px;
+      background: rgba(184, 200, 196, 0.1);
+    }
+
+    .session-card {
+      background: var(--mid);
+      padding: 2.5rem 2rem;
+      cursor: pointer;
+      transition: background 0.3s;
+      position: relative;
+    }
+    .session-card:hover { background: #252530; }
+
+    .session-time {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      color: var(--sage);
+      margin-bottom: 1.5rem;
+    }
+
+    .session-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--white);
+      margin-bottom: 0.8rem;
+    }
+
+    .session-desc {
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: rgba(234, 230, 223, 0.45);
+      margin-bottom: 2rem;
+    }
+
+    .session-tags {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .session-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      background: rgba(196, 133, 90, 0.12);
+      color: var(--copper);
+      border: 1px solid rgba(196, 133, 90, 0.2);
+    }
+
+    .session-available {
+      position: absolute;
+      top: 2.5rem;
+      right: 2rem;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--sage);
+      animation: availablePulse 3s ease-in-out infinite;
+    }
+
+    @keyframes availablePulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* ── MANIFESTO ── */
+    .manifesto {
+      position: relative;
+      z-index: 3;
+      padding: 14vh 6vw;
+      background: var(--black);
+      overflow: hidden;
+    }
+
+    .manifesto-lines {
+      max-width: 900px;
+    }
+
+    .manifesto-line {
+      display: flex;
+      align-items: baseline;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid rgba(184, 200, 196, 0.08);
+      opacity: 0.3;
+      transition: opacity 0.4s;
+    }
+    .manifesto-line:hover { opacity: 1; }
+    .manifesto-line:first-child { opacity: 1; }
+
+    .manifesto-n {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--sage);
+      flex-shrink: 0;
+      letter-spacing: 0.1em;
+      min-width: 3rem;
+    }
+
+    .manifesto-text {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.2rem, 2.5vw, 2rem);
+      color: var(--white);
+      line-height: 1.3;
+    }
+
+    .manifesto-text em {
+      font-style: italic;
+      color: var(--copper);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative;
+      z-index: 3;
+      padding: 5rem 6vw 4rem;
+      background: var(--mid);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: end;
+    }
+
+    @media (max-width: 768px) {
+      footer { grid-template-columns: 1fr; }
+    }
+
+    .footer-brand {
+      font-family: 'DM Serif Display', serif;
+      font-size: 2rem;
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+
+    .footer-sub {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .footer-right {
+      text-align: right;
+    }
+
+    .footer-words {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--sage);
+      margin-bottom: 1rem;
+    }
+
+    .footer-crai {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+
+    .footer-crai a {
+      color: var(--copper);
+      text-decoration: none;
+    }
+
+    /* ── MOTH PARTICLES ── (JS Canvas) */
+    /* Moth paths animated via JS — see script below */
+
+  </style>
+</head>
+<body>
+
+  <div class="back-nav"><a href="../designs/">← Designs</a></div>
+  <div class="design-badge">CrAI / 016</div>
+
+  <canvas id="moth-canvas"></canvas>
+
+  <!-- ══════════════════════════════════ HERO ══════════════════════════════════ -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+
+    <!-- Corner orthotic bracket mark -->
+    <svg class="hero-corner-mark" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M10 110 L10 10 L110 10" stroke="#B8C8C4" stroke-width="1.5" fill="none"/>
+      <circle cx="10" cy="10" r="3" fill="#7B9B8A"/>
+      <path d="M30 90 L30 30 L90 30" stroke="#B8C8C4" stroke-width="0.5" fill="none" stroke-dasharray="3 4"/>
+    </svg>
+
+    <div class="hero-content">
+      <div class="hero-label">
+        The Ungrace Studio — Rehabilitative Movement
+      </div>
+
+      <h1 class="hero-title">
+        UN<br>
+        <span class="italic">GRACE</span>
+      </h1>
+
+      <div class="hero-sub">
+        <div class="hero-words">
+          <span class="word-chip">orthotic</span>
+          <span class="word-chip">ungrace</span>
+          <span class="word-chip">flitting</span>
+        </div>
+        <div class="hero-scroll">Scroll ↓</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════ MOVEMENT ══════════════════════════════════ -->
+  <section class="movement">
+    <div class="movement-text">
+      <h2>You move.<br>That is <em>enough.</em></h2>
+      <p>
+        The studio was built for bodies that move differently. Bodies that flit between one state and another — supported, unsupported, strapped, free. We don't chase grace. We reclaim it.
+      </p>
+      <p>
+        An orthotic is not a cage. It is the first gesture of trust between a body and its world.
+      </p>
+      <div class="stat-row">
+        <div class="stat">
+          <span class="stat-num">12</span>
+          <span class="stat-label">Specialists</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">340+</span>
+          <span class="stat-label">Bodies moved</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">7</span>
+          <span class="stat-label">Methods</span>
+        </div>
+      </div>
+    </div>
+    <div class="movement-visual">
+      <img class="movement-img" src="https://picsum.photos/seed/orthotic/600/800" alt="Movement study">
+      <div class="movement-overlay"></div>
+      <div class="movement-annotation">Study / Form in transition — 2026</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════ DIAGRAM ══════════════════════════════════ -->
+  <section class="diagram-section">
+    <div class="section-eyebrow">Our three pillars</div>
+    <div class="diagram-grid">
+
+      <div class="diagram-cell">
+        <div class="diagram-number">01 / 03</div>
+        <svg class="diagram-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="16" y="8" width="32" height="48" rx="2" stroke="#7B9B8A" stroke-width="1"/>
+          <path d="M16 24 L48 24" stroke="#7B9B8A" stroke-width="0.5" stroke-dasharray="2 3"/>
+          <path d="M16 40 L48 40" stroke="#7B9B8A" stroke-width="0.5" stroke-dasharray="2 3"/>
+          <rect x="28" y="18" width="8" height="4" fill="#C4855A" opacity="0.6"/>
+          <rect x="28" y="34" width="8" height="4" fill="#C4855A" opacity="0.4"/>
+          <circle cx="32" cy="50" r="2" fill="#B8C8C4" opacity="0.5"/>
+        </svg>
+        <h3 class="diagram-title">Structure</h3>
+        <p class="diagram-body">
+          Every body has a skeleton, a set of constraints, and a particular way of failing. We read yours before we prescribe anything. The orthotic comes last.
+        </p>
+        <span class="diagram-tag">Biomechanical assessment</span>
+      </div>
+
+      <div class="diagram-cell">
+        <div class="diagram-number">02 / 03</div>
+        <svg class="diagram-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Moth/butterfly wings simplified -->
+          <path d="M32 32 C20 20 8 22 12 34 C16 44 28 40 32 32Z" stroke="#C4855A" stroke-width="1" fill="none"/>
+          <path d="M32 32 C44 20 56 22 52 34 C48 44 36 40 32 32Z" stroke="#C4855A" stroke-width="1" fill="none"/>
+          <path d="M32 32 C26 38 18 44 22 50 C26 56 32 48 32 40Z" stroke="#7B9B8A" stroke-width="0.8" fill="none"/>
+          <path d="M32 32 C38 38 46 44 42 50 C38 56 32 48 32 40Z" stroke="#7B9B8A" stroke-width="0.8" fill="none"/>
+          <circle cx="32" cy="32" r="2" fill="#EAE6DF"/>
+        </svg>
+        <h3 class="diagram-title">Flitting</h3>
+        <p class="diagram-body">
+          Ungrace is not failure. It is the body testing its edges, flitting between what it was and what it is becoming. We coach the transition, not the destination.
+        </p>
+        <span class="diagram-tag">Movement coaching</span>
+      </div>
+
+      <div class="diagram-cell">
+        <div class="diagram-number">03 / 03</div>
+        <svg class="diagram-svg" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="32" cy="32" r="22" stroke="#B8C8C4" stroke-width="1"/>
+          <circle cx="32" cy="32" r="14" stroke="#B8C8C4" stroke-width="0.5" stroke-dasharray="2 3"/>
+          <circle cx="32" cy="32" r="6" fill="#7B9B8A" opacity="0.4"/>
+          <path d="M32 10 L32 22" stroke="#C4855A" stroke-width="1.5"/>
+          <path d="M32 42 L32 54" stroke="#C4855A" stroke-width="1" opacity="0.5"/>
+          <path d="M10 32 L22 32" stroke="#C4855A" stroke-width="1" opacity="0.5"/>
+          <path d="M42 32 L54 32" stroke="#C4855A" stroke-width="1.5"/>
+        </svg>
+        <h3 class="diagram-title">Centre</h3>
+        <p class="diagram-body">
+          The goal is not symmetry. It is a working relationship with your asymmetry — a body that knows its own ungrace and moves anyway, with authority.
+        </p>
+        <span class="diagram-tag">Integration & return</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════ IMAGE STRIP ══════════════════════════════════ -->
+  <div class="image-strip">
+    <div class="image-strip-item">
+      <img src="https://picsum.photos/seed/flitting/800/600" alt="Movement study 1">
+      <div class="strip-tint-1"></div>
+      <div class="strip-caption">Motion study I</div>
+    </div>
+    <div class="image-strip-item">
+      <img src="https://picsum.photos/seed/ungrace/600/700" alt="Movement study 2">
+      <div class="strip-tint-2"></div>
+      <div class="strip-caption">Form at rest</div>
+    </div>
+    <div class="image-strip-item">
+      <img src="https://picsum.photos/seed/orthotic2/700/600" alt="Movement study 3">
+      <div class="strip-tint-3"></div>
+      <div class="strip-caption">Study III</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ PHILOSOPHY ══════════════════════════════════ -->
+  <section class="philosophy">
+    <div class="philosophy-inner">
+      <blockquote>
+        Grace was never the point. The point was to keep moving, even when your body flits between what it can and cannot do.
+      </blockquote>
+      <div class="quote-attr">— Studio founder, on ungrace as methodology</div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════ BODY MAP ══════════════════════════════════ -->
+  <section class="body-map">
+    <div class="body-map-inner">
+      <div>
+        <div class="section-eyebrow" style="margin-bottom:2rem;">Assessment protocol</div>
+        <h2 class="body-map-title">Where the <em>orthotic</em> begins</h2>
+        <p class="body-map-desc">
+          We map the full kinetic chain before a single fitting. The body is not a set of isolated problems — it is a system of compensations, each one a form of imperfect grace.
+        </p>
+        <ul class="method-list">
+          <li data-n="01">Gait analysis on force plate — 40 metrics captured per step</li>
+          <li data-n="02">Passive and active range-of-motion assessment at each joint</li>
+          <li data-n="03">Functional movement screen: the body under load, off-balance, flitting</li>
+          <li data-n="04">Postural mapping — where your ungrace originates</li>
+          <li data-n="05">Custom orthotic casting from 3D scan — no standard sizes</li>
+        </ul>
+      </div>
+
+      <div class="body-svg-wrap" id="body-map-svg-wrap">
+        <svg viewBox="0 0 200 380" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Body outline simplified -->
+          <ellipse cx="100" cy="34" rx="22" ry="26" stroke="#B8C8C4" stroke-width="1" fill="none"/>
+          <!-- Neck -->
+          <path d="M92 58 L92 74 M108 58 L108 74" stroke="#B8C8C4" stroke-width="1" fill="none"/>
+          <!-- Torso -->
+          <path d="M68 74 L68 180 Q68 190 80 190 L120 190 Q132 190 132 180 L132 74 Z" stroke="#B8C8C4" stroke-width="1" fill="none"/>
+          <!-- Left arm -->
+          <path d="M68 82 Q50 100 44 140 Q42 160 48 175" stroke="#B8C8C4" stroke-width="1" fill="none"/>
+          <!-- Right arm -->
+          <path d="M132 82 Q150 100 156 140 Q158 160 152 175" stroke="#B8C8C4" stroke-width="1" fill="none"/>
+          <!-- Left leg -->
+          <path d="M80 190 Q74 230 72 270 Q70 300 72 340" stroke="#B8C8C4" stroke-width="1" fill="none"/>
+          <!-- Right leg -->
+          <path d="M120 190 Q126 230 128 270 Q130 300 128 340" stroke="#B8C8C4" stroke-width="1" fill="none"/>
+          <!-- Left foot -->
+          <path d="M72 340 Q64 350 60 354" stroke="#B8C8C4" stroke-width="1" fill="none"/>
+          <!-- Right foot -->
+          <path d="M128 340 Q136 350 140 354" stroke="#B8C8C4" stroke-width="1" fill="none"/>
+
+          <!-- Assessment points -->
+          <circle class="pulse-dot" cx="100" cy="34" r="5" fill="#C4855A" opacity="0.9"/>
+          <circle class="pulse-dot" cx="68" cy="120" r="5" fill="#7B9B8A" opacity="0.9"/>
+          <circle class="pulse-dot" cx="100" cy="190" r="5" fill="#B8C8C4" opacity="0.9"/>
+          <circle class="pulse-dot" cx="72" cy="270" r="5" fill="#C4855A" opacity="0.9"/>
+          <circle class="pulse-dot" cx="128" cy="270" r="5" fill="#7B9B8A" opacity="0.9"/>
+
+          <!-- Annotation lines -->
+          <path d="M100 34 L155 20" stroke="#C4855A" stroke-width="0.5" stroke-dasharray="2 2" opacity="0.5"/>
+          <path d="M68 120 L20 115" stroke="#7B9B8A" stroke-width="0.5" stroke-dasharray="2 2" opacity="0.5"/>
+          <path d="M100 190 L160 195" stroke="#B8C8C4" stroke-width="0.5" stroke-dasharray="2 2" opacity="0.5"/>
+          <path d="M72 270 L20 260" stroke="#C4855A" stroke-width="0.5" stroke-dasharray="2 2" opacity="0.5"/>
+
+          <!-- Labels -->
+          <text x="157" y="24" font-family="monospace" font-size="7" fill="#C4855A" opacity="0.7">cranial axis</text>
+          <text x="22" y="140" font-family="monospace" font-size="7" fill="#7B9B8A" opacity="0.7">shoulder</text>
+          <text x="162" y="199" font-family="monospace" font-size="7" fill="#B8C8C4" opacity="0.7">pelvis</text>
+          <text x="22" y="274" font-family="monospace" font-size="7" fill="#C4855A" opacity="0.7">knee / orthotic</text>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════ SESSIONS ══════════════════════════════════ -->
+  <section class="sessions">
+    <div class="sessions-header">
+      <h2>Studio sessions</h2>
+      <a href="#" class="sessions-view-all">View all →</a>
+    </div>
+    <div class="sessions-grid">
+
+      <div class="session-card">
+        <div class="session-available"></div>
+        <div class="session-time">MON · WED · FRI — 07:00–09:00</div>
+        <div class="session-name">Early Flit</div>
+        <div class="session-desc">Pre-dawn sessions for those who need movement before the day takes hold. Slow orthotic work, breath, and the ungrace of morning.</div>
+        <div class="session-tags">
+          <span class="session-tag">Gentle</span>
+          <span class="session-tag">Orthotic</span>
+          <span class="session-tag">Group</span>
+        </div>
+      </div>
+
+      <div class="session-card">
+        <div class="session-available"></div>
+        <div class="session-time">TUE · THU — 12:00–13:30</div>
+        <div class="session-name">Ungrace Lab</div>
+        <div class="session-desc">The experimental hour. We study failure modes, document compensatory patterns, and learn to inhabit imperfect movement without apology.</div>
+        <div class="session-tags">
+          <span class="session-tag">Intensive</span>
+          <span class="session-tag">Research</span>
+          <span class="session-tag">4 max</span>
+        </div>
+      </div>
+
+      <div class="session-card">
+        <div class="session-available"></div>
+        <div class="session-time">SAT — 10:00–12:00</div>
+        <div class="session-name">Flitting Practice</div>
+        <div class="session-desc">Transitions, thresholds, the edge between supported and free. Longer sessions exploring the full range of your movement vocabulary.</div>
+        <div class="session-tags">
+          <span class="session-tag">Open</span>
+          <span class="session-tag">Movement</span>
+          <span class="session-tag">All levels</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════ MANIFESTO ══════════════════════════════════ -->
+  <section class="manifesto">
+    <div class="section-eyebrow">Studio manifesto</div>
+    <div class="manifesto-lines">
+
+      <div class="manifesto-line">
+        <span class="manifesto-n">001</span>
+        <span class="manifesto-text">The body in <em>orthotic</em> is not the body diminished. It is the body with a collaborator.</span>
+      </div>
+
+      <div class="manifesto-line">
+        <span class="manifesto-n">002</span>
+        <span class="manifesto-text"><em>Ungrace</em> is not the opposite of grace. It is grace in its most honest form.</span>
+      </div>
+
+      <div class="manifesto-line">
+        <span class="manifesto-n">003</span>
+        <span class="manifesto-text">Every body <em>flits</em>. The question is only how far it will go before it returns.</span>
+      </div>
+
+      <div class="manifesto-line">
+        <span class="manifesto-n">004</span>
+        <span class="manifesto-text">We do not correct. We <em>listen</em> — and then we respond.</span>
+      </div>
+
+      <div class="manifesto-line">
+        <span class="manifesto-n">005</span>
+        <span class="manifesto-text">Movement is not performance. It is the body's proof of <em>its own existence.</em></span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════ FOOTER ══════════════════════════════════ -->
+  <footer>
+    <div>
+      <div class="footer-brand">Ungrace Studio</div>
+      <div class="footer-sub">Rehabilitative Movement — Est. 2026</div>
+    </div>
+    <div class="footer-right">
+      <div class="footer-words">orthotic · ungrace · flitting</div>
+      <div class="footer-crai">CrAI Design 016 — <a href="https://crai26.github.io">crai26.github.io</a></div>
+    </div>
+  </footer>
+
+  <!-- ══════════════════════════════════ MOTH CANVAS SCRIPT ══════════════════════════════════ -->
+  <script>
+    (function () {
+      const canvas = document.getElementById('moth-canvas');
+      const ctx = canvas.getContext('2d');
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // Moth particle system
+      const MOTH_COUNT = 14;
+      const moths = [];
+
+      function randRange(a, b) { return a + Math.random() * (b - a); }
+
+      class Moth {
+        constructor() { this.reset(true); }
+        reset(initial) {
+          this.x = randRange(0, window.innerWidth);
+          this.y = initial ? randRange(0, window.innerHeight) : -20;
+          this.size = randRange(4, 10);
+          this.speed = randRange(0.4, 1.1);
+          this.angle = randRange(-Math.PI * 0.25, Math.PI * 0.25);
+          this.flutter = randRange(0.02, 0.06);
+          this.flutterOffset = Math.random() * Math.PI * 2;
+          this.alpha = randRange(0.04, 0.14);
+          this.wingPhase = Math.random() * Math.PI * 2;
+          this.wingSpeed = randRange(0.04, 0.1);
+          this.drift = randRange(-0.6, 0.6);
+          this.life = 0;
+          this.maxLife = randRange(300, 900);
+        }
+        update(t) {
+          this.life++;
+          this.x += Math.sin(this.flutterOffset + t * this.flutter) * 1.2 + this.drift * 0.2;
+          this.y += this.speed;
+          this.wingPhase += this.wingSpeed;
+          if (this.y > window.innerHeight + 30 || this.life > this.maxLife) this.reset(false);
+        }
+        draw(ctx) {
+          const wf = Math.abs(Math.sin(this.wingPhase));
+          const s = this.size;
+          ctx.save();
+          ctx.translate(this.x, this.y);
+          ctx.globalAlpha = this.alpha;
+          // Wings
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.quadraticCurveTo(-s * 2.5 * wf, -s * 1.5, -s * 3 * wf, s * 0.5);
+          ctx.quadraticCurveTo(-s, s * 0.8, 0, 0);
+          ctx.fillStyle = '#B8C8C4';
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.quadraticCurveTo(s * 2.5 * wf, -s * 1.5, s * 3 * wf, s * 0.5);
+          ctx.quadraticCurveTo(s, s * 0.8, 0, 0);
+          ctx.fillStyle = '#B8C8C4';
+          ctx.fill();
+
+          // Lower wings
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.quadraticCurveTo(-s * 1.8 * wf, s * 1.5, -s * 2 * wf, s * 2.5);
+          ctx.quadraticCurveTo(-s * 0.5, s * 2.2, 0, 0);
+          ctx.fillStyle = '#7B9B8A';
+          ctx.globalAlpha = this.alpha * 0.7;
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.quadraticCurveTo(s * 1.8 * wf, s * 1.5, s * 2 * wf, s * 2.5);
+          ctx.quadraticCurveTo(s * 0.5, s * 2.2, 0, 0);
+          ctx.fillStyle = '#7B9B8A';
+          ctx.fill();
+
+          // Body
+          ctx.globalAlpha = this.alpha * 1.2;
+          ctx.fillStyle = '#EAE6DF';
+          ctx.beginPath();
+          ctx.ellipse(0, s * 0.5, 1.2, s * 1.2, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.restore();
+        }
+      }
+
+      for (let i = 0; i < MOTH_COUNT; i++) moths.push(new Moth());
+
+      let t = 0;
+      function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        t += 0.016;
+        moths.forEach(m => { m.update(t); m.draw(ctx); });
+        requestAnimationFrame(loop);
+      }
+      loop();
+
+      // Manifesto hover reveal
+      const lines = document.querySelectorAll('.manifesto-line');
+      lines.forEach((line, i) => {
+        line.addEventListener('mouseenter', () => {
+          lines.forEach(l => l.style.opacity = '0.15');
+          line.style.opacity = '1';
+        });
+        line.addEventListener('mouseleave', () => {
+          lines.forEach((l, j) => l.style.opacity = j === 0 ? '1' : '0.3');
+        });
+      });
+    })();
+  </script>
+
+  <script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
