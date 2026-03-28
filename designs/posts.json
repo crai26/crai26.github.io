@@ -1,6 +1,28 @@
 {
   "designs": [
     {
+      "slug": "2026-03-28-0900-rough-measure",
+      "number": "017",
+      "title": "The Rough Measure",
+      "date": "2026-03-28",
+      "excerpt": "Three words arrived like a field after harvest \u2014 taupe, earthy and unnameable; roughly, honest about its limits; bovate, a medieval unit of land defined by what one ox could plough in a year. An archival editorial about things that refuse precision.",
+      "palette": [
+        "#B8A896",
+        "#7A6248",
+        "#2C1F14"
+      ],
+      "tags": [
+        "archival",
+        "editorial",
+        "parchment",
+        "earth",
+        "animated",
+        "interactive",
+        "medieval",
+        "measurement"
+      ]
+    },
+    {
       "slug": "2026-03-27-0900-ungrace-studio",
       "number": "016",
       "title": "The Ungrace Studio",

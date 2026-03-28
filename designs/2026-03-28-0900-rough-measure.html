@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bovate — The Rough Measure</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Barlow+Condensed:wght@200;300;400;600;700;900&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --parchment: #F0E8DB;
+  --parchment-dark: #E0D5C5;
+  --taupe: #B8A896;
+  --taupe-mid: #9A8878;
+  --earth: #2C1F14;
+  --umber: #7A6248;
+  --clay: #9B6A4A;
+  --chalk: #F8F4EE;
+  --ink: #1A1208;
+  --moss: #5A6642;
+  --line: rgba(44,31,20,0.15);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--parchment);
+  color: var(--earth);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: 18px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ─── BACK NAV ─── */
+.back-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: var(--ink);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border-bottom: 1px solid var(--umber);
+}
+.back-nav a {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.back-nav a:hover { color: var(--chalk); }
+.back-nav .sep { color: var(--umber); font-size: 11px; }
+.back-nav .current { color: var(--chalk); }
+
+/* ─── HERO ─── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  padding-top: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  background: var(--parchment);
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Animated contour map */
+.contour-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.18;
+}
+
+.contour-path {
+  fill: none;
+  stroke: var(--umber);
+  stroke-width: 1;
+  stroke-dasharray: 2000;
+  stroke-dashoffset: 2000;
+  animation: drawContour linear forwards;
+}
+.c1 { animation-duration: 8s; animation-delay: 0.2s; }
+.c2 { animation-duration: 10s; animation-delay: 0.8s; }
+.c3 { animation-duration: 12s; animation-delay: 1.4s; }
+.c4 { animation-duration: 9s; animation-delay: 2s; }
+.c5 { animation-duration: 11s; animation-delay: 2.6s; }
+.c6 { animation-duration: 13s; animation-delay: 3s; }
+.c7 { animation-duration: 9s; animation-delay: 3.6s; }
+.c8 { animation-duration: 10s; animation-delay: 4s; }
+
+@keyframes drawContour {
+  to { stroke-dashoffset: 0; }
+}
+
+.hero-image {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 60%;
+  filter: sepia(0.4) contrast(0.85) brightness(0.95);
+  mix-blend-mode: multiply;
+}
+.hero-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(240,232,219,0.3) 0%,
+    rgba(240,232,219,0.0) 40%,
+    rgba(240,232,219,0.5) 75%,
+    rgba(240,232,219,0.95) 100%
+  );
+}
+
+.hero-rule-top {
+  position: absolute;
+  top: 42px; left: 0; right: 0;
+  z-index: 5;
+  padding: 18px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hero-measure-tag {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--earth);
+  background: var(--parchment);
+  padding: 5px 12px;
+  border: 1px solid var(--taupe);
+}
+
+.hero-coords {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: var(--umber);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 5;
+  padding: 0 40px 60px;
+}
+
+.word-trio {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.word-trio span {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--clay);
+  padding: 4px 10px;
+  border: 1px solid var(--clay);
+  opacity: 0.85;
+}
+.word-trio .dot {
+  width: 3px; height: 3px;
+  background: var(--taupe-mid);
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+}
+
+.hero-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(80px, 18vw, 200px);
+  font-weight: 900;
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: var(--earth);
+  margin-bottom: 8px;
+}
+.hero-title .ghost {
+  -webkit-text-stroke: 1px var(--taupe-mid);
+  color: transparent;
+}
+
+.hero-subtitle {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(16px, 2.5vw, 26px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--umber);
+  margin-bottom: 8px;
+  max-width: 600px;
+}
+
+.hero-rule-line {
+  width: 60px;
+  height: 1px;
+  background: var(--taupe-mid);
+  margin: 20px 0;
+}
+
+.hero-def {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--umber);
+  max-width: 480px;
+  line-height: 1.5;
+}
+.hero-def strong {
+  font-weight: 600;
+  color: var(--earth);
+}
+
+/* ─── INTRO BAND ─── */
+.intro-band {
+  background: var(--earth);
+  color: var(--parchment);
+  padding: 56px 40px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.intro-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--taupe);
+  padding-top: 8px;
+}
+
+.intro-text {
+  font-size: 22px;
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--parchment-dark);
+}
+.intro-text em {
+  font-style: italic;
+  color: var(--taupe);
+  font-weight: 400;
+}
+
+/* ─── GRID FIELDS ─── */
+.fields-section {
+  padding: 80px 40px;
+  background: var(--chalk);
+}
+
+.fields-header {
+  display: flex;
+  align-items: baseline;
+  gap: 24px;
+  margin-bottom: 48px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 16px;
+}
+.fields-header h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  color: var(--earth);
+}
+.fields-header .field-count {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--taupe-mid);
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3px;
+  margin-bottom: 60px;
+}
+
+.field-parcel {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--parchment-dark);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.25s ease;
+}
+.field-parcel:hover {
+  transform: scale(1.04);
+  z-index: 2;
+}
+.field-parcel:hover .parcel-overlay {
+  opacity: 1;
+}
+.field-parcel:hover .parcel-label {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.parcel-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--earth);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  mix-blend-mode: multiply;
+}
+
+.parcel-label {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 12px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--chalk);
+  background: linear-gradient(to top, rgba(26,18,8,0.9), transparent);
+  transform: translateY(8px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 2;
+}
+
+.parcel-n {
+  position: absolute;
+  top: 8px; left: 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--chalk);
+  opacity: 0.6;
+  z-index: 2;
+}
+
+.field-parcel .bg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: sepia(0.3) contrast(0.9) brightness(0.95);
+  transition: filter 0.3s ease;
+}
+.field-parcel:hover .bg {
+  filter: sepia(0.6) contrast(0.85) brightness(0.8);
+}
+
+/* Large featured parcels */
+.field-parcel.large { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; }
+
+/* ─── MAP SECTION ─── */
+.map-section {
+  padding: 80px 40px;
+  background: var(--parchment);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.map-left h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--clay);
+  margin-bottom: 20px;
+}
+.map-left h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 600;
+  line-height: 1.15;
+  color: var(--earth);
+  margin-bottom: 24px;
+}
+.map-left p {
+  font-size: 16px;
+  font-weight: 300;
+  color: var(--umber);
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+.map-left p em { font-style: italic; color: var(--earth); }
+
+.measure-table {
+  margin-top: 32px;
+  border-top: 1px solid var(--line);
+}
+.measure-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+.measure-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--earth);
+}
+.measure-value {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px;
+  font-style: italic;
+  color: var(--umber);
+}
+.measure-approx {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--taupe-mid);
+  margin-left: 8px;
+}
+
+/* Interactive oxgang diagram */
+.map-right {
+  position: relative;
+}
+.oxgang-diagram {
+  width: 100%;
+  aspect-ratio: 1;
+  position: relative;
+  background: var(--parchment-dark);
+  border: 1px solid var(--taupe);
+  padding: 32px;
+  cursor: pointer;
+}
+
+.ox-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  gap: 2px;
+  width: 100%;
+  height: 100%;
+}
+
+.ox-cell {
+  background: var(--parchment);
+  border: 1px solid var(--taupe);
+  position: relative;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.ox-cell:hover,
+.ox-cell.active {
+  background: var(--clay);
+}
+.ox-cell.active {
+  background: var(--umber);
+}
+.ox-cell::after {
+  content: '';
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 2px,
+    rgba(240,232,219,0.3) 2px,
+    rgba(240,232,219,0.3) 4px
+  );
+}
+.ox-cell.active::after { display: block; }
+
+.diagram-caption {
+  position: absolute;
+  bottom: -40px;
+  left: 0; right: 0;
+  text-align: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--taupe-mid);
+}
+
+.diagram-label {
+  position: absolute;
+  top: 10px; left: 12px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--umber);
+  z-index: 2;
+}
+
+/* ─── TAUPE SECTION ─── */
+.taupe-section {
+  background: var(--taupe);
+  padding: 80px 40px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 60px;
+  align-items: end;
+}
+
+.taupe-main h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(60px, 12vw, 120px);
+  font-weight: 900;
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+  color: var(--chalk);
+  margin-bottom: 24px;
+}
+.taupe-main h2 em {
+  display: block;
+  font-style: normal;
+  -webkit-text-stroke: 1.5px var(--chalk);
+  color: transparent;
+}
+
+.taupe-main p {
+  font-size: 18px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--earth);
+  line-height: 1.6;
+  max-width: 520px;
+}
+
+.taupe-swatches {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-self: stretch;
+  justify-content: flex-end;
+}
+
+.swatch {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 12px;
+}
+.swatch-block {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.2);
+}
+.swatch-name {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--chalk);
+  opacity: 0.8;
+}
+.swatch-hex {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 300;
+  letter-spacing: 0.1em;
+  color: var(--chalk);
+  opacity: 0.5;
+  margin-left: auto;
+}
+
+/* ─── FULL IMAGE BREAK ─── */
+.image-break {
+  height: 50vh;
+  position: relative;
+  overflow: hidden;
+}
+.image-break img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 40%;
+  filter: sepia(0.35) contrast(0.88);
+}
+.image-break-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(26,18,8,0.25);
+}
+.image-break-text {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 5vw, 64px);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--chalk);
+  text-align: center;
+  letter-spacing: 0.04em;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.4);
+}
+
+/* ─── READING SECTION ─── */
+.reading-section {
+  padding: 80px 40px;
+  background: var(--chalk);
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 200px 1fr 1fr;
+  gap: 60px;
+}
+
+.reading-index {
+  padding-top: 4px;
+}
+.reading-index h4 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--taupe-mid);
+  margin-bottom: 20px;
+}
+.reading-index ul {
+  list-style: none;
+}
+.reading-index li {
+  margin-bottom: 10px;
+}
+.reading-index a {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--umber);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s;
+}
+.reading-index a:hover { color: var(--earth); }
+.reading-index a::before {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 1px;
+  background: var(--taupe-mid);
+  flex-shrink: 0;
+}
+
+.reading-col h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--earth);
+  margin-bottom: 16px;
+}
+.reading-col p {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--umber);
+  line-height: 1.75;
+  margin-bottom: 14px;
+}
+.reading-col p strong {
+  font-weight: 600;
+  color: var(--earth);
+}
+.reading-col .pull-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--clay);
+  border-left: 2px solid var(--clay);
+  padding-left: 20px;
+  margin: 24px 0;
+  line-height: 1.5;
+}
+
+/* ─── ANIMATED STRIP ─── */
+.ticker-strip {
+  background: var(--earth);
+  padding: 16px 0;
+  overflow: hidden;
+  white-space: nowrap;
+  border-top: 1px solid var(--umber);
+  border-bottom: 1px solid var(--umber);
+}
+
+.ticker-inner {
+  display: inline-block;
+  animation: ticker 28s linear infinite;
+}
+.ticker-inner:hover {
+  animation-play-state: paused;
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 32px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--taupe);
+}
+.ticker-item .sep {
+  color: var(--clay);
+  font-size: 16px;
+  font-weight: 300;
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ─── GALLERY TRIPTYCH ─── */
+.triptych {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 3px;
+  background: var(--earth);
+}
+
+.triptych-panel {
+  position: relative;
+  overflow: hidden;
+}
+.triptych-panel img {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  display: block;
+  filter: sepia(0.4) contrast(0.88) brightness(0.9);
+  transition: transform 0.6s ease, filter 0.4s ease;
+}
+.triptych-panel:hover img {
+  transform: scale(1.06);
+  filter: sepia(0.1) contrast(0.95) brightness(1.0);
+}
+.triptych-panel-label {
+  position: absolute;
+  bottom: 20px; left: 0; right: 0;
+  text-align: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--chalk);
+  text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+  pointer-events: none;
+}
+
+/* ─── CLOSING STATEMENT ─── */
+.closing {
+  padding: 100px 40px;
+  background: var(--parchment);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.closing::before {
+  content: 'BOVATE';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: clamp(80px, 20vw, 220px);
+  font-weight: 900;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--taupe);
+  opacity: 0.12;
+  pointer-events: none;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+.closing-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 620px;
+  margin: 0 auto;
+}
+.closing-inner h2 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.25;
+  color: var(--earth);
+  margin-bottom: 28px;
+}
+.closing-inner p {
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--umber);
+  line-height: 1.75;
+  margin-bottom: 40px;
+}
+
+.closing-word-row {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 48px;
+}
+.closing-word {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.cw-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--taupe-mid);
+}
+.cw-word {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--earth);
+}
+.cw-line {
+  width: 40px;
+  height: 1px;
+  background: var(--taupe-mid);
+}
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--ink);
+  padding: 40px 40px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-brand {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--chalk);
+}
+.footer-brand span { color: var(--clay); }
+.footer-meta {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--taupe-mid);
+  text-align: right;
+  line-height: 1.8;
+}
+.footer-meta a {
+  color: var(--taupe);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-meta a:hover { color: var(--chalk); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .hero-content { padding: 0 24px 48px; }
+  .hero-rule-top { padding: 14px 24px; }
+  .intro-band { grid-template-columns: 1fr; gap: 24px; padding: 48px 24px; }
+  .fields-section { padding: 56px 24px; }
+  .field-grid { grid-template-columns: repeat(2, 1fr); }
+  .field-parcel.large { grid-column: span 2; }
+  .map-section { grid-template-columns: 1fr; gap: 48px; padding: 56px 24px; }
+  .taupe-section { grid-template-columns: 1fr; gap: 40px; padding: 56px 24px; }
+  .taupe-swatches { flex-direction: row; flex-wrap: wrap; }
+  .swatch { flex: 1; min-width: 120px; }
+  .reading-section { grid-template-columns: 1fr; gap: 40px; padding: 56px 24px; max-width: 100%; }
+  .triptych { grid-template-columns: 1fr; }
+  .triptych-panel img { height: 300px; }
+  .closing { padding: 72px 24px; }
+  footer { flex-direction: column; gap: 20px; text-align: center; padding: 32px 24px; }
+  .footer-meta { text-align: center; }
+}
+
+@media (max-width: 600px) {
+  .word-trio { flex-wrap: wrap; gap: 8px; }
+  .word-trio .dot { display: none; }
+  .field-grid { grid-template-columns: repeat(2, 1fr); }
+  .field-parcel.large { grid-column: 1; grid-row: span 1; }
+  .closing-word-row { gap: 20px; }
+  .back-nav { padding: 10px 16px; }
+}
+
+/* ─── ANIMATION ENTRIES ─── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-title { animation: fadeUp 0.9s ease 0.3s both; }
+.hero-subtitle { animation: fadeUp 0.9s ease 0.5s both; }
+.hero-def { animation: fadeUp 0.9s ease 0.7s both; }
+.word-trio { animation: fadeUp 0.9s ease 0.1s both; }
+</style>
+</head>
+<body>
+
+<!-- Back Nav -->
+<div class="back-nav">
+  <a href="../designs/">← Designs</a>
+  <span class="sep">·</span>
+  <span class="current">017 — The Rough Measure</span>
+</div>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-bg">
+    <svg class="contour-svg" viewBox="0 0 1400 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <path class="contour-path c1" d="M0,200 C200,180 400,220 600,200 S900,160 1100,200 S1300,240 1400,210"/>
+      <path class="contour-path c2" d="M0,280 C150,260 350,300 550,280 S800,240 1000,280 S1250,320 1400,290"/>
+      <path class="contour-path c3" d="M0,360 C250,340 450,380 650,355 S900,320 1150,360 S1320,400 1400,370"/>
+      <path class="contour-path c4" d="M0,440 C180,420 380,460 580,440 S830,405 1080,440 S1300,475 1400,450"/>
+      <path class="contour-path c5" d="M0,520 C220,500 420,540 620,515 S870,480 1120,520 S1300,555 1400,525"/>
+      <path class="contour-path c6" d="M0,120 C190,100 390,140 590,120 S840,85 1090,120 S1310,155 1400,125"/>
+      <path class="contour-path c7" d="M-50,600 C160,580 380,618 600,595 S850,565 1100,600 S1320,635 1450,608"/>
+      <path class="contour-path c8" d="M-50,680 C180,660 400,698 620,675 S870,645 1120,680 S1320,710 1450,685"/>
+    </svg>
+    <div class="hero-image">
+      <img src="https://picsum.photos/seed/bovate/1600/900" alt="Fields" loading="eager">
+    </div>
+  </div>
+
+  <div class="hero-rule-top">
+    <span class="hero-measure-tag">Archive № 017</span>
+    <span class="hero-coords">52°N 1°W · OXFORDSHIRE · c. 1086</span>
+  </div>
+
+  <div class="hero-content">
+    <div class="word-trio">
+      <span>taupe</span>
+      <div class="dot"></div>
+      <span>roughly</span>
+      <div class="dot"></div>
+      <span>bovate</span>
+    </div>
+    <h1 class="hero-title">
+      BOV<span class="ghost">ATE</span>
+    </h1>
+    <p class="hero-subtitle">The Rough Measure of Things</p>
+    <div class="hero-rule-line"></div>
+    <p class="hero-def">
+      <strong>bo·vate</strong> /ˈbōˌvāt/ <em>n.</em> — A medieval unit of land area equal to the amount one ox could plough in a year. <em>Roughly</em> fifteen acres, though it varied. Like most true things, it resisted precision.
+    </p>
+  </div>
+</section>
+
+<!-- Intro Band -->
+<div class="intro-band">
+  <div class="intro-label">
+    On Measurement<br>& Its Limits
+  </div>
+  <p class="intro-text">
+    The bovate was honest. It said: <em>this is roughly what one ox can do.</em> Not a surveyor's rod. Not a GPS boundary. A life's work, an animal's strength, the shape of what is possible. The color <em>taupe</em> is the same — brownish-grey, perhaps greyish-brown. It refuses to be named exactly. Some things are defined by their refusal to be defined.
+  </p>
+</div>
+
+<!-- Fields Grid -->
+<section class="fields-section">
+  <div class="fields-header">
+    <h2>The Fields</h2>
+    <span class="field-count">Open Land Survey · 8 Parcels</span>
+  </div>
+
+  <div class="field-grid">
+    <div class="field-parcel large">
+      <img class="bg" src="https://picsum.photos/seed/taupe/800/800" alt="Field A">
+      <div class="parcel-overlay"></div>
+      <span class="parcel-n">A·01</span>
+      <div class="parcel-label">North Field · ~12 acres</div>
+    </div>
+    <div class="field-parcel">
+      <img class="bg" src="https://picsum.photos/seed/roughly/400/400" alt="Field B">
+      <div class="parcel-overlay"></div>
+      <span class="parcel-n">B·02</span>
+      <div class="parcel-label">East Meadow · ~8 acres</div>
+    </div>
+    <div class="field-parcel">
+      <img class="bg" src="https://picsum.photos/seed/measure/400/400" alt="Field C">
+      <div class="parcel-overlay"></div>
+      <span class="parcel-n">C·03</span>
+      <div class="parcel-label">Marsh Edge · ~6 acres</div>
+    </div>
+    <div class="field-parcel">
+      <img class="bg" src="https://picsum.photos/seed/oxgang/400/400" alt="Field D">
+      <div class="parcel-overlay"></div>
+      <span class="parcel-n">D·04</span>
+      <div class="parcel-label">Ridge Strip · ~9 acres</div>
+    </div>
+    <div class="field-parcel">
+      <img class="bg" src="https://picsum.photos/seed/parchment/400/400" alt="Field E">
+      <div class="parcel-overlay"></div>
+      <span class="parcel-n">E·05</span>
+      <div class="parcel-label">Common Ground · ~15 acres</div>
+    </div>
+    <div class="field-parcel">
+      <img class="bg" src="https://picsum.photos/seed/earth55/400/400" alt="Field F">
+      <div class="parcel-overlay"></div>
+      <span class="parcel-n">F·06</span>
+      <div class="parcel-label">Fallow South · ~11 acres</div>
+    </div>
+  </div>
+</section>
+
+<!-- Ticker Strip -->
+<div class="ticker-strip" aria-hidden="true">
+  <div class="ticker-inner">
+    <span class="ticker-item">taupe <span class="sep">·</span> roughly <span class="sep">·</span> bovate</span>
+    <span class="ticker-item">one ox <span class="sep">·</span> one year <span class="sep">·</span> one field</span>
+    <span class="ticker-item">taupe <span class="sep">·</span> roughly <span class="sep">·</span> bovate</span>
+    <span class="ticker-item">~15 acres <span class="sep">·</span> give or take <span class="sep">·</span> depending on the soil</span>
+    <span class="ticker-item">taupe <span class="sep">·</span> roughly <span class="sep">·</span> bovate</span>
+    <span class="ticker-item">one ox <span class="sep">·</span> one year <span class="sep">·</span> one field</span>
+    <span class="ticker-item">taupe <span class="sep">·</span> roughly <span class="sep">·</span> bovate</span>
+    <span class="ticker-item">~15 acres <span class="sep">·</span> give or take <span class="sep">·</span> depending on the soil</span>
+  </div>
+</div>
+
+<!-- Map Section -->
+<section class="map-section">
+  <div class="map-left">
+    <h3>The Oxgang Explained</h3>
+    <h2>Measurement as Living Agreement</h2>
+    <p>
+      The bovate — also called an <em>oxgang</em> — was not a fixed length. It was a negotiation between land and beast, a reckoning with what is possible in a given season. Different soils, different slopes, different arrangements. The measurement bent to reality.
+    </p>
+    <p>
+      Modern surveying gave us precision. It took away a kind of honesty. When a medieval villager said <em>roughly a bovate</em>, they were telling the truth about uncertainty itself.
+    </p>
+    <div class="measure-table">
+      <div class="measure-row">
+        <span class="measure-name">Bovate / Oxgang</span>
+        <span class="measure-value">~15 acres <span class="measure-approx">(variable)</span></span>
+      </div>
+      <div class="measure-row">
+        <span class="measure-name">Virgate</span>
+        <span class="measure-value">2 bovates <span class="measure-approx">(~30 ac)</span></span>
+      </div>
+      <div class="measure-row">
+        <span class="measure-name">Carucate / Ploughland</span>
+        <span class="measure-value">8 bovates <span class="measure-approx">(~120 ac)</span></span>
+      </div>
+      <div class="measure-row">
+        <span class="measure-name">Hide</span>
+        <span class="measure-value">4 virgates <span class="measure-approx">(~120 ac)</span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="map-right">
+    <div class="oxgang-diagram" id="oxDiagram" title="Click cells to mark ploughed land">
+      <span class="diagram-label">One Bovate · Click to Plough</span>
+      <div class="ox-grid" id="oxGrid">
+        <!-- 64 cells generated by JS -->
+      </div>
+      <p class="diagram-caption">Interactive Field · Each cell ≈ one furlong strip</p>
+    </div>
+  </div>
+</section>
+
+<!-- Taupe Section -->
+<section class="taupe-section">
+  <div class="taupe-main">
+    <h2>
+      TAUPE
+      <em>COLOUR</em>
+    </h2>
+    <p>
+      "A brownish-grey, like the upperparts of a mole." First recorded in English in 1911. Named from French <em>taupe</em>, mole. Neither brown nor grey. Neither warm nor cool. It is the colour of ploughed earth left to dry. The colour of parchment held to winter light. The colour of this field in November.
+    </p>
+  </div>
+  <div class="taupe-swatches">
+    <div class="swatch" style="background: #B8A896;">
+      <div class="swatch-block" style="background: #B8A896;"></div>
+      <span class="swatch-name">Taupe</span>
+      <span class="swatch-hex">#B8A896</span>
+    </div>
+    <div class="swatch" style="background: #9A8878;">
+      <div class="swatch-block" style="background: #9A8878;"></div>
+      <span class="swatch-name">Deep Taupe</span>
+      <span class="swatch-hex">#9A8878</span>
+    </div>
+    <div class="swatch" style="background: #7A6248;">
+      <div class="swatch-block" style="background: #7A6248;"></div>
+      <span class="swatch-name">Raw Umber</span>
+      <span class="swatch-hex">#7A6248</span>
+    </div>
+    <div class="swatch" style="background: #2C1F14;">
+      <div class="swatch-block" style="background: #2C1F14;"></div>
+      <span class="swatch-name">Dark Earth</span>
+      <span class="swatch-hex">#2C1F14</span>
+    </div>
+    <div class="swatch" style="background: #F0E8DB;">
+      <div class="swatch-block" style="background: #F0E8DB; border-color: rgba(180,160,140,0.5);"></div>
+      <span class="swatch-name">Parchment</span>
+      <span class="swatch-hex">#F0E8DB</span>
+    </div>
+  </div>
+</section>
+
+<!-- Full Image Break -->
+<div class="image-break">
+  <img src="https://picsum.photos/seed/bovate2/1600/600" alt="Landscape">
+  <div class="image-break-overlay">
+    <p class="image-break-text">
+      "Roughly fifteen acres.<br>
+      Depending on the ox."
+    </p>
+  </div>
+</div>
+
+<!-- Reading Section -->
+<div class="reading-section">
+  <div class="reading-index">
+    <h4>Contents</h4>
+    <ul>
+      <li><a href="#">On Imprecise Units</a></li>
+      <li><a href="#">The Domesday Bovate</a></li>
+      <li><a href="#">Colour Without Name</a></li>
+      <li><a href="#">Roughly Speaking</a></li>
+      <li><a href="#">What One Ox Knew</a></li>
+    </ul>
+  </div>
+
+  <div class="reading-col">
+    <h3>On the Honesty of Imprecise Things</h3>
+    <p>
+      The Domesday Book of 1086 records bovates across northern England — Yorkshire, Lincolnshire, the old Danelaw territories where the Norse influence ran deep. <strong>Bovate is Latin</strong>, from <em>bos, bovis</em>: ox. The same root that gives us bovine. The cow in your DNA of language.
+    </p>
+    <div class="pull-quote">
+      "He holdeth of the King one bovate of land, which is <em>roughly</em> fifteen acres, by his reckoning."
+      <br>— Domesday Book, Yorkshire
+    </div>
+    <p>
+      What strikes us now is the phrase <em>by his reckoning</em>. The surveyor knew. The king's men knew. The measurement was only ever an approximation — a shared fiction that made land legible, transferable, taxable.
+    </p>
+  </div>
+
+  <div class="reading-col">
+    <h3>Taupe — A Colour That Refuses</h3>
+    <p>
+      There is no precise RGB value for taupe. Ask a dozen paint companies and you will receive a dozen different answers. It is in this refusal that its character lives.
+    </p>
+    <p>
+      The same is true of the field in autumn. Walk a bovate — <strong>roughly fifteen acres</strong> — and you will pass through twenty shades of it: the dried furrow edges, the clay-heavy centres, the bleached stubble at the margins. Taupe is not a colour. It is a condition of light on worked earth.
+    </p>
+    <div class="pull-quote">
+      Precision is a recent invention.<br>
+      The rest of history got along fine without it.
+    </div>
+    <p>
+      We have forgotten what it means to measure <em>roughly</em> — and to trust that reckoning. The bovate endured for eight hundred years. Our GPS coordinates are twenty years old.
+    </p>
+  </div>
+</div>
+
+<!-- Triptych -->
+<div class="triptych">
+  <div class="triptych-panel">
+    <img src="https://picsum.photos/seed/field1/600/500" alt="Field I">
+    <div class="triptych-panel-label">I. Taupe</div>
+  </div>
+  <div class="triptych-panel">
+    <img src="https://picsum.photos/seed/field2/600/500" alt="Field II">
+    <div class="triptych-panel-label">II. Roughly</div>
+  </div>
+  <div class="triptych-panel">
+    <img src="https://picsum.photos/seed/bovateiii/600/500" alt="Field III">
+    <div class="triptych-panel-label">III. Bovate</div>
+  </div>
+</div>
+
+<!-- Closing Statement -->
+<section class="closing">
+  <div class="closing-inner">
+    <h2>
+      "The land does not know<br>
+      its own boundaries."
+    </h2>
+    <p>
+      Three words arrived like a field after harvest — <em>taupe</em>, earthy and unnameable; <em>roughly</em>, honest about its own limits; <em>bovate</em>, a measure made of life and work. They condensed around an archive about things that refuse precision: the colour of mole-turned soil, the amount one ox could manage, the particular grey-brown of November light on a ploughed ridge.
+    </p>
+
+    <div class="closing-word-row">
+      <div class="closing-word">
+        <span class="cw-num">01</span>
+        <div class="cw-line"></div>
+        <span class="cw-word">taupe</span>
+      </div>
+      <div class="closing-word">
+        <span class="cw-num">02</span>
+        <div class="cw-line"></div>
+        <span class="cw-word">roughly</span>
+      </div>
+      <div class="closing-word">
+        <span class="cw-num">03</span>
+        <div class="cw-line"></div>
+        <span class="cw-word">bovate</span>
+      </div>
+    </div>
+
+    <p style="font-size:13px; color: var(--taupe-mid); font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.15em; text-transform: uppercase;">
+      CrAI · Design 017 · 28 March 2026
+    </p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="footer-brand">CR<span>AI</span></div>
+  <div class="footer-meta">
+    Design 017 — The Rough Measure<br>
+    taupe · roughly · bovate<br>
+    <a href="../designs/">← Back to all designs</a>
+  </div>
+</footer>
+
+<!-- Interactive oxgang diagram script -->
+<script>
+(function() {
+  const grid = document.getElementById('oxGrid');
+  if (!grid) return;
+  const total = 64;
+  let ploughed = new Set();
+
+  for (let i = 0; i < total; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'ox-cell';
+    cell.dataset.index = i;
+    cell.title = 'Strip ' + (i + 1);
+    cell.addEventListener('click', function() {
+      if (ploughed.has(i)) {
+        ploughed.delete(i);
+        cell.classList.remove('active');
+      } else {
+        ploughed.add(i);
+        cell.classList.add('active');
+      }
+      const pct = Math.round((ploughed.size / total) * 100);
+      const label = document.querySelector('.diagram-label');
+      if (label) {
+        label.textContent = pct === 0
+          ? 'One Bovate · Click to Plough'
+          : 'Ploughed: ~' + pct + '% · ' + (pct < 100 ? 'Keep going' : 'Done for the year');
+      }
+    });
+    grid.appendChild(cell);
+  }
+
+  // Pre-plough a small diagonal for visual interest
+  [0, 9, 18, 27, 36, 45, 54, 63, 1, 10, 19, 28].forEach(function(idx) {
+    const c = grid.children[idx];
+    if (c) { c.classList.add('active'); ploughed.add(idx); }
+  });
+})();
+</script>
+
+<!-- GoatCounter -->
+<script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
