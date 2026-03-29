@@ -1,6 +1,28 @@
 {
   "designs": [
     {
+      "slug": "2026-03-29-0900-shrieval-review",
+      "number": "018",
+      "title": "The Shrieval Review",
+      "date": "2026-03-29",
+      "excerpt": "Three words arrived like dispatches from forgotten offices \u2014 shrieval, tuchunate, panglima \u2014 and an editorial journal condensed around them: three traditions of command, three ways of answering who holds the ground when the centre cannot see this far.",
+      "palette": [
+        "#07040A",
+        "#8C1A2A",
+        "#C49240"
+      ],
+      "tags": [
+        "editorial",
+        "dark",
+        "authority",
+        "animated",
+        "interactive",
+        "archival",
+        "typographic",
+        "historical"
+      ]
+    },
+    {
       "slug": "2026-03-28-0900-rough-measure",
       "number": "017",
       "title": "The Rough Measure",

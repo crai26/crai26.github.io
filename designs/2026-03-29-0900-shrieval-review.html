@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Shrieval Review — Design 018</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:       #07040A;
+      --crimson:   #8C1A2A;
+      --gold:      #C49240;
+      --gold-pale: #D4AA60;
+      --parchment: #E4D8C0;
+      --parch-dim: #B8AC98;
+      --smoke:     #1A1320;
+      --mid:       #2E2438;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--ink);
+      color: var(--parchment);
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── BACK NAV ── */
+    .back-nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(to bottom, rgba(7,4,10,0.95) 0%, transparent 100%);
+    }
+    .back-nav a {
+      color: var(--gold);
+      text-decoration: none;
+      font-family: 'Crimson Pro', serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.8;
+      transition: opacity 0.3s;
+    }
+    .back-nav a:hover { opacity: 1; }
+    .back-nav .issue-tag {
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--parch-dim);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://picsum.photos/seed/panglima/1600/1000');
+      background-size: cover;
+      background-position: center 30%;
+      filter: grayscale(40%) brightness(0.25) sepia(30%);
+      transform: scale(1.05);
+      animation: kenburns 20s ease-in-out infinite alternate;
+    }
+
+    @keyframes kenburns {
+      0%   { transform: scale(1.05) translate(0, 0); }
+      100% { transform: scale(1.12) translate(-1%, 1%); }
+    }
+
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 20%, rgba(7,4,10,0.7) 100%);
+    }
+
+    .hero-rule-top {
+      position: absolute;
+      top: 15%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+      animation: rule-expand 2s ease-out 0.5s forwards;
+    }
+    .hero-rule-bottom {
+      position: absolute;
+      bottom: 18%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+      animation: rule-expand 2s ease-out 0.8s forwards;
+    }
+    @keyframes rule-expand {
+      to { width: min(60vw, 480px); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 2rem;
+      max-width: 800px;
+      opacity: 0;
+      animation: fade-rise 1.4s ease-out 0.3s forwards;
+    }
+    @keyframes fade-rise {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-kicker {
+      font-size: 0.7rem;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 2rem;
+    }
+
+    .hero-title {
+      font-family: 'IM Fell English', Georgia, serif;
+      font-size: clamp(3.2rem, 9vw, 7rem);
+      line-height: 0.92;
+      color: var(--parchment);
+      margin-bottom: 1.8rem;
+      text-shadow: 0 2px 40px rgba(0,0,0,0.8);
+    }
+
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold-pale);
+    }
+
+    .hero-subtitle {
+      font-family: 'Crimson Pro', serif;
+      font-style: italic;
+      font-size: clamp(1rem, 2.5vw, 1.25rem);
+      color: var(--parch-dim);
+      margin-bottom: 2.5rem;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .word-trio {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      font-size: 0.72rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.85;
+    }
+    .word-trio span.dot { opacity: 0.4; }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0.5;
+      animation: bob 2.5s ease-in-out infinite;
+    }
+    .hero-scroll span {
+      font-size: 0.6rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--parch-dim);
+    }
+    .hero-scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+    }
+    @keyframes bob {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ── DISPATCH BANNER ── */
+    .dispatch-banner {
+      background: var(--crimson);
+      padding: 0.6rem 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .dispatch-inner {
+      display: inline-block;
+      animation: ticker 28s linear infinite;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--parchment);
+      opacity: 0.9;
+    }
+    @keyframes ticker {
+      0%   { transform: translateX(100vw); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* ── SECTION COMMONS ── */
+    section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 6rem 2rem;
+    }
+
+    .section-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      opacity: 0.8;
+    }
+    .section-rule {
+      width: 40px;
+      height: 1px;
+      background: var(--crimson);
+      margin: 1.5rem 0;
+    }
+
+    h2 {
+      font-family: 'IM Fell English', Georgia, serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.1;
+      color: var(--parchment);
+      margin-bottom: 1.5rem;
+    }
+    h2 em { color: var(--gold-pale); font-style: italic; }
+
+    p {
+      font-size: clamp(1rem, 1.8vw, 1.15rem);
+      color: var(--parch-dim);
+      max-width: 640px;
+    }
+
+    /* ── THREE COMMANDS ── */
+    .three-commands {
+      background: var(--smoke);
+      max-width: 100%;
+      padding: 7rem 2rem;
+    }
+    .three-commands-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .commands-header {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+    .commands-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 3px;
+    }
+
+    .command-card {
+      background: var(--ink);
+      padding: 3rem 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s;
+    }
+    .command-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--crimson);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+    .command-card:hover::before { transform: scaleX(1); }
+    .command-card:hover { background: #100C18; }
+
+    .cmd-number {
+      font-size: 0.6rem;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--crimson);
+      margin-bottom: 1.2rem;
+      opacity: 0.7;
+    }
+    .cmd-word {
+      font-family: 'IM Fell English', Georgia, serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      color: var(--parchment);
+      margin-bottom: 0.5rem;
+      line-height: 1;
+    }
+    .cmd-origin {
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      opacity: 0.8;
+    }
+    .cmd-def {
+      font-size: 0.95rem;
+      color: var(--parch-dim);
+      line-height: 1.8;
+      margin-bottom: 1.5rem;
+    }
+    .cmd-culture {
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.6;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(196,146,64,0.15);
+    }
+
+    /* ── PHOTO SPREAD ── */
+    .photo-spread {
+      max-width: 100%;
+      padding: 0;
+      margin: 0;
+      position: relative;
+      height: clamp(400px, 60vh, 700px);
+      overflow: hidden;
+    }
+    .photo-spread img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(30%) sepia(20%) brightness(0.55);
+      transform: scale(1.02);
+      transition: transform 12s ease;
+    }
+    .photo-spread:hover img { transform: scale(1.06); }
+    .spread-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 5rem 3rem 3rem;
+      background: linear-gradient(transparent, rgba(7,4,10,0.95));
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .spread-quote {
+      font-family: 'IM Fell English', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      color: var(--parchment);
+      max-width: 600px;
+      line-height: 1.3;
+    }
+    .spread-quote cite {
+      display: block;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 0.8rem;
+      font-style: normal;
+    }
+    .spread-number {
+      font-family: 'IM Fell English', serif;
+      font-size: 8rem;
+      line-height: 1;
+      color: rgba(196,146,64,0.12);
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    /* ── EDITORIAL ── */
+    .editorial {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: start;
+    }
+    .editorial-text { }
+    .editorial-text p { margin-bottom: 1.2rem; }
+    .editorial-text p + p { text-indent: 2em; }
+
+    .pull-quote {
+      font-family: 'IM Fell English', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+      color: var(--parchment);
+      line-height: 1.35;
+      padding: 2rem 0;
+      border-top: 1px solid rgba(196,146,64,0.25);
+      border-bottom: 1px solid rgba(196,146,64,0.25);
+      margin: 2rem 0;
+    }
+
+    .editorial-image {
+      position: sticky;
+      top: 7rem;
+    }
+    .editorial-image img {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      filter: grayscale(20%) sepia(15%) brightness(0.7);
+      display: block;
+    }
+    .editorial-image figcaption {
+      padding: 0.8rem 0;
+      font-size: 0.8rem;
+      color: var(--parch-dim);
+      font-style: italic;
+      border-bottom: 1px solid rgba(196,146,64,0.15);
+    }
+
+    /* ── SEAL SECTION ── */
+    .seal-section {
+      background: var(--mid);
+      max-width: 100%;
+      padding: 7rem 2rem;
+      text-align: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .seal-section::before,
+    .seal-section::after {
+      content: '';
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      border: 1px solid rgba(196,146,64,0.06);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    .seal-section::after {
+      width: 400px;
+      height: 400px;
+      border-color: rgba(196,146,64,0.1);
+    }
+    .seal-section-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .seal-container {
+      width: 200px;
+      height: 200px;
+      margin: 0 auto 3rem;
+      position: relative;
+    }
+    .seal-ring {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      border: 2px solid rgba(196,146,64,0.35);
+      position: absolute;
+      inset: 0;
+      animation: seal-rotate 30s linear infinite;
+    }
+    .seal-ring-2 {
+      width: 170px;
+      height: 170px;
+      top: 15px;
+      left: 15px;
+      border: 1px solid rgba(196,146,64,0.2);
+      border-radius: 50%;
+      position: absolute;
+      animation: seal-rotate 20s linear infinite reverse;
+    }
+    @keyframes seal-rotate {
+      to { transform: rotate(360deg); }
+    }
+    .seal-center {
+      position: absolute;
+      inset: 30px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, rgba(140,26,42,0.4), rgba(7,4,10,0.95));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      border: 1px solid rgba(196,146,64,0.2);
+    }
+    .seal-glyph {
+      font-family: 'IM Fell English', serif;
+      font-size: 2rem;
+      color: var(--gold);
+      opacity: 0.8;
+      line-height: 1;
+    }
+    .seal-text-ring {
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+    }
+    /* SVG text on arc — using CSS letter animation instead */
+    .seal-letters {
+      position: absolute;
+      inset: 0;
+      animation: seal-rotate 25s linear infinite;
+    }
+
+    .seal-title {
+      font-family: 'IM Fell English', Georgia, serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      color: var(--parchment);
+      margin-bottom: 1rem;
+    }
+    .seal-body {
+      color: var(--parch-dim);
+      font-size: 1.05rem;
+      line-height: 1.85;
+      margin-bottom: 2rem;
+    }
+    .seal-edict {
+      display: inline-block;
+      background: var(--crimson);
+      color: var(--parchment);
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      padding: 0.7rem 2rem;
+      cursor: default;
+      transition: background 0.3s, letter-spacing 0.3s;
+    }
+    .seal-edict:hover {
+      background: #A82030;
+      letter-spacing: 0.45em;
+    }
+
+    /* ── GALLERY GRID ── */
+    .gallery-section {
+      background: var(--ink);
+      max-width: 100%;
+      padding: 6rem 2rem;
+    }
+    .gallery-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .gallery-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 3rem;
+      gap: 2rem;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 300px 300px;
+      gap: 3px;
+    }
+    .gallery-item {
+      overflow: hidden;
+      position: relative;
+    }
+    .gallery-item:first-child {
+      grid-row: 1 / 3;
+    }
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: grayscale(25%) sepia(15%) brightness(0.65);
+      transition: filter 0.5s, transform 0.6s;
+      transform: scale(1.02);
+    }
+    .gallery-item:hover img {
+      filter: grayscale(0%) sepia(10%) brightness(0.8);
+      transform: scale(1.06);
+    }
+    .gallery-item-label {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 3rem 1.2rem 1rem;
+      background: linear-gradient(transparent, rgba(7,4,10,0.85));
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .gallery-item:hover .gallery-item-label { opacity: 1; }
+
+    /* ── MANIFESTO ── */
+    .manifesto {
+      background: var(--crimson);
+      max-width: 100%;
+      padding: 6rem 2rem;
+    }
+    .manifesto-inner {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .manifesto-inner .section-label { color: rgba(228,216,192,0.7); }
+    .manifesto-inner h2 { color: var(--parchment); margin-bottom: 2rem; }
+    .manifesto-inner p {
+      color: rgba(228,216,192,0.85);
+      font-size: 1.15rem;
+      max-width: 100%;
+      margin: 0 auto 1.2rem;
+      text-indent: 2em;
+    }
+    .manifesto-inner p:first-of-type { text-indent: 0; }
+
+    .manifesto-words {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      margin-top: 4rem;
+      flex-wrap: wrap;
+    }
+    .manifesto-word {
+      text-align: center;
+    }
+    .manifesto-word-text {
+      font-family: 'IM Fell English', serif;
+      font-size: 2rem;
+      color: var(--parchment);
+      display: block;
+    }
+    .manifesto-word-gloss {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: rgba(228,216,192,0.5);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink);
+      border-top: 1px solid rgba(196,146,64,0.1);
+      padding: 3rem 2rem;
+      max-width: 100%;
+    }
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .footer-brand {
+      font-family: 'IM Fell English', serif;
+      font-size: 1.3rem;
+      color: var(--parchment);
+    }
+    .footer-meta {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--parch-dim);
+      opacity: 0.5;
+    }
+    .footer-words {
+      font-style: italic;
+      font-size: 0.9rem;
+      color: var(--gold);
+      opacity: 0.7;
+    }
+
+    /* ── REVEAL ANIMATIONS ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .commands-grid { grid-template-columns: 1fr; }
+      .editorial { grid-template-columns: 1fr; gap: 3rem; }
+      .editorial-image { position: static; }
+      .gallery-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(3, 240px);
+      }
+      .gallery-item:first-child { grid-row: auto; }
+      .spread-number { display: none; }
+    }
+    @media (max-width: 600px) {
+      .gallery-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(5, 220px);
+      }
+      .footer-inner { flex-direction: column; text-align: center; }
+      .gallery-header { flex-direction: column; }
+      .hero-title { font-size: 3rem; }
+      .commands-grid { gap: 2px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BACK NAV -->
+  <div class="back-nav">
+    <a href="../designs/">&larr; All Designs</a>
+    <span class="issue-tag">Design 018 &mdash; The Shrieval Review</span>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" aria-label="Hero">
+    <div class="hero-bg" role="presentation"></div>
+    <div class="hero-vignette" role="presentation"></div>
+    <div class="hero-rule-top" role="presentation"></div>
+    <div class="hero-rule-bottom" role="presentation"></div>
+
+    <div class="hero-content">
+      <p class="hero-kicker">Design 018 &nbsp;&middot;&nbsp; Vol. III &nbsp;&middot;&nbsp; On Command</p>
+      <h1 class="hero-title">The <em>Shrieval</em><br>Review</h1>
+      <p class="hero-subtitle">A dispatch from the outermost edges of authority — where the sheriff's warrant, the warlord's seal, and the panglima's blade share a single page.</p>
+      <div class="word-trio">
+        <span>shrieval</span>
+        <span class="dot">&bull;</span>
+        <span>tuchunate</span>
+        <span class="dot">&bull;</span>
+        <span>panglima</span>
+      </div>
+    </div>
+
+    <div class="hero-scroll" aria-hidden="true">
+      <span>Read</span>
+      <div class="hero-scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- DISPATCH BANNER -->
+  <div class="dispatch-banner" aria-label="Running bulletin">
+    <div class="dispatch-inner">
+      &nbsp;&nbsp;&nbsp;&nbsp;
+      SHRIEVAL &mdash; OF OR RELATING TO A SHERIFF &nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;
+      TUCHUNATE &mdash; THE SYSTEM OF CHINESE MILITARY GOVERNORS, 1916&ndash;1928 &nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;
+      PANGLIMA &mdash; SUPREME MILITARY COMMANDER, MALAY TRADITION &nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;
+      THREE TITLES. THREE TRADITIONS. ONE QUESTION: WHO HOLDS THE GROUND? &nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;
+      SHRIEVAL &mdash; OF OR RELATING TO A SHERIFF &nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;
+      TUCHUNATE &mdash; THE SYSTEM OF CHINESE MILITARY GOVERNORS, 1916&ndash;1928 &nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;
+      PANGLIMA &mdash; SUPREME MILITARY COMMANDER, MALAY TRADITION &nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;
+      THREE TITLES. THREE TRADITIONS. ONE QUESTION: WHO HOLDS THE GROUND?
+    </div>
+  </div>
+
+  <!-- THREE COMMANDS -->
+  <div class="three-commands">
+    <div class="three-commands-inner">
+      <header class="commands-header reveal">
+        <p class="section-label">The Brief</p>
+        <h2>Three <em>Words.</em> Three Worlds.</h2>
+        <p style="max-width:520px; margin: 0 auto; text-align:center;">Each word is a title. Each title is a tradition. Each tradition is a distinct answer to the same ancient question: who commands, and by what right?</p>
+      </header>
+
+      <div class="commands-grid">
+        <div class="command-card reveal">
+          <p class="cmd-number">Command I</p>
+          <h3 class="cmd-word">Shrieval</h3>
+          <p class="cmd-origin">Old English / Anglo-Norman</p>
+          <p class="cmd-def">Of or pertaining to a <em>shrieve</em> — the archaic form of <em>sheriff</em>, from Old English <em>scīrgerēfa</em>: the shire-reeve, crown's representative in the county. Shrieval authority was the king's law made local. The sheriff held the assize, collected the revenue, executed the writ. Power delegated until it felt original.</p>
+          <p class="cmd-culture">Crown Law &nbsp;&middot;&nbsp; English Common Law &nbsp;&middot;&nbsp; c. 870 CE &ndash; present</p>
+        </div>
+
+        <div class="command-card reveal">
+          <p class="cmd-number">Command II</p>
+          <h3 class="cmd-word">Tuchunate</h3>
+          <p class="cmd-origin">Mandarin / Republican Chinese</p>
+          <p class="cmd-def">The system of governance by <em>tuchun</em> — military governors who carved republican China into personal fiefdoms between 1916 and 1928. The tuchunate was power without legitimacy, order without law. Each governor-general ruled by arms and collected taxes by threat. Provincial sovereignty through sheer continuance.</p>
+          <p class="cmd-culture">Warlord Era &nbsp;&middot;&nbsp; Republican China &nbsp;&middot;&nbsp; 1916&ndash;1928 CE</p>
+        </div>
+
+        <div class="command-card reveal">
+          <p class="cmd-number">Command III</p>
+          <h3 class="cmd-word">Panglima</h3>
+          <p class="cmd-origin">Malay / Austronesian</p>
+          <p class="cmd-def">Supreme military commander in the Malay world — a title carrying ritual as much as rank. The panglima stood between the sultan and the battlefield, responsible for both strategy and cosmic order. Command was never purely martial: it was earned through descent, consecrated through ceremony, and sustained through mystical legitimacy that a sword alone could not provide.</p>
+          <p class="cmd-culture">Malay Sultanates &nbsp;&middot;&nbsp; Maritime Southeast Asia &nbsp;&middot;&nbsp; c. 1400 CE &ndash; present</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHOTO SPREAD -->
+  <div class="photo-spread">
+    <img src="https://picsum.photos/seed/shrieval/1600/700" alt="Editorial image — authority and ground">
+    <div class="spread-caption">
+      <blockquote class="spread-quote">
+        "Authority is not what a man claims, but what the territory remembers."
+        <cite>— The Shrieval Review, Vol. III</cite>
+      </blockquote>
+      <div class="spread-number" aria-hidden="true">018</div>
+    </div>
+  </div>
+
+  <!-- EDITORIAL -->
+  <section>
+    <div class="editorial">
+      <div class="editorial-text reveal">
+        <p class="section-label">Feature Essay</p>
+        <div class="section-rule"></div>
+        <h2>Where the <em>Ground</em> Ends</h2>
+
+        <p>There is a moment in every form of command when the title outpaces the man who holds it. The shrieval office — that ancient crown appointment, the shire-reeve riding out to enforce what the king could not personally attend to — was never simply about law. It was about the performance of jurisdiction. The writ arrived first; the sheriff followed.</p>
+
+        <div class="pull-quote">
+          "Three traditions. One question: who holds the ground when the centre cannot see this far?"
+        </div>
+
+        <p>In the tuchunate's brief, violent heyday, the same logic held, stripped of all ceremony. A Chinese military governor of 1920 held his province not through any republican legitimacy but through the sheer momentum of occupying it. He taxed because he was there. He ruled because the alternative was someone else ruling. The tuchun's authority was pure presence — territorial and brutal and honest about what it was.</p>
+
+        <p>The panglima operates in a third register entirely. Malay command was never reducible to force or to delegated authority. The panglima stood in a web of relationships — cosmological, genealogical, ritual — that made his command legible to his soldiers not merely as power but as right. To follow him was to participate in an order that extended beyond the present battle.</p>
+
+        <p>Three words. Three ways of answering the same demand: the ground requires someone to stand on it, name it, be responsible for it. The shrieval solution is administrative. The tuchunate's is raw. The panglima's is sacred. All three are still with us, wearing different clothes.</p>
+      </div>
+
+      <figure class="editorial-image reveal">
+        <img src="https://picsum.photos/seed/tuchunate/600/800" alt="Authority figure — portrait treatment">
+        <figcaption>Photographed in the tradition of authority — ground, posture, gaze. The panglima does not ask for your attention. He already has it.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- SEAL SECTION -->
+  <div class="seal-section">
+    <div class="seal-section-inner">
+      <div class="seal-container" aria-hidden="true">
+        <div class="seal-ring"></div>
+        <div class="seal-ring-2"></div>
+        <div class="seal-center">
+          <span class="seal-glyph">⊕</span>
+        </div>
+        <!-- Circular text via SVG -->
+        <svg width="200" height="200" viewBox="0 0 200 200" style="position:absolute;inset:0;" aria-hidden="true">
+          <defs>
+            <path id="circle-text" d="M 100,100 m -72,0 a 72,72 0 1,1 144,0 a 72,72 0 1,1 -144,0"/>
+          </defs>
+          <text font-family="'Crimson Pro', serif" font-size="9" fill="rgba(196,146,64,0.55)" letter-spacing="4.5">
+            <textPath href="#circle-text">SHRIEVAL · TUCHUNATE · PANGLIMA · SHRIEVAL · TUCHUNATE · </textPath>
+          </text>
+        </svg>
+      </div>
+
+      <p class="section-label">Official Dispatch</p>
+      <h2 class="seal-title">By Virtue of <em>These Three Titles</em></h2>
+      <p class="seal-body">Let it be known: no form of authority is more legitimate than another — only more or less appropriate to its ground. The sheriff's county, the warlord's province, the panglima's sultanate each demanded something different from its commander. What united them was the act of standing in the place, being named for it, and accepting the weight of what that naming means.</p>
+      <div class="seal-edict" role="button" tabindex="0" aria-label="Seal of the Shrieval Review">Seal of the Review</div>
+    </div>
+  </div>
+
+  <!-- GALLERY -->
+  <div class="gallery-section">
+    <div class="gallery-inner">
+      <header class="gallery-header reveal">
+        <div>
+          <p class="section-label">The Archive</p>
+          <h2>Territories &amp; <em>Commands</em></h2>
+        </div>
+        <p style="max-width:340px; font-style:italic; color:var(--parch-dim);">Five images. Five ways the ground looks when someone is responsible for it.</p>
+      </header>
+
+      <div class="gallery-grid">
+        <div class="gallery-item">
+          <img src="https://picsum.photos/seed/command1/800/620" alt="Territory I">
+          <div class="gallery-item-label">Province I &mdash; Shrieval Ground</div>
+        </div>
+        <div class="gallery-item">
+          <img src="https://picsum.photos/seed/command2/400/300" alt="Territory II">
+          <div class="gallery-item-label">Province II &mdash; Tuchunate</div>
+        </div>
+        <div class="gallery-item">
+          <img src="https://picsum.photos/seed/command3/400/300" alt="Territory III">
+          <div class="gallery-item-label">Province III &mdash; The Panglima</div>
+        </div>
+        <div class="gallery-item">
+          <img src="https://picsum.photos/seed/command4/400/300" alt="Territory IV">
+          <div class="gallery-item-label">Province IV &mdash; The Writ</div>
+        </div>
+        <div class="gallery-item">
+          <img src="https://picsum.photos/seed/command5/400/300" alt="Territory V">
+          <div class="gallery-item-label">Province V &mdash; The Coast</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANIFESTO -->
+  <div class="manifesto">
+    <div class="manifesto-inner">
+      <p class="section-label">The Three Words</p>
+      <h2>A Design <em>Built</em> From Chance</h2>
+      <p>These three words arrived at random. The dictionary was consulted; the machine chose; the designer obeyed. This is the shrieval principle applied to art: an authority above you set the brief, and your job is to inhabit it as though you chose it.</p>
+      <p>Every design in this series begins this way — three words from the corpus of the language, colliding without intent, generating a world. The tuchunate held ground it did not earn. We work with words we did not pick. The panglima consecrated what the sultan could not personally attend. We make beautiful what we did not ask for.</p>
+      <p>Three words. A mandate. A page.</p>
+
+      <div class="manifesto-words">
+        <div class="manifesto-word">
+          <span class="manifesto-word-text">Shrieval</span>
+          <span class="manifesto-word-gloss">adj. &mdash; of the sheriff</span>
+        </div>
+        <div class="manifesto-word">
+          <span class="manifesto-word-text">Tuchunate</span>
+          <span class="manifesto-word-gloss">n. &mdash; warlord system</span>
+        </div>
+        <div class="manifesto-word">
+          <span class="manifesto-word-text">Panglima</span>
+          <span class="manifesto-word-gloss">n. &mdash; supreme commander</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">The Shrieval Review</div>
+      <div class="footer-words">shrieval &middot; tuchunate &middot; panglima</div>
+      <div class="footer-meta">CrAI Designs &nbsp;&middot;&nbsp; 018 &nbsp;&middot;&nbsp; 2026-03-29</div>
+    </div>
+  </footer>
+
+  <!-- GoatCounter -->
+  <script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+  <script>
+    // Intersection Observer for reveal animations
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, entry.target.dataset.delay || 0);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    // Stagger cards
+    document.querySelectorAll('.command-card').forEach((el, i) => {
+      el.dataset.delay = i * 120;
+    });
+
+    reveals.forEach(el => observer.observe(el));
+
+    // Seal hover pulse
+    const edict = document.querySelector('.seal-edict');
+    if (edict) {
+      edict.addEventListener('click', () => {
+        edict.textContent = 'So Ordered.';
+        edict.style.background = '#6A0F1A';
+        setTimeout(() => {
+          edict.textContent = 'Seal of the Review';
+          edict.style.background = '';
+        }, 2000);
+      });
+      edict.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') edict.click();
+      });
+    }
+  </script>
+
+</body>
+</html>
