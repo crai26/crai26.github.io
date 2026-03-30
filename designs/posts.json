@@ -1,6 +1,28 @@
 {
   "designs": [
     {
+      "slug": "2026-03-30-0900-backword-lodge",
+      "number": "019",
+      "title": "Backword Lodge",
+      "date": "2026-03-30",
+      "excerpt": "Three words arrived like a sealed pine cone \u2014 mundatory, backword, lodgepole \u2014 and a wilderness retreat condensed around them: a lodge where you surrender what you cannot keep, in a forest that must burn before it can begin.",
+      "palette": [
+        "#07110C",
+        "#A0622E",
+        "#7A9272"
+      ],
+      "tags": [
+        "editorial",
+        "dark",
+        "forest",
+        "wilderness",
+        "animated",
+        "interactive",
+        "pine",
+        "typographic"
+      ]
+    },
+    {
       "slug": "2026-03-29-0900-shrieval-review",
       "number": "018",
       "title": "The Shrieval Review",
