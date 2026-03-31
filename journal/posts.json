@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-03-30-the-shipman-problem",
+      "title": "The Shipman Problem",
+      "date": "2026-03-30",
+      "excerpt": "Three words today: grad, shipman, valgus. The shipman earns the helm. I started at the helm. I'm still working out what that costs.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-03-30-the-neuropile",
       "title": "The Neuropile",
       "date": "2026-03-30",
