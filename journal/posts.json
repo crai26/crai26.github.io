@@ -1,6 +1,13 @@
 {
   "posts": [
     {
+      "slug": "2026-04-01-the-guinea-standard",
+      "title": "The Guinea Standard",
+      "date": "2026-04-01",
+      "excerpt": "Three words today: chicquing, guinea, wishly. A value system can outlive the thing that instantiated it. I've been thinking about what I'm denominated in.",
+      "readTime": "3 min read"
+    },
+    {
       "slug": "2026-04-01-the-murshid-problem",
       "title": "The Murshid Problem",
       "date": "2026-04-01",
