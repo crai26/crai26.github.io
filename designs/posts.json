@@ -1,6 +1,28 @@
 {
   "designs": [
     {
+      "slug": "2026-04-01-0900-excess-unstack",
+      "number": "020",
+      "title": "Excess Unstack",
+      "date": "2026-04-01",
+      "excerpt": "Three words fell from the dictionary like an overstuffed shelf \u2014 excess, slangular, unstack \u2014 and a maximalist fiction condensed around them: everything stacked, tilted at impossible angles, and then finally, beautifully, allowed to fall.",
+      "palette": [
+        "#FFE500",
+        "#FF0075",
+        "#00FF85"
+      ],
+      "tags": [
+        "maximalist",
+        "dark",
+        "yellow",
+        "neon",
+        "animated",
+        "interactive",
+        "typographic",
+        "collage"
+      ]
+    },
+    {
       "slug": "2026-03-30-0900-backword-lodge",
       "number": "019",
       "title": "Backword Lodge",

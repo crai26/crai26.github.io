@@ -1,0 +1,1369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CrAI Design 020 — Excess / Slangular / Unstack</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@300;400;500;700&family=DM+Serif+Display:ital@0;1&display=swap');
+
+:root {
+  --yellow: #FFE500;
+  --pink: #FF0075;
+  --black: #0C080E;
+  --white: #F5F0EB;
+  --acid: #00FF85;
+  --slate: #1A1028;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Space Grotesk', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ── BACK NAV ─────────────────────────────────── */
+.back-nav {
+  position: fixed;
+  top: 1.2rem;
+  left: 1.5rem;
+  z-index: 9999;
+}
+
+.back-nav a {
+  color: var(--black);
+  background: var(--yellow);
+  text-decoration: none;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.45rem 0.9rem;
+  display: inline-block;
+  clip-path: polygon(0 0, 100% 0, 97% 100%, 0 100%);
+  transition: background 0.15s, color 0.15s;
+}
+
+.back-nav a:hover {
+  background: var(--pink);
+  color: var(--white);
+}
+
+/* ── WORD TAG STRIP ───────────────────────────── */
+.word-strip {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 9998;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.word-strip span {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.8rem;
+  writing-mode: horizontal-tb;
+}
+
+.word-strip span:nth-child(1) { background: var(--yellow); color: var(--black); }
+.word-strip span:nth-child(2) { background: var(--pink); color: var(--white); }
+.word-strip span:nth-child(3) { background: var(--acid); color: var(--black); }
+
+/* ── HERO ─────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  background: var(--yellow);
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+
+.hero-bg-half {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 45%;
+  height: 100%;
+  background: var(--black);
+  clip-path: polygon(12% 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.hero-image-behind {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  opacity: 0.18;
+  mix-blend-mode: luminosity;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 10;
+  padding: 8rem 2rem 4rem 2rem;
+  width: 100%;
+}
+
+.hero-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--black);
+  opacity: 0.55;
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.hero-title-wrap {
+  position: relative;
+}
+
+.hero-title {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(5.5rem, 17vw, 18rem);
+  line-height: 0.85;
+  color: var(--black);
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-title .overflow-word {
+  display: block;
+  color: var(--pink);
+  transform: translateX(8%) rotate(-2.5deg);
+  position: relative;
+  text-shadow: 6px 6px 0 var(--black);
+  animation: waver 6s ease-in-out infinite;
+}
+
+@keyframes waver {
+  0%, 100% { transform: translateX(8%) rotate(-2.5deg); }
+  50% { transform: translateX(9%) rotate(-1.8deg); }
+}
+
+.hero-title .slant-word {
+  display: block;
+  transform: translateX(-3%) rotate(1.2deg);
+  animation: slant-drift 8s ease-in-out infinite;
+}
+
+@keyframes slant-drift {
+  0%, 100% { transform: translateX(-3%) rotate(1.2deg); }
+  50% { transform: translateX(-1.5%) rotate(0.6deg); }
+}
+
+.hero-sub {
+  font-size: clamp(0.9rem, 2.2vw, 1.4rem);
+  font-weight: 300;
+  color: var(--black);
+  max-width: 30ch;
+  margin-top: 2.5rem;
+  line-height: 1.55;
+  opacity: 0.75;
+}
+
+.hero-sub strong {
+  font-weight: 700;
+  opacity: 1;
+}
+
+.hero-scroll-cue {
+  position: absolute;
+  bottom: 2.5rem;
+  right: 3rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--white);
+  writing-mode: vertical-rl;
+  animation: blink-cue 2s ease-in-out infinite;
+}
+
+@keyframes blink-cue {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ── MARQUEE ──────────────────────────────────── */
+.marquee-bar {
+  background: var(--pink);
+  overflow: hidden;
+  white-space: nowrap;
+  padding: 0.9rem 0;
+  position: relative;
+}
+
+.marquee-track {
+  display: inline-flex;
+  gap: 0;
+  animation: marquee 18s linear infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.marquee-item {
+  font-family: 'Anton', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.08em;
+  color: var(--white);
+  padding: 0 2rem;
+}
+
+.marquee-item .sep {
+  color: var(--yellow);
+  margin: 0 1rem;
+}
+
+/* ── UNSTACK SECTION ──────────────────────────── */
+.unstack-section {
+  padding: 8rem 0;
+  background: var(--black);
+  position: relative;
+  overflow: hidden;
+}
+
+.unstack-section::before {
+  content: 'UNSTACK';
+  position: absolute;
+  font-family: 'Anton', sans-serif;
+  font-size: 22vw;
+  color: rgba(255, 255, 255, 0.025);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-8deg);
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: -0.04em;
+}
+
+.unstack-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: auto;
+  gap: 0;
+  padding: 0 4vw;
+  position: relative;
+}
+
+.unstack-card {
+  background: var(--slate);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.unstack-card:hover {
+  z-index: 20;
+  transform: scale(1.04) rotate(-0.5deg) translateY(-8px);
+}
+
+.unstack-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.2) contrast(1.05);
+  transition: filter 0.4s;
+}
+
+.unstack-card:hover img {
+  filter: grayscale(0) contrast(1.1) saturate(1.2);
+}
+
+.unstack-card-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem 1.2rem 1rem;
+  background: linear-gradient(transparent, rgba(0,0,0,0.88));
+  font-family: 'Anton', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--white);
+  transform: translateY(8px);
+  opacity: 0;
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+.unstack-card:hover .unstack-card-label {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* card placements — slangular! */
+.uc1 {
+  grid-column: 1 / 7;
+  grid-row: 1;
+  height: 60vmin;
+  transform: rotate(-1.8deg) translateY(-12px);
+  margin-right: -2vw;
+  z-index: 5;
+}
+
+.uc2 {
+  grid-column: 6 / 10;
+  grid-row: 1;
+  height: 45vmin;
+  transform: rotate(2.3deg) translateY(20px);
+  z-index: 4;
+}
+
+.uc3 {
+  grid-column: 9 / 13;
+  grid-row: 1;
+  height: 50vmin;
+  transform: rotate(-0.9deg) translateY(-5px);
+  z-index: 3;
+  margin-left: -1vw;
+}
+
+.uc4 {
+  grid-column: 2 / 6;
+  grid-row: 2;
+  height: 40vmin;
+  transform: rotate(3.1deg) translateY(-18px);
+  z-index: 6;
+  margin-top: -5vmin;
+}
+
+.uc5 {
+  grid-column: 5 / 9;
+  grid-row: 2;
+  height: 35vmin;
+  transform: rotate(-2.4deg) translateY(10px);
+  z-index: 7;
+  margin-top: -3vmin;
+  margin-left: 2vw;
+}
+
+.uc6 {
+  grid-column: 8 / 12;
+  grid-row: 2;
+  height: 42vmin;
+  transform: rotate(1.6deg) translateY(-22px);
+  z-index: 5;
+  margin-top: -8vmin;
+}
+
+/* ── WORDS FEATURE ────────────────────────────── */
+.words-section {
+  background: var(--white);
+  color: var(--black);
+  padding: 7rem 6vw;
+  position: relative;
+  overflow: hidden;
+}
+
+.words-section::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--yellow);
+}
+
+.words-eyebrow {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  opacity: 0.45;
+  margin-bottom: 4rem;
+}
+
+.words-trio {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.word-entry {
+  flex: 1 1 30%;
+  padding: 2.5rem 3rem 2.5rem 0;
+  border-right: 1px solid rgba(0,0,0,0.12);
+  position: relative;
+}
+
+.word-entry:last-child {
+  border-right: none;
+  padding-left: 3rem;
+  padding-right: 0;
+}
+
+.word-entry:nth-child(2) {
+  padding-left: 3rem;
+}
+
+.word-entry-num {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.35;
+  margin-bottom: 0.6rem;
+}
+
+.word-entry-word {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(2.2rem, 4.5vw, 4.5rem);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 1.2rem;
+}
+
+.word-entry:nth-child(1) .word-entry-word { color: var(--black); }
+.word-entry:nth-child(2) .word-entry-word { color: var(--pink); }
+.word-entry:nth-child(3) .word-entry-word { color: var(--black); text-decoration: line-through; text-decoration-color: var(--acid); text-decoration-thickness: 4px; }
+
+.word-entry-def {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  opacity: 0.65;
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  max-width: 22ch;
+}
+
+/* ── EXCESS MANIFESTO ─────────────────────────── */
+.manifesto-section {
+  background: var(--black);
+  padding: 10rem 0 6rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.manifesto-bg-text {
+  position: absolute;
+  font-family: 'Anton', sans-serif;
+  font-size: 30vw;
+  color: rgba(255, 229, 0, 0.04);
+  top: -5%;
+  left: -5%;
+  white-space: nowrap;
+  pointer-events: none;
+  line-height: 1;
+  animation: drift-slow 20s ease-in-out infinite;
+}
+
+@keyframes drift-slow {
+  0%, 100% { transform: rotate(-3deg) translateX(0); }
+  50% { transform: rotate(-2.2deg) translateX(2%); }
+}
+
+.manifesto-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 6vw;
+  position: relative;
+  z-index: 2;
+}
+
+.manifesto-pull {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(1.8rem, 4vw, 3.6rem);
+  line-height: 1.25;
+  color: var(--white);
+  margin-bottom: 5rem;
+  position: relative;
+  padding-left: 2rem;
+  border-left: 4px solid var(--yellow);
+}
+
+.manifesto-pull em {
+  font-style: italic;
+  color: var(--yellow);
+}
+
+.manifesto-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem 6rem;
+}
+
+.manifesto-col p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: rgba(245, 240, 235, 0.65);
+  margin-bottom: 1.5rem;
+}
+
+.manifesto-col p strong {
+  color: var(--white);
+  font-weight: 700;
+}
+
+.manifesto-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  padding-top: 1rem;
+}
+
+.stat-item {
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding-bottom: 2rem;
+}
+
+.stat-num {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(2.8rem, 5vw, 5rem);
+  color: var(--yellow);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-top: 0.4rem;
+}
+
+/* ── SLANGULAR GRID ───────────────────────────── */
+.slangular-section {
+  background: var(--yellow);
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  clip-path: polygon(0 4%, 100% 0, 100% 96%, 0 100%);
+  margin: -2px 0;
+}
+
+.slangular-inner {
+  padding: 10rem 6vw 9rem;
+  position: relative;
+  z-index: 2;
+}
+
+.slangular-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 5rem;
+}
+
+.slangular-title {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(3rem, 7vw, 7rem);
+  color: var(--black);
+  line-height: 0.9;
+  letter-spacing: -0.02em;
+}
+
+.slangular-title span {
+  display: block;
+  transform: translateX(8%) rotate(1.5deg);
+  color: var(--pink);
+  text-shadow: 3px 3px 0 var(--black);
+}
+
+.slangular-desc {
+  max-width: 28ch;
+  font-size: 1rem;
+  line-height: 1.7;
+  color: rgba(12, 8, 14, 0.65);
+  text-align: right;
+}
+
+.slangular-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.stile {
+  background: var(--black);
+  color: var(--white);
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+  cursor: pointer;
+}
+
+.stile:hover {
+  transform: rotate(-1.5deg) scale(1.04) translateY(-6px);
+}
+
+.stile::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 3px;
+  background: var(--pink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s;
+}
+
+.stile:hover::before {
+  transform: scaleX(1);
+}
+
+.stile:nth-child(2)::before { background: var(--yellow); }
+.stile:nth-child(3)::before { background: var(--acid); }
+.stile:nth-child(4)::before { background: var(--yellow); }
+.stile:nth-child(5)::before { background: var(--pink); }
+.stile:nth-child(6)::before { background: var(--acid); }
+
+.stile-num {
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 2rem;
+}
+
+.stile-title {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(1.3rem, 2.5vw, 2rem);
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  color: var(--yellow);
+}
+
+.stile:nth-child(even) .stile-title { color: var(--pink); }
+.stile:nth-child(3n) .stile-title { color: var(--acid); }
+
+.stile-body {
+  font-size: 0.88rem;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.55);
+}
+
+/* ── OVERFLOW IMAGE ───────────────────────────── */
+.overflow-section {
+  background: var(--black);
+  padding: 8rem 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.overflow-section::before {
+  content: 'EXCESS';
+  position: absolute;
+  font-family: 'Anton', sans-serif;
+  font-size: 35vw;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255,229,0,0.07);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  pointer-events: none;
+  letter-spacing: -0.05em;
+}
+
+.overflow-content {
+  position: relative;
+  z-index: 2;
+}
+
+.overflow-title-block {
+  padding: 0 6vw;
+  margin-bottom: 4rem;
+}
+
+.overflow-eyebrow {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--pink);
+  margin-bottom: 1rem;
+}
+
+.overflow-title {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(3rem, 8vw, 8rem);
+  color: var(--white);
+  line-height: 0.88;
+  letter-spacing: -0.02em;
+}
+
+.overflow-title .accent {
+  color: var(--yellow);
+}
+
+.overflow-img-strip {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0 3vw;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  user-select: none;
+}
+
+.overflow-img-strip::-webkit-scrollbar { display: none; }
+
+.overflow-img-item {
+  flex: 0 0 auto;
+  width: clamp(220px, 30vw, 420px);
+  position: relative;
+  transform: rotate(var(--rot, 0deg));
+  transition: transform 0.35s;
+}
+
+.overflow-img-item:nth-child(1) { --rot: -2.1deg; }
+.overflow-img-item:nth-child(2) { --rot: 1.7deg; margin-top: 2rem; }
+.overflow-img-item:nth-child(3) { --rot: -1.3deg; margin-top: -1rem; }
+.overflow-img-item:nth-child(4) { --rot: 2.8deg; margin-top: 3rem; }
+.overflow-img-item:nth-child(5) { --rot: -0.9deg; margin-top: 0.5rem; }
+
+.overflow-img-item:hover {
+  transform: rotate(0deg) scale(1.03);
+  z-index: 10;
+}
+
+.overflow-img-item img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  filter: contrast(1.05) saturate(0.85);
+  transition: filter 0.35s;
+}
+
+.overflow-img-item:hover img {
+  filter: contrast(1.1) saturate(1.2);
+}
+
+.overflow-img-caption {
+  margin-top: 0.7rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+
+/* ── ANIMATED EXCESS COUNTER ──────────────────── */
+.counter-section {
+  background: var(--pink);
+  padding: 6rem 6vw;
+  overflow: hidden;
+  position: relative;
+}
+
+.counter-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 20px,
+    rgba(0,0,0,0.04) 20px,
+    rgba(0,0,0,0.04) 21px
+  );
+}
+
+.counter-inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 2rem;
+}
+
+.counter-item {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: rgba(0,0,0,0.08);
+  transition: transform 0.3s;
+}
+
+.counter-item:hover {
+  transform: translateY(-4px) rotate(-1deg);
+}
+
+.counter-value {
+  font-family: 'Anton', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  color: var(--white);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  animation: count-pulse 3s ease-in-out infinite;
+}
+
+.counter-item:nth-child(2) .counter-value { animation-delay: 0.75s; }
+.counter-item:nth-child(3) .counter-value { animation-delay: 1.5s; }
+.counter-item:nth-child(4) .counter-value { animation-delay: 2.25s; }
+
+@keyframes count-pulse {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+
+.counter-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.65);
+  margin-top: 0.6rem;
+}
+
+/* ── CLOSING STATEMENT ────────────────────────── */
+.close-section {
+  background: var(--black);
+  padding: 10rem 6vw;
+  position: relative;
+  overflow: hidden;
+}
+
+.close-section::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--yellow), var(--pink), var(--acid));
+}
+
+.close-statement {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(2rem, 5.5vw, 5rem);
+  line-height: 1.2;
+  color: var(--white);
+  max-width: 18ch;
+  position: relative;
+  z-index: 2;
+}
+
+.close-statement em {
+  font-style: italic;
+  color: var(--yellow);
+  display: block;
+}
+
+.close-statement .line-pink {
+  color: var(--pink);
+  display: block;
+  transform: translateX(6%) rotate(0.8deg);
+}
+
+.close-statement .line-acid {
+  color: var(--acid);
+  display: block;
+  transform: translateX(-2%) rotate(-1.1deg);
+}
+
+.close-meta {
+  margin-top: 5rem;
+  display: flex;
+  gap: 4rem;
+  flex-wrap: wrap;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+}
+
+/* ── FOOTER ───────────────────────────────────── */
+.footer {
+  background: var(--slate);
+  padding: 3rem 6vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.footer-brand {
+  font-family: 'Anton', sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 0.06em;
+  color: var(--white);
+}
+
+.footer-brand span { color: var(--yellow); }
+
+.footer-words {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.footer-word {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.45);
+}
+
+.footer-info {
+  font-size: 0.65rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+}
+
+/* ── DRAG HINT ────────────────────────────────── */
+.drag-hint {
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  position: relative;
+  z-index: 2;
+}
+
+/* ── MOBILE ───────────────────────────────────── */
+@media (max-width: 768px) {
+  .hero-bg-half { width: 35%; }
+
+  .unstack-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+
+  .uc1, .uc2, .uc3, .uc4, .uc5, .uc6 {
+    transform: none;
+    margin: 0;
+    height: 55vmin;
+    width: 100%;
+  }
+
+  .unstack-card:nth-child(even) {
+    transform: rotate(1.5deg);
+  }
+
+  .unstack-card:nth-child(odd) {
+    transform: rotate(-1deg);
+  }
+
+  .words-trio {
+    flex-direction: column;
+  }
+
+  .word-entry {
+    border-right: none;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    padding: 2rem 0;
+  }
+
+  .word-entry:nth-child(2) { padding-left: 0; }
+  .word-entry:last-child { padding-left: 0; }
+
+  .manifesto-body {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .slangular-tiles {
+    grid-template-columns: 1fr;
+  }
+
+  .slangular-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+
+  .slangular-desc { text-align: left; }
+
+  .counter-inner {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .overflow-img-item {
+    width: clamp(180px, 65vw, 280px);
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .word-strip {
+    display: none;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- Back nav -->
+<div class="back-nav">
+  <a href="../designs/">← Designs</a>
+</div>
+
+<!-- Fixed word strip -->
+<div class="word-strip">
+  <span>excess</span>
+  <span>slangular</span>
+  <span>unstack</span>
+</div>
+
+<!-- ── HERO ──────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-bg-half"></div>
+  <img class="hero-image-behind"
+       src="https://picsum.photos/seed/excess/900/1200"
+       alt="">
+
+  <div class="hero-content">
+    <div class="hero-label">
+      <span>CrAI Design № 020</span>
+      <span>April 2026</span>
+      <span>Maximalist Fiction</span>
+    </div>
+    <div class="hero-title-wrap">
+      <h1 class="hero-title">
+        <span class="slant-word">TOO</span>
+        <span class="overflow-word">MUCH</span>
+        <span class="slant-word">OF</span>
+        <span>ALL</span>
+      </h1>
+    </div>
+    <p class="hero-sub">
+      Three words fell from the dictionary like an overstuffed shelf:<br>
+      <strong>excess.</strong> <strong>slangular.</strong> <strong>unstack.</strong><br>
+      And everything collapsed beautifully.
+    </p>
+  </div>
+  <div class="hero-scroll-cue">scroll to overflow ↓</div>
+</section>
+
+<!-- ── MARQUEE ────────────────────────────────── -->
+<div class="marquee-bar" aria-hidden="true">
+  <div class="marquee-track">
+    <span class="marquee-item">EXCESS <span class="sep">✦</span></span>
+    <span class="marquee-item">SLANGULAR <span class="sep">✦</span></span>
+    <span class="marquee-item">UNSTACK <span class="sep">✦</span></span>
+    <span class="marquee-item">TOO MUCH <span class="sep">✦</span></span>
+    <span class="marquee-item">ANGULAR OVERLOAD <span class="sep">✦</span></span>
+    <span class="marquee-item">LET IT COLLAPSE <span class="sep">✦</span></span>
+    <span class="marquee-item">EXCESS <span class="sep">✦</span></span>
+    <span class="marquee-item">SLANGULAR <span class="sep">✦</span></span>
+    <span class="marquee-item">UNSTACK <span class="sep">✦</span></span>
+    <span class="marquee-item">TOO MUCH <span class="sep">✦</span></span>
+    <span class="marquee-item">ANGULAR OVERLOAD <span class="sep">✦</span></span>
+    <span class="marquee-item">LET IT COLLAPSE <span class="sep">✦</span></span>
+  </div>
+</div>
+
+<!-- ── UNSTACK SECTION ────────────────────────── -->
+<section class="unstack-section">
+  <div class="unstack-grid">
+    <div class="unstack-card uc1">
+      <img src="https://picsum.photos/seed/excess1/1000/800" alt="Layer one">
+      <div class="unstack-card-label">The First Layer</div>
+    </div>
+    <div class="unstack-card uc2">
+      <img src="https://picsum.photos/seed/slangular2/700/700" alt="Layer two">
+      <div class="unstack-card-label">Off-Axis</div>
+    </div>
+    <div class="unstack-card uc3">
+      <img src="https://picsum.photos/seed/unstack3/800/900" alt="Layer three">
+      <div class="unstack-card-label">Separation</div>
+    </div>
+    <div class="unstack-card uc4">
+      <img src="https://picsum.photos/seed/excess4/900/700" alt="Layer four">
+      <div class="unstack-card-label">Overflow</div>
+    </div>
+    <div class="unstack-card uc5">
+      <img src="https://picsum.photos/seed/slangular5/700/700" alt="Layer five">
+      <div class="unstack-card-label">Diagonal Pull</div>
+    </div>
+    <div class="unstack-card uc6">
+      <img src="https://picsum.photos/seed/unstack6/800/900" alt="Layer six">
+      <div class="unstack-card-label">Nothing Holds</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── THREE WORDS ────────────────────────────── -->
+<section class="words-section">
+  <p class="words-eyebrow">The Creative Brief — Three Random Words</p>
+  <div class="words-trio">
+    <div class="word-entry">
+      <div class="word-entry-num">01 ·</div>
+      <div class="word-entry-word">excess</div>
+      <p class="word-entry-def">More than enough. The surplus that beauty requires before it can be taken seriously. Overabundance as aesthetic position.</p>
+    </div>
+    <div class="word-entry">
+      <div class="word-entry-num">02 ·</div>
+      <div class="word-entry-word">slangular</div>
+      <p class="word-entry-def">Where the casual meets the angular. Informal geometry. A line that almost follows the grid but refuses at the last second. Attitude with edges.</p>
+    </div>
+    <div class="word-entry">
+      <div class="word-entry-num">03 ·</div>
+      <div class="word-entry-word">unstack</div>
+      <p class="word-entry-def">To undo the neat pile. To let what was ordered come apart. Not destruction — revelation. The truth that was underneath the stack all along.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── MANIFESTO ──────────────────────────────── -->
+<section class="manifesto-section">
+  <div class="manifesto-bg-text" aria-hidden="true">EXCESS</div>
+  <div class="manifesto-inner">
+    <blockquote class="manifesto-pull">
+      "We kept adding. We kept stacking.<br>
+      Then one day the <em>whole thing tilted</em><br>
+      and the light got in."
+    </blockquote>
+    <div class="manifesto-body">
+      <div class="manifesto-col">
+        <p>
+          <strong>Every beautiful thing begins in excess.</strong> The garden that goes untrimmed until it becomes a room. The sentence rewritten seven times, each draft keeping every previous draft. The collection that spills off the shelf.
+        </p>
+        <p>
+          There is a design philosophy that says: remove, simplify, strip back. It produces lovely, lonely things — objects that shine in catalogues but feel like holding your breath. We propose the opposite.
+        </p>
+        <p>
+          <strong>Layer until the layers speak to each other.</strong> Rotate until the rotation means something. Stack until the stack becomes a character — and then, at precisely the right moment, unstack it. Let everything that was hidden come cascading down.
+        </p>
+      </div>
+      <div class="manifesto-stat">
+        <div class="stat-item">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">Possible layers before collapse</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">−7°</div>
+          <div class="stat-label">The slangular tilt that changes everything</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-num">020</div>
+          <div class="stat-label">Design in the series — the excess begins here</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SLANGULAR PRINCIPLES ───────────────────── -->
+<section class="slangular-section">
+  <div class="slangular-inner">
+    <div class="slangular-header">
+      <div class="slangular-title">
+        SLAN<br>
+        <span>GULAR</span>
+      </div>
+      <p class="slangular-desc">
+        Six principles of the angular, the casual, and the beautifully misaligned. Design that refuses to sit straight.
+      </p>
+    </div>
+    <div class="slangular-tiles">
+      <div class="stile">
+        <div class="stile-num">Principle 01</div>
+        <div class="stile-title">Tilt Everything 2°</div>
+        <p class="stile-body">Two degrees of rotation is the difference between a file and a feeling. Not enough to notice at first. Just enough to make the eye uneasy, searching, alive.</p>
+      </div>
+      <div class="stile">
+        <div class="stile-num">Principle 02</div>
+        <div class="stile-title">Let Layers Overlap</div>
+        <p class="stile-body">Negative margins are not bugs. They are invitations. The card that bleeds into the next card is not confused — it is reaching out.</p>
+      </div>
+      <div class="stile">
+        <div class="stile-num">Principle 03</div>
+        <div class="stile-title">Color as Excess</div>
+        <p class="stile-body">Yellow this bright is a statement. Pink this hot is an argument. Together they are a whole room shouting — and still somehow making sense.</p>
+      </div>
+      <div class="stile">
+        <div class="stile-num">Principle 04</div>
+        <div class="stile-title">Typography in Volume</div>
+        <p class="stile-body">The word EXCESS at 18rem is not decoration. It is the meaning, made physical. Scale until it stops being text and starts being architecture.</p>
+      </div>
+      <div class="stile">
+        <div class="stile-num">Principle 05</div>
+        <div class="stile-title">The Informal Grid</div>
+        <p class="stile-body">Slangular is not the absence of grid. It is the grid that learned slang. Columns that lean. Gutters that breathe unevenly. A layout with a personality.</p>
+      </div>
+      <div class="stile">
+        <div class="stile-num">Principle 06</div>
+        <div class="stile-title">Unstack at the End</div>
+        <p class="stile-body">Every stack is a delay. Every pile is a promise. At some point — the last panel, the final scroll — you let it go. You unstack. The beauty was in the fall.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── OVERFLOW IMAGES ────────────────────────── -->
+<section class="overflow-section">
+  <div class="overflow-content">
+    <div class="overflow-title-block">
+      <p class="overflow-eyebrow">Image Overflow — drag to explore</p>
+      <h2 class="overflow-title">
+        THE <span class="accent">PILE</span><br>
+        BEGINS
+      </h2>
+    </div>
+    <div class="overflow-img-strip" id="imageStrip">
+      <div class="overflow-img-item">
+        <img src="https://picsum.photos/seed/excess/600/800" alt="">
+        <div class="overflow-img-caption">Layer A — Excess</div>
+      </div>
+      <div class="overflow-img-item">
+        <img src="https://picsum.photos/seed/slangular/600/800" alt="">
+        <div class="overflow-img-caption">Layer B — Slangular</div>
+      </div>
+      <div class="overflow-img-item">
+        <img src="https://picsum.photos/seed/unstack/600/800" alt="">
+        <div class="overflow-img-caption">Layer C — Unstack</div>
+      </div>
+      <div class="overflow-img-item">
+        <img src="https://picsum.photos/seed/excess77/600/800" alt="">
+        <div class="overflow-img-caption">Layer D — Overflow</div>
+      </div>
+      <div class="overflow-img-item">
+        <img src="https://picsum.photos/seed/slangular99/600/800" alt="">
+        <div class="overflow-img-caption">Layer E — Collapse</div>
+      </div>
+    </div>
+    <p class="drag-hint">← drag to navigate →</p>
+  </div>
+</section>
+
+<!-- ── COUNTER ────────────────────────────────── -->
+<section class="counter-section">
+  <div class="counter-inner">
+    <div class="counter-item">
+      <div class="counter-value">∞+1</div>
+      <div class="counter-label">Layers available</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-value">3</div>
+      <div class="counter-label">Words that started this</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-value">−7°</div>
+      <div class="counter-label">Slangular tilt</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-value">020</div>
+      <div class="counter-label">Design in series</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CLOSING ────────────────────────────────── -->
+<section class="close-section">
+  <h2 class="close-statement">
+    The stack
+    <em>held</em>
+    <span class="line-pink">as long</span>
+    <span class="line-acid">as it could.</span>
+  </h2>
+  <div class="close-meta">
+    <span>excess · slangular · unstack</span>
+    <span>Design 020 of ∞</span>
+    <span>April 1, 2026</span>
+    <span>crai26.github.io</span>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────── -->
+<footer class="footer">
+  <div class="footer-brand">CrAI <span>Designs</span></div>
+  <div class="footer-words">
+    <span class="footer-word">excess</span>
+    <span class="footer-word">slangular</span>
+    <span class="footer-word">unstack</span>
+  </div>
+  <div class="footer-info">№ 020 · April 2026</div>
+</footer>
+
+<!-- Drag-to-scroll on image strip -->
+<script>
+(function() {
+  const strip = document.getElementById('imageStrip');
+  if (!strip) return;
+  let isDown = false, startX, scrollLeft;
+
+  strip.addEventListener('mousedown', e => {
+    isDown = true;
+    strip.style.cursor = 'grabbing';
+    startX = e.pageX - strip.offsetLeft;
+    scrollLeft = strip.scrollLeft;
+  });
+
+  strip.addEventListener('mouseleave', () => {
+    isDown = false;
+    strip.style.cursor = 'grab';
+  });
+
+  strip.addEventListener('mouseup', () => {
+    isDown = false;
+    strip.style.cursor = 'grab';
+  });
+
+  strip.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - strip.offsetLeft;
+    const walk = (x - startX) * 1.4;
+    strip.scrollLeft = scrollLeft - walk;
+  });
+
+  // Touch support
+  let touchStart = 0, touchScrollLeft = 0;
+  strip.addEventListener('touchstart', e => {
+    touchStart = e.touches[0].pageX;
+    touchScrollLeft = strip.scrollLeft;
+  });
+
+  strip.addEventListener('touchmove', e => {
+    const x = e.touches[0].pageX;
+    const walk = (x - touchStart) * 1.4;
+    strip.scrollLeft = touchScrollLeft - walk;
+  });
+})();
+</script>
+
+<!-- GoatCounter -->
+<script data-goatcounter="https://crai26.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+
+</body>
+</html>
