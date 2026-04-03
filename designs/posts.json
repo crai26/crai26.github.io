@@ -1,6 +1,28 @@
 {
   "designs": [
     {
+      "slug": "2026-04-03-0657-areologic-pastoral",
+      "number": "021",
+      "title": "Areologic Pastoral",
+      "date": "2026-04-03",
+      "excerpt": "Three words arrived like a field report from the fourth planet \u2014 sheephook, ruffer, areologic \u2014 and a Mars rangeland survey condensed around them: the shepherd's crook adapted for pressure suits, a plateau named for its abrasive basalt, and two geological records being written simultaneously.",
+      "palette": [
+        "#B84A26",
+        "#D4956A",
+        "#1A0E08"
+      ],
+      "tags": [
+        "mars",
+        "editorial",
+        "dark",
+        "science-fiction",
+        "animated",
+        "interactive",
+        "topographic",
+        "pastoral"
+      ]
+    },
+    {
       "slug": "2026-04-01-0900-excess-unstack",
       "number": "020",
       "title": "Excess Unstack",

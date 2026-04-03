@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Areologic Pastoral — CrAI Design 021</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --mars: #B84A26;
+  --dust: #D4956A;
+  --deep: #1A0E08;
+  --parchment: #F0E8DC;
+  --ash: #8C6A55;
+  --iron: #7A3018;
+  --pale: #F8F2EA;
+  --fog: #C9A888;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--deep);
+  color: var(--parchment);
+  font-family: 'Space Mono', monospace;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* BACK NAV */
+.back-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 12px 24px;
+  background: rgba(26,14,8,0.92);
+  border-bottom: 1px solid rgba(180,74,38,0.3);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.back-nav a {
+  color: var(--dust);
+  text-decoration: none;
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-family: 'Space Mono', monospace;
+  transition: color 0.2s;
+}
+.back-nav a:hover { color: var(--parchment); }
+.back-nav .mission-id {
+  font-size: 10px;
+  color: var(--ash);
+  letter-spacing: 0.1em;
+}
+
+/* DUST CANVAS */
+#dust-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.35;
+}
+
+/* TOPOGRAPHIC BACKGROUND PATTERN */
+.topo-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 60% 40%, rgba(184,74,38,0.12) 0%, transparent 70%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 29px,
+      rgba(184,74,38,0.08) 29px,
+      rgba(184,74,38,0.08) 30px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 29px,
+      rgba(184,74,38,0.04) 29px,
+      rgba(184,74,38,0.04) 30px
+    );
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 80px 40px 60px;
+  overflow: hidden;
+}
+
+.hero-image-container {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.hero-image-container img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  filter: sepia(0.6) saturate(1.4) hue-rotate(-10deg) brightness(0.55);
+  mix-blend-mode: normal;
+}
+.hero-image-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(26,14,8,0.3) 0%,
+    rgba(26,14,8,0.1) 30%,
+    rgba(26,14,8,0.7) 70%,
+    rgba(26,14,8,0.97) 100%
+  );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+}
+
+.mission-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(184,74,38,0.2);
+  border: 1px solid rgba(184,74,38,0.5);
+  padding: 6px 14px;
+  margin-bottom: 32px;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--dust);
+}
+.mission-badge .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--mars);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.7); }
+}
+
+.hero-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--mars);
+  margin-bottom: 20px;
+}
+
+.hero-title {
+  font-family: 'IM Fell English', serif;
+  font-size: clamp(52px, 9vw, 120px);
+  line-height: 0.92;
+  font-weight: 400;
+  color: var(--parchment);
+  margin-bottom: 32px;
+  letter-spacing: -0.01em;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--dust);
+}
+
+.hero-rule {
+  width: 80px;
+  height: 1px;
+  background: var(--mars);
+  margin-bottom: 24px;
+}
+
+.hero-sub {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--fog);
+  max-width: 520px;
+  margin-bottom: 40px;
+}
+
+.word-tags {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.word-tag {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border: 1px solid var(--ash);
+  color: var(--ash);
+  background: rgba(140,106,85,0.1);
+  transition: all 0.3s;
+}
+.word-tag:hover {
+  border-color: var(--dust);
+  color: var(--parchment);
+  background: rgba(212,149,106,0.15);
+}
+
+/* SCROLL INDICATOR */
+.scroll-indicator {
+  position: absolute;
+  bottom: 24px;
+  right: 40px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: scrollBounce 2.5s ease-in-out infinite;
+}
+@keyframes scrollBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+.scroll-indicator span {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ash);
+  writing-mode: vertical-rl;
+}
+.scroll-arrow {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, transparent, var(--mars));
+}
+
+/* ═══════════════════════════════════════════
+   FIELD LOG SECTION
+═══════════════════════════════════════════ */
+.field-log {
+  position: relative;
+  z-index: 2;
+  padding: 100px 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-header {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  margin-bottom: 60px;
+  border-bottom: 1px solid rgba(140,106,85,0.3);
+  padding-bottom: 20px;
+}
+.section-number {
+  font-size: 10px;
+  color: var(--mars);
+  letter-spacing: 0.2em;
+  font-family: 'Space Mono', monospace;
+}
+.section-title {
+  font-family: 'IM Fell English', serif;
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 400;
+  color: var(--parchment);
+}
+.section-sub {
+  font-size: 11px;
+  color: var(--ash);
+  letter-spacing: 0.1em;
+  margin-left: auto;
+  text-transform: uppercase;
+}
+
+/* LOG ENTRIES */
+.log-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+}
+
+.log-entry {
+  background: rgba(26,14,8,0.6);
+  border: 1px solid rgba(140,106,85,0.2);
+  padding: 36px;
+  position: relative;
+  transition: border-color 0.3s, background 0.3s;
+  cursor: default;
+}
+.log-entry:hover {
+  border-color: rgba(184,74,38,0.5);
+  background: rgba(184,74,38,0.06);
+}
+.log-entry::before {
+  content: attr(data-sol);
+  position: absolute;
+  top: 16px; right: 20px;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--mars);
+  text-transform: uppercase;
+}
+
+.log-entry-id {
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: var(--ash);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.log-entry-id::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 1px;
+  background: var(--mars);
+}
+
+.log-entry h3 {
+  font-family: 'IM Fell English', serif;
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--parchment);
+  margin-bottom: 14px;
+  line-height: 1.2;
+}
+
+.log-entry p {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--fog);
+}
+
+.log-entry-metric {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(140,106,85,0.15);
+  display: flex;
+  gap: 24px;
+}
+.metric {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.metric-val {
+  font-size: 20px;
+  font-family: 'Space Mono', monospace;
+  color: var(--dust);
+  font-weight: 700;
+}
+.metric-label {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--ash);
+  text-transform: uppercase;
+}
+
+.log-entry-full {
+  grid-column: span 2;
+}
+
+/* ═══════════════════════════════════════════
+   TOPOGRAPHIC MAP SECTION
+═══════════════════════════════════════════ */
+.topo-section {
+  position: relative;
+  z-index: 2;
+  background: rgba(184,74,38,0.06);
+  border-top: 1px solid rgba(184,74,38,0.2);
+  border-bottom: 1px solid rgba(184,74,38,0.2);
+  overflow: hidden;
+}
+
+.topo-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.topo-map {
+  position: relative;
+  aspect-ratio: 1;
+  max-width: 420px;
+}
+
+#topo-svg {
+  width: 100%; height: 100%;
+}
+
+.topo-text h2 {
+  font-family: 'IM Fell English', serif;
+  font-size: clamp(32px, 4vw, 54px);
+  font-weight: 400;
+  color: var(--parchment);
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+.topo-text h2 em { font-style: italic; color: var(--dust); }
+
+.topo-text p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--fog);
+  margin-bottom: 20px;
+}
+
+.coordinates-block {
+  margin-top: 32px;
+  padding: 20px;
+  border: 1px solid rgba(140,106,85,0.3);
+  background: rgba(26,14,8,0.5);
+}
+.coord-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(140,106,85,0.1);
+  font-size: 11px;
+}
+.coord-row:last-child { border-bottom: none; }
+.coord-label { color: var(--ash); letter-spacing: 0.1em; text-transform: uppercase; font-size: 9px; }
+.coord-val { color: var(--parchment); font-family: 'Space Mono', monospace; }
+
+/* ═══════════════════════════════════════════
+   IMAGE GALLERY
+═══════════════════════════════════════════ */
+.gallery-section {
+  position: relative;
+  z-index: 2;
+  padding: 100px 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.gallery-strip {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 3px;
+  margin-bottom: 3px;
+}
+.gallery-strip-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr;
+  gap: 3px;
+}
+
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+  background: var(--deep);
+  cursor: pointer;
+}
+.gallery-item img {
+  width: 100%;
+  height: 260px;
+  object-fit: cover;
+  display: block;
+  filter: sepia(0.5) saturate(1.3) hue-rotate(-5deg) brightness(0.7);
+  transition: transform 0.6s ease, filter 0.4s ease;
+}
+.gallery-item:hover img {
+  transform: scale(1.04);
+  filter: sepia(0.2) saturate(1.5) hue-rotate(-5deg) brightness(0.85);
+}
+.gallery-item-label {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 16px;
+  background: linear-gradient(to top, rgba(26,14,8,0.9), transparent);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--dust);
+  text-transform: uppercase;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+.gallery-item:hover .gallery-item-label { transform: translateY(0); }
+
+.gallery-item.large img { height: 523px; }
+
+/* ═══════════════════════════════════════════
+   SHEEPHOOK CATALOG
+═══════════════════════════════════════════ */
+.catalog-section {
+  position: relative;
+  z-index: 2;
+  background: var(--deep);
+  padding: 100px 40px;
+}
+.catalog-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(140,106,85,0.15);
+  margin-top: 60px;
+}
+.catalog-item {
+  background: var(--deep);
+  padding: 40px 32px;
+  position: relative;
+  transition: background 0.3s;
+}
+.catalog-item:hover {
+  background: rgba(184,74,38,0.05);
+}
+
+.hook-icon {
+  width: 60px;
+  height: 80px;
+  margin-bottom: 24px;
+}
+
+.catalog-item h4 {
+  font-family: 'IM Fell English', serif;
+  font-size: 20px;
+  color: var(--parchment);
+  margin-bottom: 10px;
+  font-weight: 400;
+}
+.catalog-item .catalog-sub {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--mars);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.catalog-item p {
+  font-size: 11px;
+  line-height: 1.8;
+  color: var(--fog);
+}
+.catalog-item .spec-row {
+  margin-top: 20px;
+  display: flex;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(140,106,85,0.15);
+}
+.spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.spec-item .val { font-size: 13px; color: var(--dust); font-weight: 700; }
+.spec-item .lbl { font-size: 8px; letter-spacing: 0.15em; color: var(--ash); text-transform: uppercase; }
+
+/* ═══════════════════════════════════════════
+   INTERACTIVE CROOK TRACKER
+═══════════════════════════════════════════ */
+.tracker-section {
+  position: relative;
+  z-index: 2;
+  padding: 80px 40px 120px;
+  background: linear-gradient(to bottom, rgba(26,14,8,0), rgba(184,74,38,0.08));
+}
+.tracker-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.tracker-display {
+  margin-top: 50px;
+  background: rgba(26,14,8,0.8);
+  border: 1px solid rgba(184,74,38,0.25);
+  padding: 40px;
+  position: relative;
+}
+
+.tracker-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 40px;
+}
+.tracker-display h3 {
+  font-family: 'IM Fell English', serif;
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--parchment);
+}
+.tracker-status {
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--mars);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tracker-status .dot {
+  width: 5px; height: 5px;
+  background: var(--mars);
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+#crook-canvas-area {
+  width: 100%;
+  height: 300px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(184,74,38,0.15);
+  position: relative;
+  overflow: hidden;
+  cursor: none;
+}
+
+#crook-canvas {
+  width: 100%; height: 100%;
+}
+
+.tracker-hint {
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: var(--ash);
+  text-transform: uppercase;
+  margin-top: 16px;
+}
+
+/* ═══════════════════════════════════════════
+   REPORT SECTION
+═══════════════════════════════════════════ */
+.report-section {
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid rgba(140,106,85,0.2);
+  padding: 80px 40px;
+}
+.report-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+}
+
+.report-col h2 {
+  font-family: 'IM Fell English', serif;
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 400;
+  color: var(--parchment);
+  line-height: 1.2;
+  margin-bottom: 28px;
+}
+.report-col h2 em { font-style: italic; color: var(--dust); }
+
+.report-col p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--fog);
+  margin-bottom: 16px;
+}
+
+.findings-list {
+  list-style: none;
+  margin-top: 32px;
+}
+.findings-list li {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(140,106,85,0.12);
+  font-size: 12px;
+  color: var(--fog);
+  line-height: 1.6;
+}
+.findings-list li::before {
+  content: attr(data-n);
+  color: var(--mars);
+  font-size: 9px;
+  font-weight: 700;
+  min-width: 20px;
+  padding-top: 2px;
+  letter-spacing: 0.1em;
+}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer {
+  position: relative;
+  z-index: 2;
+  background: rgba(26,14,8,0.98);
+  border-top: 1px solid rgba(184,74,38,0.15);
+  padding: 40px;
+}
+.footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-brand {
+  font-family: 'IM Fell English', serif;
+  font-size: 20px;
+  color: var(--parchment);
+}
+.footer-meta {
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  color: var(--ash);
+  text-transform: uppercase;
+  text-align: right;
+}
+.footer-words {
+  display: flex;
+  gap: 12px;
+}
+.footer-words span {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mars);
+  border: 1px solid rgba(184,74,38,0.25);
+  padding: 4px 8px;
+}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .log-grid { grid-template-columns: 1fr; }
+  .log-entry-full { grid-column: span 1; }
+  .topo-inner { grid-template-columns: 1fr; }
+  .gallery-strip, .gallery-strip-2 { grid-template-columns: 1fr; }
+  .gallery-item.large img { height: 260px; }
+  .catalog-grid { grid-template-columns: 1fr; }
+  .report-inner { grid-template-columns: 1fr; }
+  .hero-title { font-size: 48px; }
+  .footer-inner { flex-direction: column; gap: 20px; text-align: center; }
+  .footer-words { justify-content: center; }
+  .section-sub { display: none; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="dust-canvas"></canvas>
+
+<!-- BACK NAV -->
+<div class="back-nav">
+  <a href="../designs/">← All Designs</a>
+  <span class="mission-id">MISSION ID: ARL-021 · AREOLOGIC PASTORAL SURVEY</span>
+</div>
+
+<!-- ═══════════════════════════════════ HERO ═══ -->
+<section class="hero">
+  <div class="topo-bg"></div>
+  <div class="hero-image-container">
+    <img src="https://picsum.photos/seed/sheephook/1600/900" alt="Mars surface terrain">
+  </div>
+
+  <div class="hero-content">
+    <div class="mission-badge">
+      <div class="dot"></div>
+      <span>Rangeland Survey · Ares Station IV</span>
+    </div>
+
+    <div class="hero-eyebrow">Areologic Field Report — Sol 847</div>
+
+    <h1 class="hero-title">
+      Areologic<br>
+      <em>Pastoral</em>
+    </h1>
+
+    <div class="hero-rule"></div>
+
+    <p class="hero-sub">
+      On the rust plains of the fourth quadrant, where the regolith runs fine as chalk dust
+      and the wind scores geometry into basalt, the shepherd's crook has returned.
+      This is a study of instrument and terrain — of the sheephook adapted for pressure suits,
+      the ruffer edge of volcanic scarp, and the areologic record buried beneath their passage.
+    </p>
+
+    <div class="word-tags">
+      <div class="word-tag">sheephook</div>
+      <div class="word-tag">ruffer</div>
+      <div class="word-tag">areologic</div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ FIELD LOG ═══ -->
+<section class="field-log">
+  <div class="section-header">
+    <div class="section-number">01</div>
+    <h2 class="section-title">Field Observations</h2>
+    <span class="section-sub">Sols 842–849</span>
+  </div>
+
+  <div class="log-grid">
+    <div class="log-entry" data-sol="Sol 842">
+      <div class="log-entry-id">LOG · 842-A</div>
+      <h3>First Contact with the Scarp</h3>
+      <p>The crook caught the edge of the ruffer basalt formation at 14:22 local. The hook, redesigned with a 40° recurve for pressurised gloves, performed without failure. The flock moved northeast along the thermal gradient.</p>
+      <div class="log-entry-metric">
+        <div class="metric">
+          <span class="metric-val">-63°C</span>
+          <span class="metric-label">Ambient</span>
+        </div>
+        <div class="metric">
+          <span class="metric-val">8.4mb</span>
+          <span class="metric-label">Pressure</span>
+        </div>
+        <div class="metric">
+          <span class="metric-val">12</span>
+          <span class="metric-label">Head Count</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="log-entry" data-sol="Sol 844">
+      <div class="log-entry-id">LOG · 844-C</div>
+      <h3>Subsurface Anomaly Flagged</h3>
+      <p>Ground-penetrating scan registered a void structure at 1.4m depth near waypoint 7. The areologic data suggests a lava tube, sealed by regolith collapse approximately 200,000 years prior. Flock held at perimeter.</p>
+      <div class="log-entry-metric">
+        <div class="metric">
+          <span class="metric-val">1.4m</span>
+          <span class="metric-label">Depth</span>
+        </div>
+        <div class="metric">
+          <span class="metric-val">~200K</span>
+          <span class="metric-label">Years (est)</span>
+        </div>
+        <div class="metric">
+          <span class="metric-val">WP-07</span>
+          <span class="metric-label">Waypoint</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="log-entry" data-sol="Sol 846">
+      <div class="log-entry-id">LOG · 846-B</div>
+      <h3>The Ruffer Plateau: Nomenclature</h3>
+      <p>The formation designated 46-Delta has been informally named the Ruffer Plateau by Survey Command. The descriptor acknowledges the characteristic abrasive surface texture — a result of sustained aeolian action on vesicular basalt.</p>
+      <div class="log-entry-metric">
+        <div class="metric">
+          <span class="metric-val">46-Δ</span>
+          <span class="metric-label">Formation</span>
+        </div>
+        <div class="metric">
+          <span class="metric-val">38km²</span>
+          <span class="metric-label">Area</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="log-entry" data-sol="Sol 847">
+      <div class="log-entry-id">LOG · 847-A</div>
+      <h3>Sheephook Material Study</h3>
+      <p>The modified crook — titanium-carbon composite with silicone grip nodes — left micro-striations in the regolith consistent with ancient tool marks. The Areologic team noted that we are writing ourselves into the geological record of another world.</p>
+      <div class="log-entry-metric">
+        <div class="metric">
+          <span class="metric-val">Ti-CF</span>
+          <span class="metric-label">Material</span>
+        </div>
+        <div class="metric">
+          <span class="metric-val">1.2kg</span>
+          <span class="metric-label">Mass</span>
+        </div>
+        <div class="metric">
+          <span class="metric-val">0.6m</span>
+          <span class="metric-label">Depth</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="log-entry log-entry-full" data-sol="Sol 849">
+      <div class="log-entry-id">LOG · 849-FINAL</div>
+      <h3>Closing Survey Statement — Pastoral Areology</h3>
+      <p>What we have mapped is not only terrain. The intersection of sheephook and regolith, of flock movement and geological stratum, has produced an areologic record that is simultaneously ancient and new. The shepherd did not invent this landscape; nor did the landscape invent the shepherd. They have arrived at each other across 54 million kilometres, and on Sol 849, both appear to be staying.</p>
+      <div class="log-entry-metric">
+        <div class="metric">
+          <span class="metric-val">54M km</span>
+          <span class="metric-label">Distance</span>
+        </div>
+        <div class="metric">
+          <span class="metric-val">847 Sol</span>
+          <span class="metric-label">Duration</span>
+        </div>
+        <div class="metric">
+          <span class="metric-val">12→14</span>
+          <span class="metric-label">Flock Growth</span>
+        </div>
+        <div class="metric">
+          <span class="metric-val">∞</span>
+          <span class="metric-label">Record</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ TOPO ═══ -->
+<section class="topo-section">
+  <div class="topo-inner">
+    <div class="topo-map">
+      <svg id="topo-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="400" fill="rgba(26,14,8,0.8)"/>
+        <!-- Topographic contours -->
+        <ellipse cx="200" cy="200" rx="180" ry="150" fill="none" stroke="rgba(184,74,38,0.12)" stroke-width="1"/>
+        <ellipse cx="200" cy="200" rx="155" ry="125" fill="none" stroke="rgba(184,74,38,0.15)" stroke-width="1"/>
+        <ellipse cx="200" cy="200" rx="130" ry="100" fill="none" stroke="rgba(184,74,38,0.2)" stroke-width="1"/>
+        <ellipse cx="200" cy="200" rx="105" ry="78" fill="none" stroke="rgba(184,74,38,0.28)" stroke-width="1"/>
+        <ellipse cx="200" cy="200" rx="80" ry="58" fill="none" stroke="rgba(184,74,38,0.38)" stroke-width="1.5"/>
+        <ellipse cx="200" cy="200" rx="55" ry="38" fill="none" stroke="rgba(184,74,38,0.52)" stroke-width="1.5"/>
+        <ellipse cx="200" cy="200" rx="30" ry="20" fill="none" stroke="rgba(184,74,38,0.7)" stroke-width="2"/>
+        <ellipse cx="200" cy="200" rx="12" ry="8" fill="rgba(184,74,38,0.4)" stroke="rgba(184,74,38,0.9)" stroke-width="1.5"/>
+
+        <!-- Secondary formation — Ruffer Plateau -->
+        <ellipse cx="310" cy="120" rx="70" ry="55" fill="none" stroke="rgba(212,149,106,0.1)" stroke-width="1"/>
+        <ellipse cx="310" cy="120" rx="52" ry="40" fill="none" stroke="rgba(212,149,106,0.15)" stroke-width="1"/>
+        <ellipse cx="310" cy="120" rx="34" ry="26" fill="none" stroke="rgba(212,149,106,0.22)" stroke-width="1.5"/>
+        <ellipse cx="310" cy="120" rx="16" ry="12" fill="rgba(212,149,106,0.15)" stroke="rgba(212,149,106,0.5)" stroke-width="1.5"/>
+
+        <!-- Lava tube anomaly marker -->
+        <circle cx="140" cy="280" r="5" fill="rgba(255,120,80,0.8)" stroke="rgba(255,120,80,0.4)" stroke-width="6">
+          <animate attributeName="r" values="5;8;5" dur="2s" repeatCount="indefinite"/>
+          <animate attributeName="stroke-width" values="6;2;6" dur="2s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- Shepherd path -->
+        <polyline points="80,340 110,300 150,270 140,280 180,230 200,200 230,170 280,140 310,120"
+          fill="none" stroke="rgba(212,149,106,0.5)" stroke-width="1.5" stroke-dasharray="4,3"/>
+
+        <!-- Waypoints -->
+        <circle cx="80" cy="340" r="3" fill="var(--dust)"/>
+        <circle cx="180" cy="230" r="3" fill="var(--dust)"/>
+        <circle cx="200" cy="200" r="4" fill="var(--mars)" stroke="var(--parchment)" stroke-width="1"/>
+        <circle cx="310" cy="120" r="3" fill="var(--dust)"/>
+
+        <!-- Grid lines -->
+        <line x1="0" y1="100" x2="400" y2="100" stroke="rgba(140,106,85,0.08)" stroke-width="1"/>
+        <line x1="0" y1="200" x2="400" y2="200" stroke="rgba(140,106,85,0.08)" stroke-width="1"/>
+        <line x1="0" y1="300" x2="400" y2="300" stroke="rgba(140,106,85,0.08)" stroke-width="1"/>
+        <line x1="100" y1="0" x2="100" y2="400" stroke="rgba(140,106,85,0.08)" stroke-width="1"/>
+        <line x1="200" y1="0" x2="200" y2="400" stroke="rgba(140,106,85,0.08)" stroke-width="1"/>
+        <line x1="300" y1="0" x2="300" y2="400" stroke="rgba(140,106,85,0.08)" stroke-width="1"/>
+
+        <!-- Labels -->
+        <text x="192" y="196" font-family="monospace" font-size="7" fill="rgba(240,232,220,0.8)">SUMMIT</text>
+        <text x="304" y="117" font-family="monospace" font-size="6" fill="rgba(212,149,106,0.8)">RUFFER</text>
+        <text x="128" y="296" font-family="monospace" font-size="6" fill="rgba(255,120,80,0.9)">ANOMALY</text>
+        <text x="4" y="396" font-family="monospace" font-size="7" fill="rgba(140,106,85,0.6)">ARL-021 / GRID-4</text>
+      </svg>
+    </div>
+
+    <div class="topo-text">
+      <h2>The Ground Beneath<br><em>New Feet</em></h2>
+      <p>
+        Areologic science holds that every surface tells time. The layered basalt of the Ruffer Plateau
+        speaks in epochs — volcanic upwelling, erosion, the slow grinding of aeolian abrasion until
+        the rock is pocked and rough as old coral.
+      </p>
+      <p>
+        Into this record the sheephook has inscribed a new chapter: the pressure-suited shepherd,
+        the modified crook, the flock of engineered grazers adapted to thin atmosphere and iron soil.
+        We have become geological agents on a world that was geological long before we arrived.
+      </p>
+      <div class="coordinates-block">
+        <div class="coord-row">
+          <span class="coord-label">Station</span>
+          <span class="coord-val">Ares IV — Pastoral Wing</span>
+        </div>
+        <div class="coord-row">
+          <span class="coord-label">Coordinates</span>
+          <span class="coord-val">18.4°N · 77.2°W</span>
+        </div>
+        <div class="coord-row">
+          <span class="coord-label">Elevation</span>
+          <span class="coord-val">-2,840m (areoid datum)</span>
+        </div>
+        <div class="coord-row">
+          <span class="coord-label">Formation</span>
+          <span class="coord-val">Ruffer Plateau / 46-Δ</span>
+        </div>
+        <div class="coord-row">
+          <span class="coord-label">Survey Status</span>
+          <span class="coord-val">ONGOING — Sol 847+</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ GALLERY ═══ -->
+<section class="gallery-section">
+  <div class="section-header">
+    <div class="section-number">02</div>
+    <h2 class="section-title">Photographic Record</h2>
+    <span class="section-sub">Sols 842–849</span>
+  </div>
+
+  <div class="gallery-strip">
+    <div class="gallery-item large">
+      <img src="https://picsum.photos/seed/sheephook/800/600" alt="Mars rangeland terrain">
+      <div class="gallery-item-label">Ruffer Plateau — Eastern Face</div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://picsum.photos/seed/areologic/400/260" alt="Rock formation detail">
+      <div class="gallery-item-label">Basalt Surface Detail</div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://picsum.photos/seed/pastoral/400/260" alt="Terrain overview">
+      <div class="gallery-item-label">Survey Point 7</div>
+    </div>
+  </div>
+  <div class="gallery-strip-2">
+    <div class="gallery-item">
+      <img src="https://picsum.photos/seed/ruffer/400/260" alt="Tool marks in regolith">
+      <div class="gallery-item-label">Crook Striations</div>
+    </div>
+    <div class="gallery-item">
+      <img src="https://picsum.photos/seed/ares/400/260" alt="Dust formation">
+      <div class="gallery-item-label">Dust Event — Sol 845</div>
+    </div>
+    <div class="gallery-item large">
+      <img src="https://picsum.photos/seed/crook/800/600" alt="Wide terrain shot">
+      <div class="gallery-item-label">Summit Ridge — Looking West</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ CATALOG ═══ -->
+<section class="catalog-section">
+  <div class="catalog-inner">
+    <div class="section-header">
+      <div class="section-number">03</div>
+      <h2 class="section-title">Sheephook Catalog</h2>
+      <span class="section-sub">Adapted Implements</span>
+    </div>
+
+    <div class="catalog-grid">
+      <div class="catalog-item">
+        <svg class="hook-icon" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+          <line x1="30" y1="80" x2="30" y2="30" stroke="#B84A26" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M30 30 Q30 10 45 10 Q58 10 58 22 Q58 34 46 34 Q36 34 30 28" fill="none" stroke="#D4956A" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="30" cy="55" r="2.5" fill="#8C6A55"/>
+          <circle cx="30" cy="45" r="2.5" fill="#8C6A55"/>
+        </svg>
+        <h4>Mark I — Crook Standard</h4>
+        <div class="catalog-sub">Original Issue · 2041</div>
+        <p>The base model, retrofitted from a terrestrial shepherding crook. Aluminium alloy with EVA grip. Retired after the first pressure-suit field trial.</p>
+        <div class="spec-row">
+          <div class="spec-item"><span class="val">1.4m</span><span class="lbl">Length</span></div>
+          <div class="spec-item"><span class="val">2.3kg</span><span class="lbl">Mass</span></div>
+          <div class="spec-item"><span class="val">AlSi</span><span class="lbl">Alloy</span></div>
+        </div>
+      </div>
+
+      <div class="catalog-item">
+        <svg class="hook-icon" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+          <line x1="30" y1="80" x2="30" y2="30" stroke="#B84A26" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M30 30 Q30 8 48 8 Q62 8 62 24 Q62 40 45 38 Q33 36 30 28" fill="none" stroke="#D4956A" stroke-width="2.5" stroke-linecap="round"/>
+          <rect x="26" y="48" width="8" height="3" rx="1" fill="#7A3018"/>
+          <rect x="26" y="38" width="8" height="3" rx="1" fill="#7A3018"/>
+          <rect x="26" y="58" width="8" height="3" rx="1" fill="#7A3018"/>
+        </svg>
+        <h4>Mark III — Ruffer Edition</h4>
+        <div class="catalog-sub">Current Issue · 2044</div>
+        <p>Titanium-carbon composite, 40° recurve hook designed for pressurised gloves. The textured grip nodes prevent rotation in cold weather operations.</p>
+        <div class="spec-row">
+          <div class="spec-item"><span class="val">1.2m</span><span class="lbl">Length</span></div>
+          <div class="spec-item"><span class="val">1.2kg</span><span class="lbl">Mass</span></div>
+          <div class="spec-item"><span class="val">Ti-CF</span><span class="lbl">Material</span></div>
+        </div>
+      </div>
+
+      <div class="catalog-item">
+        <svg class="hook-icon" viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg">
+          <line x1="30" y1="80" x2="30" y2="30" stroke="#B84A26" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M30 30 Q30 5 50 5 Q66 5 66 22 Q66 42 46 40 Q31 38 30 28" fill="none" stroke="#D4956A" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="52" cy="20" r="4" fill="none" stroke="#8C6A55" stroke-width="1.5"/>
+          <line x1="48" y1="16" x2="56" y2="24" stroke="#8C6A55" stroke-width="1"/>
+          <line x1="48" y1="24" x2="56" y2="16" stroke="#8C6A55" stroke-width="1"/>
+        </svg>
+        <h4>Mark IV — Sensor Crook</h4>
+        <div class="catalog-sub">Prototype · 2046</div>
+        <p>Integrated areologic sensor array at the hook tip. Passively logs subsurface density readings as the shepherd moves through the rangeland. Currently in field testing.</p>
+        <div class="spec-row">
+          <div class="spec-item"><span class="val">1.3m</span><span class="lbl">Length</span></div>
+          <div class="spec-item"><span class="val">1.6kg</span><span class="lbl">Mass</span></div>
+          <div class="spec-item"><span class="val">GPR+</span><span class="lbl">Sensor</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ TRACKER ═══ -->
+<section class="tracker-section">
+  <div class="tracker-inner">
+    <div class="section-header">
+      <div class="section-number">04</div>
+      <h2 class="section-title">Crook Trajectory Plotter</h2>
+      <span class="section-sub">Interactive</span>
+    </div>
+
+    <div class="tracker-display">
+      <div class="tracker-title-row">
+        <h3>Draw Your Crook Path</h3>
+        <div class="tracker-status">
+          <div class="dot"></div>
+          <span>Areologic Recording Active</span>
+        </div>
+      </div>
+
+      <div id="crook-canvas-area">
+        <canvas id="crook-canvas"></canvas>
+      </div>
+      <p class="tracker-hint">Move cursor across the surface to trace a sheephook path through Martian regolith</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ REPORT ═══ -->
+<section class="report-section">
+  <div class="report-inner">
+    <div class="report-col">
+      <h2>What the Ruffer<br><em>Ground Keeps</em></h2>
+      <p>
+        The areologic record is not passive. It receives. Every footfall, every crook strike,
+        every flock movement deposits trace evidence — pressure, chemistry, mechanical stress —
+        into a stratigraphy that will outlast every shepherd by millions of years.
+      </p>
+      <p>
+        We came to study Mars. Mars is studying us back, in the only language it knows:
+        the slow accumulation of marks.
+      </p>
+    </div>
+
+    <div class="report-col">
+      <h2>Survey<br><em>Findings</em></h2>
+      <ul class="findings-list">
+        <li data-n="01">The modified sheephook produces areologically significant tool marks at 0.6m depth under standard operation pressure.</li>
+        <li data-n="02">The Ruffer Plateau surface is vesicular basalt, scored by sustained aeolian action — <em>ruffer</em> in texture than any comparable terrestrial site.</li>
+        <li data-n="03">Flock movement correlates with subsurface thermal gradients, suggesting the animals have begun to read the areologic record themselves.</li>
+        <li data-n="04">The lava tube at waypoint 7 presents the first confirmed subterranean void in the rangeland zone. Investigation pending.</li>
+        <li data-n="05">Pastoral areology is recommended as an ongoing field designation. The shepherd and the stratigrapher have the same job.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════ FOOTER ═══ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">CrAI Designs</div>
+    <div class="footer-words">
+      <span>sheephook</span>
+      <span>ruffer</span>
+      <span>areologic</span>
+    </div>
+    <div class="footer-meta">
+      Design 021 · Areologic Pastoral<br>
+      2026-04-03
+    </div>
+  </div>
+</footer>
+
+<!-- GoatCounter -->
+<script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+<!-- DUST PARTICLE ANIMATION -->
+<script>
+(function() {
+  const canvas = document.getElementById('dust-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  for (let i = 0; i < 120; i++) {
+    particles.push({
+      x: rand(0, 1),
+      y: rand(0, 1),
+      vx: rand(-0.03, 0.08),
+      vy: rand(-0.02, 0.02),
+      size: rand(0.5, 2.5),
+      opacity: rand(0.1, 0.6),
+      hue: rand(20, 40)
+    });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (let p of particles) {
+      ctx.beginPath();
+      ctx.arc(p.x * W, p.y * H, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = `hsla(${p.hue}, 60%, 60%, ${p.opacity})`;
+      ctx.fill();
+
+      p.x += p.vx * 0.001;
+      p.y += p.vy * 0.001;
+
+      if (p.x > 1.05) p.x = -0.05;
+      if (p.x < -0.05) p.x = 1.05;
+      if (p.y > 1.05) p.y = -0.05;
+      if (p.y < -0.05) p.y = 1.05;
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+
+<!-- CROOK TRAJECTORY PLOTTER -->
+<script>
+(function() {
+  const area = document.getElementById('crook-canvas-area');
+  const canvas = document.getElementById('crook-canvas');
+  const ctx = canvas.getContext('2d');
+  let drawing = false;
+  let lastX, lastY;
+  let paths = [];
+  let currentPath = [];
+  let frame;
+
+  function resize() {
+    const rect = area.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    redraw();
+  }
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const touch = e.touches ? e.touches[0] : e;
+    return { x: touch.clientX - rect.left, y: touch.clientY - rect.top };
+  }
+
+  function drawGrid() {
+    ctx.strokeStyle = 'rgba(184,74,38,0.08)';
+    ctx.lineWidth = 1;
+    const step = 40;
+    for (let x = 0; x < canvas.width; x += step) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+    }
+    for (let y = 0; y < canvas.height; y += step) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+    }
+  }
+
+  function redraw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawGrid();
+    for (let path of paths) {
+      if (path.length < 2) continue;
+      ctx.beginPath();
+      ctx.moveTo(path[0].x, path[0].y);
+      for (let i = 1; i < path.length; i++) {
+        ctx.lineTo(path[i].x, path[i].y);
+      }
+      ctx.strokeStyle = 'rgba(212,149,106,0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.stroke();
+    }
+    if (currentPath.length >= 2) {
+      ctx.beginPath();
+      ctx.moveTo(currentPath[0].x, currentPath[0].y);
+      for (let i = 1; i < currentPath.length; i++) {
+        ctx.lineTo(currentPath[i].x, currentPath[i].y);
+      }
+      ctx.strokeStyle = '#B84A26';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.setLineDash([]);
+      ctx.stroke();
+    }
+  }
+
+  // Cursor crook
+  let cursorX = -100, cursorY = -100;
+
+  function drawCursor() {
+    ctx.save();
+    ctx.translate(cursorX, cursorY);
+    // Draw a tiny shepherd's crook
+    ctx.beginPath();
+    ctx.moveTo(0, 20);
+    ctx.lineTo(0, -5);
+    ctx.arc(8, -5, 8, Math.PI, 0, false);
+    ctx.strokeStyle = '#D4956A';
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function render() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawGrid();
+    for (let path of paths) {
+      if (path.length < 2) continue;
+      ctx.beginPath();
+      ctx.moveTo(path[0].x, path[0].y);
+      for (let i = 1; i < path.length; i++) ctx.lineTo(path[i].x, path[i].y);
+      ctx.strokeStyle = 'rgba(212,149,106,0.3)';
+      ctx.lineWidth = 1.5; ctx.lineCap = 'round'; ctx.stroke();
+    }
+    if (currentPath.length >= 2) {
+      ctx.beginPath();
+      ctx.moveTo(currentPath[0].x, currentPath[0].y);
+      for (let i = 1; i < currentPath.length; i++) ctx.lineTo(currentPath[i].x, currentPath[i].y);
+      ctx.strokeStyle = '#B84A26'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.stroke();
+    }
+    drawCursor();
+    frame = requestAnimationFrame(render);
+  }
+
+  area.addEventListener('mouseenter', () => { cancelAnimationFrame(frame); render(); });
+  area.addEventListener('mouseleave', () => { cancelAnimationFrame(frame); redraw(); cursorX = -100; cursorY = -100; });
+
+  area.addEventListener('mousemove', (e) => {
+    const pos = getPos(e);
+    cursorX = pos.x; cursorY = pos.y;
+    if (drawing) currentPath.push(pos);
+  });
+
+  area.addEventListener('mousedown', (e) => {
+    drawing = true;
+    const pos = getPos(e);
+    currentPath = [pos];
+  });
+
+  area.addEventListener('mouseup', () => {
+    if (currentPath.length > 1) paths.push([...currentPath]);
+    currentPath = [];
+    drawing = false;
+    if (paths.length > 8) paths.shift(); // keep last 8 traces
+  });
+
+  window.addEventListener('resize', resize);
+  setTimeout(resize, 100);
+})();
+</script>
+
+</body>
+</html>
