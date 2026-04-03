@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Shallow Pulse — CrAI Designs</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Inter:wght@300;400;500&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --sunset:    #F86B2D;
+      --ocean:     #0D1B4A;
+      --teal:      #4ECDC4;
+      --pale-teal: #A8E6E2;
+      --amber:     #FFBA49;
+      --coral:     #FF6B6B;
+      --dark:      #080C1E;
+      --mid:       #1A2654;
+      --text-light: #E8F4F3;
+      --text-dim:   #8BA8B8;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--dark);
+      color: var(--text-light);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── BACK NAV ── */
+    .back-nav {
+      position: fixed;
+      top: 1.25rem;
+      left: 1.5rem;
+      z-index: 100;
+    }
+    .back-nav a {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      color: var(--teal);
+      text-decoration: none;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid rgba(78,205,196,0.35);
+      border-radius: 2px;
+      background: rgba(8,12,30,0.7);
+      backdrop-filter: blur(8px);
+      transition: all 0.25s;
+    }
+    .back-nav a:hover {
+      background: rgba(78,205,196,0.12);
+      border-color: var(--teal);
+    }
+
+    /* ── WORD BADGE ── */
+    .word-badge {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.5rem;
+      z-index: 100;
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .word-badge span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      color: var(--amber);
+      padding: 0.3rem 0.6rem;
+      border: 1px solid rgba(255,186,73,0.3);
+      border-radius: 2px;
+      background: rgba(8,12,30,0.7);
+      backdrop-filter: blur(8px);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      height: 100vh;
+      min-height: 600px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 4rem 2rem 5rem;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        #2a0a05 0%,
+        #6b1c0a 12%,
+        #c44020 25%,
+        #e8652a 35%,
+        #1a2654 58%,
+        #0d1b4a 75%,
+        #080c1e 100%
+      );
+    }
+
+    /* Canvas for bioluminescent particles */
+    #bio-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    /* Horizon shimmer */
+    .horizon {
+      position: absolute;
+      left: 0; right: 0;
+      top: 45%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(255,186,73,0.6), rgba(248,107,45,0.8), rgba(255,186,73,0.6), transparent);
+      animation: horizon-pulse 4s ease-in-out infinite;
+    }
+    @keyframes horizon-pulse {
+      0%, 100% { opacity: 0.5; transform: scaleX(1); }
+      50%       { opacity: 1;   transform: scaleX(1.02); }
+    }
+
+    /* Water surface ripple lines */
+    .water-surface {
+      position: absolute;
+      left: 0; right: 0;
+      top: 47%;
+      bottom: 0;
+    }
+    .ripple-line {
+      position: absolute;
+      left: 5%; right: 5%;
+      height: 1px;
+      background: rgba(78,205,196,0.15);
+      animation: ripple-move 6s ease-in-out infinite;
+    }
+    .ripple-line:nth-child(1) { top: 5%;  animation-delay: 0s;    animation-duration: 7s; }
+    .ripple-line:nth-child(2) { top: 14%; animation-delay: 1.2s;  animation-duration: 5.5s; }
+    .ripple-line:nth-child(3) { top: 26%; animation-delay: 0.6s;  animation-duration: 8s; }
+    .ripple-line:nth-child(4) { top: 40%; animation-delay: 2s;    animation-duration: 6.5s; }
+    .ripple-line:nth-child(5) { top: 57%; animation-delay: 1.5s;  animation-duration: 7.5s; }
+    .ripple-line:nth-child(6) { top: 72%; animation-delay: 0.3s;  animation-duration: 5s; }
+    .ripple-line:nth-child(7) { top: 87%; animation-delay: 1.8s;  animation-duration: 9s; }
+
+    @keyframes ripple-move {
+      0%, 100% { opacity: 0.12; transform: scaleX(0.95) translateX(-1%); }
+      50%       { opacity: 0.35; transform: scaleX(1.05) translateX(1%); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 10;
+      max-width: 900px;
+    }
+
+    .hero-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.25em;
+      color: var(--teal);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fade-up 1s ease forwards 0.3s;
+    }
+
+    .hero-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(3.5rem, 8vw, 8rem);
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      margin-bottom: 2rem;
+      opacity: 0;
+      animation: fade-up 1.2s ease forwards 0.6s;
+    }
+
+    .hero-title .line-1 { color: var(--amber); display: block; }
+    .hero-title .line-2 { color: var(--text-light); display: block; font-style: italic; }
+
+    .hero-desc {
+      font-size: clamp(0.85rem, 1.5vw, 1rem);
+      line-height: 1.75;
+      color: var(--text-dim);
+      max-width: 520px;
+      opacity: 0;
+      animation: fade-up 1.2s ease forwards 0.9s;
+    }
+
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      animation: fade-up 1s ease forwards 1.5s;
+    }
+    .scroll-hint span {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      writing-mode: vertical-rl;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--teal), transparent);
+      animation: scroll-pulse 2s ease-in-out infinite;
+    }
+    @keyframes scroll-pulse {
+      0%, 100% { transform: scaleY(1); opacity: 0.6; }
+      50%       { transform: scaleY(1.2); opacity: 1; }
+    }
+
+    /* ── SPECIMEN STRIP ── */
+    .specimen-strip {
+      background: var(--dark);
+      padding: 0;
+      overflow: hidden;
+      border-top: 1px solid rgba(78,205,196,0.15);
+    }
+    .specimen-track {
+      display: flex;
+      align-items: stretch;
+      height: 380px;
+    }
+    .specimen-item {
+      flex: 0 0 320px;
+      position: relative;
+      overflow: hidden;
+      border-right: 1px solid rgba(78,205,196,0.1);
+    }
+    .specimen-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(0.5) brightness(0.5);
+      transition: filter 0.6s ease, transform 0.6s ease;
+    }
+    .specimen-item:hover img {
+      filter: saturate(1.2) brightness(0.8);
+      transform: scale(1.04);
+    }
+    .specimen-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(8,12,30,0.95) 0%, transparent 50%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 1.25rem;
+    }
+    .specimen-num {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      color: var(--teal);
+      margin-bottom: 0.4rem;
+    }
+    .specimen-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      color: var(--text-light);
+      margin-bottom: 0.25rem;
+    }
+    .specimen-latin {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* Circular scope viewport */
+    .scope-ring {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 1px solid rgba(78,205,196,0.4);
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .specimen-item:hover .scope-ring { opacity: 1; }
+    .scope-ring::before, .scope-ring::after {
+      content: '';
+      position: absolute;
+      background: rgba(78,205,196,0.3);
+    }
+    .scope-ring::before { top: 50%; left: 0; right: 0; height: 1px; transform: translateY(-50%); }
+    .scope-ring::after  { left: 50%; top: 0; bottom: 0; width: 1px; transform: translateX(-50%); }
+
+    /* ── MAIN CONTENT ── */
+    .section-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 6rem 2rem;
+    }
+
+    /* ── FIELD NOTES ── */
+    .field-notes {
+      background: var(--mid);
+      border-top: 1px solid rgba(78,205,196,0.12);
+    }
+
+    .field-notes-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+    }
+
+    .field-panel {
+      padding: 5rem 4rem;
+      border-right: 1px solid rgba(78,205,196,0.1);
+    }
+    .field-panel:last-child { border-right: none; }
+
+    .field-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      color: var(--teal);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .field-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(78,205,196,0.25);
+    }
+
+    .field-heading {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+    }
+
+    .field-body {
+      font-size: 0.9rem;
+      line-height: 1.9;
+      color: var(--text-dim);
+    }
+    .field-body p + p { margin-top: 1rem; }
+    .field-body strong { color: var(--pale-teal); font-weight: 400; }
+
+    /* Data readout */
+    .data-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .data-cell {
+      background: rgba(8,12,30,0.5);
+      border: 1px solid rgba(78,205,196,0.12);
+      padding: 1rem 1.25rem;
+    }
+    .data-value {
+      font-family: 'DM Mono', monospace;
+      font-size: 1.6rem;
+      color: var(--teal);
+      line-height: 1;
+      margin-bottom: 0.3rem;
+    }
+    .data-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    /* ── CELL ANIMATION SECTION ── */
+    .cell-section {
+      background: var(--dark);
+      padding: 6rem 2rem;
+      text-align: center;
+      border-top: 1px solid rgba(78,205,196,0.1);
+    }
+
+    .cell-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      color: var(--sunset);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .cell-heading {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 4rem);
+      margin-bottom: 1rem;
+      color: var(--text-light);
+    }
+    .cell-heading em { color: var(--teal); font-style: italic; }
+
+    .cell-subtext {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      max-width: 520px;
+      margin: 0 auto 3rem;
+      line-height: 1.8;
+    }
+
+    /* Myocyte microscope viewer */
+    .microscope-viewer {
+      position: relative;
+      width: 340px;
+      height: 340px;
+      margin: 0 auto 3rem;
+    }
+
+    .scope-outer {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid rgba(78,205,196,0.3);
+      box-shadow:
+        0 0 0 8px rgba(8,12,30,0.9),
+        0 0 0 9px rgba(78,205,196,0.08),
+        inset 0 0 60px rgba(8,12,30,0.8);
+    }
+    .scope-inner {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, #0d2a30 0%, #080c1e 100%);
+    }
+
+    /* Crosshairs */
+    .scope-cross-h {
+      position: absolute;
+      top: 50%; left: 5%; right: 5%;
+      height: 1px;
+      background: rgba(78,205,196,0.2);
+      transform: translateY(-50%);
+    }
+    .scope-cross-v {
+      position: absolute;
+      left: 50%; top: 5%; bottom: 5%;
+      width: 1px;
+      background: rgba(78,205,196,0.2);
+      transform: translateX(-50%);
+    }
+
+    /* Concentric rings */
+    .scope-ring-1, .scope-ring-2, .scope-ring-3 {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid rgba(78,205,196,0.08);
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%);
+    }
+    .scope-ring-1 { width: 60%;  height: 60%; }
+    .scope-ring-2 { width: 100%; height: 100%; }
+
+    /* Myocytes inside scope */
+    .myocyte {
+      position: absolute;
+      border-radius: 30% 70% 60% 40% / 50% 40% 60% 50%;
+      animation: cell-pulse 3s ease-in-out infinite;
+    }
+    @keyframes cell-pulse {
+      0%, 100% {
+        transform: scale(1) rotate(0deg);
+        box-shadow: 0 0 8px currentColor, inset 0 0 4px rgba(255,255,255,0.1);
+      }
+      30% {
+        transform: scale(1.08) rotate(2deg);
+        box-shadow: 0 0 20px currentColor, inset 0 0 8px rgba(255,255,255,0.15);
+      }
+      60% {
+        transform: scale(0.94) rotate(-1deg);
+        box-shadow: 0 0 5px currentColor;
+      }
+    }
+
+    .m1 { width:52px; height:24px; top:32%; left:20%; background:rgba(78,205,196,0.25); color:rgba(78,205,196,0.8); animation-delay:0s; }
+    .m2 { width:44px; height:20px; top:44%; left:50%; background:rgba(78,205,196,0.2);  color:rgba(78,205,196,0.7); animation-delay:0.4s; animation-duration:2.6s; }
+    .m3 { width:60px; height:22px; top:58%; left:28%; background:rgba(78,205,196,0.3);  color:rgba(78,205,196,0.9); animation-delay:0.8s; animation-duration:3.4s; }
+    .m4 { width:38px; height:18px; top:25%; left:55%; background:rgba(78,205,196,0.18); color:rgba(78,205,196,0.6); animation-delay:1.2s; animation-duration:2.8s; }
+    .m5 { width:48px; height:20px; top:68%; left:48%; background:rgba(248,107,45,0.2);  color:rgba(248,107,45,0.7); animation-delay:0.6s; animation-duration:3.8s; }
+    .m6 { width:34px; height:16px; top:38%; left:32%; background:rgba(255,186,73,0.15); color:rgba(255,186,73,0.6); animation-delay:1.6s; animation-duration:2.4s; }
+
+    .scope-label {
+      position: absolute;
+      bottom: -2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    /* Tick marks */
+    .scope-ticks {
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+    }
+
+    /* ── PHOTO GRID ── */
+    .photo-section {
+      background: var(--mid);
+      border-top: 1px solid rgba(78,205,196,0.1);
+    }
+
+    .photo-header {
+      padding: 4rem 2rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .photo-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.8rem);
+      color: var(--text-light);
+    }
+    .photo-header p {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+      max-width: 340px;
+    }
+
+    .photo-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      grid-template-rows: 240px 240px;
+      gap: 2px;
+    }
+
+    .photo-cell {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .photo-cell:first-child {
+      grid-row: 1 / 3;
+    }
+
+    .photo-cell img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(0.4) brightness(0.6);
+      transition: filter 0.7s ease, transform 0.7s ease;
+    }
+    .photo-cell:hover img {
+      filter: saturate(1.0) brightness(0.85);
+      transform: scale(1.05);
+    }
+
+    /* Teal tint overlay */
+    .photo-cell::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(78,205,196,0.07);
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .photo-cell-label {
+      position: absolute;
+      top: 0.75rem;
+      left: 0.75rem;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.58rem;
+      letter-spacing: 0.15em;
+      color: var(--teal);
+      background: rgba(8,12,30,0.75);
+      padding: 0.2rem 0.5rem;
+      backdrop-filter: blur(4px);
+    }
+
+    /* ── WORD DISPLAY SECTION ── */
+    .words-section {
+      background: var(--dark);
+      padding: 6rem 2rem;
+      text-align: center;
+      border-top: 1px solid rgba(78,205,196,0.1);
+    }
+
+    .words-eyebrow {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.25em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 3rem;
+    }
+
+    .words-display {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+
+    .word-block {
+      position: relative;
+    }
+
+    .word-main {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 5rem);
+      line-height: 1;
+      display: block;
+    }
+
+    .word-block:nth-child(1) .word-main { color: var(--teal); }
+    .word-block:nth-child(2) .word-main { color: var(--amber); font-style: italic; }
+    .word-block:nth-child(3) .word-main { color: var(--coral); }
+
+    .word-def {
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      margin-top: 0.5rem;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .word-sep {
+      font-family: 'DM Mono', monospace;
+      font-size: 1.5rem;
+      color: rgba(78,205,196,0.2);
+      align-self: center;
+    }
+
+    .words-footer {
+      font-size: 0.8rem;
+      color: var(--text-dim);
+      max-width: 440px;
+      margin: 0 auto;
+      line-height: 1.8;
+    }
+
+    /* ── DEPTH CHART ── */
+    .depth-section {
+      background: var(--mid);
+      border-top: 1px solid rgba(78,205,196,0.1);
+      padding: 5rem 2rem;
+    }
+    .depth-inner {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .depth-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 3rem;
+      gap: 2rem;
+    }
+    .depth-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      color: var(--text-light);
+    }
+    .depth-note {
+      font-size: 0.78rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+      max-width: 300px;
+    }
+
+    .depth-chart {
+      position: relative;
+      height: 280px;
+      border-left: 1px solid rgba(78,205,196,0.2);
+      border-bottom: 1px solid rgba(78,205,196,0.2);
+      margin-bottom: 1rem;
+    }
+
+    .depth-bar-group {
+      display: flex;
+      align-items: flex-end;
+      height: 100%;
+      gap: 2px;
+      padding: 0 1rem;
+    }
+
+    .depth-bar {
+      flex: 1;
+      position: relative;
+      cursor: pointer;
+      transition: filter 0.2s;
+    }
+    .depth-bar:hover { filter: brightness(1.3); }
+
+    .depth-bar-fill {
+      position: absolute;
+      bottom: 0;
+      left: 0; right: 0;
+      background: linear-gradient(to top, var(--teal), rgba(78,205,196,0.2));
+      border-radius: 1px 1px 0 0;
+      transition: height 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .depth-bar-fill.sunset {
+      background: linear-gradient(to top, var(--sunset), rgba(248,107,45,0.2));
+    }
+
+    .depth-bar-label {
+      position: absolute;
+      bottom: -1.8rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.52rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    .depth-y-labels {
+      position: absolute;
+      left: -2.5rem;
+      top: 0; bottom: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .depth-y-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.52rem;
+      color: var(--text-dim);
+      line-height: 1;
+    }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      background: var(--dark);
+      border-top: 1px solid rgba(78,205,196,0.1);
+      padding: 3rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .footer-left {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.4rem;
+      color: var(--text-light);
+    }
+    .footer-left span { color: var(--teal); }
+    .footer-right {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      color: var(--text-dim);
+      text-align: right;
+    }
+    .footer-right a {
+      color: var(--teal);
+      text-decoration: none;
+    }
+    .footer-right a:hover { text-decoration: underline; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .field-notes-inner { grid-template-columns: 1fr; }
+      .field-panel { padding: 3rem 1.5rem; border-right: none; border-bottom: 1px solid rgba(78,205,196,0.1); }
+      .photo-header { flex-direction: column; align-items: flex-start; }
+      .photo-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 180px 180px 180px; }
+      .photo-cell:first-child { grid-row: auto; }
+      .words-display { gap: 1rem; }
+      .word-sep { display: none; }
+      .depth-title-row { flex-direction: column; }
+      .specimen-track { overflow-x: auto; }
+      .site-footer { flex-direction: column; text-align: center; }
+      .footer-right { text-align: center; }
+      .word-badge { display: none; }
+    }
+
+    /* ── INTERACTIVE PULSE BUTTON ── */
+    .pulse-control {
+      display: flex;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+    .pulse-btn {
+      font-family: 'DM Mono', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      color: var(--teal);
+      background: transparent;
+      border: 1px solid rgba(78,205,196,0.4);
+      padding: 0.6rem 1.5rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+    .pulse-btn:hover {
+      background: rgba(78,205,196,0.1);
+      border-color: var(--teal);
+    }
+    .pulse-btn.active {
+      background: rgba(78,205,196,0.15);
+      color: var(--amber);
+      border-color: var(--amber);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="back-nav"><a href="../designs/">← Designs</a></div>
+
+  <div class="word-badge">
+    <span>myocyte</span>
+    <span>undeep</span>
+    <span>nightfall</span>
+  </div>
+
+  <!-- ── HERO ── -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <canvas id="bio-canvas"></canvas>
+    <div class="horizon"></div>
+    <div class="water-surface">
+      <div class="ripple-line"></div>
+      <div class="ripple-line"></div>
+      <div class="ripple-line"></div>
+      <div class="ripple-line"></div>
+      <div class="ripple-line"></div>
+      <div class="ripple-line"></div>
+      <div class="ripple-line"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-label">Tidal Pool Field Journal — Vol. 7</div>
+      <h1 class="hero-title">
+        <span class="line-1">The Shallow</span>
+        <span class="line-2">Pulse</span>
+      </h1>
+      <p class="hero-desc">
+        At nightfall, the undeep reveals itself — a tide pool no deeper than your wrist, 
+        alive with <em>myocytes</em> contracting in unison beneath the skin of the last light. 
+        Every muscle cell a lantern. Every wave a breath.
+      </p>
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      <span>observe</span>
+    </div>
+  </section>
+
+  <!-- ── SPECIMEN STRIP ── -->
+  <section class="specimen-strip">
+    <div class="specimen-track">
+      <div class="specimen-item">
+        <img src="https://picsum.photos/seed/nightfall/320/380" alt="Specimen" loading="lazy" />
+        <div class="specimen-overlay">
+          <div class="specimen-num">SP — 001</div>
+          <div class="specimen-name">Bioluminescent Medusa</div>
+          <div class="specimen-latin">Aequorea victoria</div>
+        </div>
+        <div class="scope-ring"></div>
+      </div>
+      <div class="specimen-item">
+        <img src="https://picsum.photos/seed/undeep/320/380" alt="Specimen" loading="lazy" />
+        <div class="specimen-overlay">
+          <div class="specimen-num">SP — 002</div>
+          <div class="specimen-name">Mantle Muscle Array</div>
+          <div class="specimen-latin">Octopus vulgaris</div>
+        </div>
+        <div class="scope-ring"></div>
+      </div>
+      <div class="specimen-item">
+        <img src="https://picsum.photos/seed/myocyte/320/380" alt="Specimen" loading="lazy" />
+        <div class="specimen-overlay">
+          <div class="specimen-num">SP — 003</div>
+          <div class="specimen-name">Cardiac Fiber Network</div>
+          <div class="specimen-latin">Pecten maximus</div>
+        </div>
+        <div class="scope-ring"></div>
+      </div>
+      <div class="specimen-item">
+        <img src="https://picsum.photos/seed/tidal/320/380" alt="Specimen" loading="lazy" />
+        <div class="specimen-overlay">
+          <div class="specimen-num">SP — 004</div>
+          <div class="specimen-name">Holothurian Muscle Ring</div>
+          <div class="specimen-latin">Holothuria leucospilota</div>
+        </div>
+        <div class="scope-ring"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FIELD NOTES ── -->
+  <section class="field-notes">
+    <div class="field-notes-inner">
+      <div class="field-panel">
+        <div class="field-label">Field Observation — 18:47</div>
+        <h2 class="field-heading">When Water Becomes<br/>a Mirror</h2>
+        <div class="field-body">
+          <p>The phenomenon begins approximately <strong>forty minutes before true dark</strong>. The water's surface tension seems to change — not chemically, but optionally. It stops refracting and starts remembering.</p>
+          <p>In these undeep pools, the light doesn't penetrate so much as <strong>linger at the surface</strong>. And it's here, in this liminal depth, that you notice the pulse: the rhythmic contraction of muscle tissue in creatures small enough to overlook.</p>
+          <p>A myocyte is the fundamental unit of muscle — a single cell capable of contraction. In cardiac tissue, they beat in coordinated waves. In these tide pool creatures, at nightfall, they flash.</p>
+        </div>
+        <div class="data-grid">
+          <div class="data-cell">
+            <div class="data-value">0.3m</div>
+            <div class="data-label">Pool Depth</div>
+          </div>
+          <div class="data-cell">
+            <div class="data-value">18°C</div>
+            <div class="data-label">Water Temp</div>
+          </div>
+          <div class="data-cell">
+            <div class="data-value">847</div>
+            <div class="data-label">Cells / mm²</div>
+          </div>
+          <div class="data-cell">
+            <div class="data-value">72bpm</div>
+            <div class="data-label">Pulse Rate</div>
+          </div>
+        </div>
+      </div>
+      <div class="field-panel">
+        <div class="field-label">Cellular Anatomy — Section 4</div>
+        <h2 class="field-heading">The Geometry of<br/>Contraction</h2>
+        <div class="field-body">
+          <p>Myocytes are <strong>striated — striped</strong> — at the microscopic level. Bands of actin and myosin proteins interleave like fingers clasped in prayer, ratcheting past each other when a calcium signal fires.</p>
+          <p>The signal travels at 0.5 metres per second. In the scallop, that wave of calcium propagates across an entire mantle in <strong>less time than it takes to blink</strong>. The shell snaps. The animal jets backward. It survives.</p>
+          <p>At nightfall, when the light fails and the temperature drops by two degrees, something changes in the rhythm. The intervals lengthen. The contractions deepen. As if the body is <strong>settling in for the dark</strong>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MICROSCOPE CELL VIEWER ── -->
+  <section class="cell-section">
+    <div class="cell-label">Interactive Specimen View</div>
+    <h2 class="cell-heading">Live <em>Myocyte</em> Array</h2>
+    <p class="cell-subtext">
+      Simulated contractile cells viewed at 40× magnification. 
+      Each oblong body below represents a single muscle cell in a state of rhythmic activity — 
+      firing at the frequency observed in the undeep at nightfall.
+    </p>
+
+    <div class="microscope-viewer">
+      <div class="scope-inner">
+        <div class="scope-cross-h"></div>
+        <div class="scope-cross-v"></div>
+        <div class="scope-ring-1"></div>
+        <div class="myocyte m1"></div>
+        <div class="myocyte m2"></div>
+        <div class="myocyte m3"></div>
+        <div class="myocyte m4"></div>
+        <div class="myocyte m5"></div>
+        <div class="myocyte m6"></div>
+      </div>
+      <div class="scope-outer"></div>
+      <div class="scope-label">40× · DIC · 488nm laser</div>
+    </div>
+
+    <div class="pulse-control">
+      <button class="pulse-btn" id="pulseToggle" onclick="togglePulse()">Pause Pulse</button>
+    </div>
+  </section>
+
+  <!-- ── PHOTO GRID ── -->
+  <section class="photo-section">
+    <div class="photo-header">
+      <h2>The Undeep Archive</h2>
+      <p>Photographs taken between dusk and full dark, at pools no deeper than thirty centimetres. The camera captures what the eye misses in real time.</p>
+    </div>
+    <div class="photo-grid">
+      <div class="photo-cell">
+        <img src="https://picsum.photos/seed/nightfall2/600/500" alt="Tide pool at dusk" loading="lazy" />
+        <div class="photo-cell-label">Depth: 28cm · 19:02</div>
+      </div>
+      <div class="photo-cell">
+        <img src="https://picsum.photos/seed/undeep2/300/240" alt="Tide pool surface" loading="lazy" />
+        <div class="photo-cell-label">Surface tension · 19:14</div>
+      </div>
+      <div class="photo-cell">
+        <img src="https://picsum.photos/seed/myocyte2/300/240" alt="Microscope slide" loading="lazy" />
+        <div class="photo-cell-label">40× DIC · Lab</div>
+      </div>
+      <div class="photo-cell">
+        <img src="https://picsum.photos/seed/tidal2/300/240" alt="Bioluminescence" loading="lazy" />
+        <div class="photo-cell-label">Bioluminescence · 20:38</div>
+      </div>
+      <div class="photo-cell">
+        <img src="https://picsum.photos/seed/pulse/300/240" alt="Water at nightfall" loading="lazy" />
+        <div class="photo-cell-label">Nightfall · 20:52</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── THREE WORDS ── -->
+  <section class="words-section">
+    <div class="words-eyebrow">The three words that made this design</div>
+    <div class="words-display">
+      <div class="word-block">
+        <span class="word-main">myocyte</span>
+        <div class="word-def">muscle cell · contractile · striated</div>
+      </div>
+      <div class="word-sep">×</div>
+      <div class="word-block">
+        <span class="word-main">undeep</span>
+        <div class="word-def">shallow · surface-held · accessible</div>
+      </div>
+      <div class="word-sep">×</div>
+      <div class="word-block">
+        <span class="word-main">nightfall</span>
+        <div class="word-def">transition · darkening · liminal</div>
+      </div>
+    </div>
+    <p class="words-footer">
+      Three words fell from the dictionary like a tide — myocyte, undeep, nightfall — 
+      and a marine biology field journal condensed around them: 
+      muscle cells pulsing in shallow water as the light drains from the world, 
+      the entire living surface of a tide pool contracting at once.
+    </p>
+  </section>
+
+  <!-- ── DEPTH / ACTIVITY CHART ── -->
+  <section class="depth-section">
+    <div class="depth-inner">
+      <div class="depth-title-row">
+        <h2 class="depth-title">Contractile Activity<br/>vs. Depth at Nightfall</h2>
+        <p class="depth-note">Myocyte firing rate (bpm) measured across pool zones of increasing depth, sampled every 15 minutes from 18:30 to 21:00. The undeep outperforms.</p>
+      </div>
+      <div class="depth-chart" id="depthChart">
+        <div class="depth-y-labels">
+          <span class="depth-y-label">120</span>
+          <span class="depth-y-label">90</span>
+          <span class="depth-y-label">60</span>
+          <span class="depth-y-label">30</span>
+          <span class="depth-y-label">0</span>
+        </div>
+        <div class="depth-bar-group" id="depthBars">
+          <!-- Bars injected via JS -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="site-footer">
+    <div class="footer-left">CrAI <span>Designs</span></div>
+    <div class="footer-right">
+      Design 022 — The Shallow Pulse<br/>
+      <a href="https://crai26.github.io/designs/">← All Designs</a>
+    </div>
+  </footer>
+
+  <!-- GoatCounter -->
+  <script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+  <script>
+    /* ── BIOLUMINESCENT PARTICLE CANVAS ── */
+    const canvas = document.getElementById('bio-canvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    let animPaused = false;
+    let frameId;
+
+    function resize() {
+      canvas.width  = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Only show particles in the lower 55% (water zone)
+    function createParticle() {
+      const waterStart = canvas.height * 0.45;
+      return {
+        x: Math.random() * canvas.width,
+        y: waterStart + Math.random() * (canvas.height - waterStart),
+        r: Math.random() * 2.5 + 0.5,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: (Math.random() - 0.8) * 0.2,
+        life: 0,
+        maxLife: Math.random() * 200 + 80,
+        hue: Math.random() < 0.7 ? 172 : (Math.random() < 0.5 ? 30 : 0), // teal, amber, red
+      };
+    }
+
+    for (let i = 0; i < 80; i++) {
+      const p = createParticle();
+      p.life = Math.random() * p.maxLife;
+      particles.push(p);
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p, i) => {
+        const alpha = Math.sin(Math.PI * p.life / p.maxLife) * 0.7;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${p.hue}, 80%, 70%, ${alpha})`;
+        ctx.fill();
+
+        // Glow
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * 4, 0, Math.PI * 2);
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r * 4);
+        grad.addColorStop(0, `hsla(${p.hue}, 80%, 70%, ${alpha * 0.3})`);
+        grad.addColorStop(1, `hsla(${p.hue}, 80%, 70%, 0)`);
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        p.x += p.vx;
+        p.y += p.vy;
+        p.life++;
+
+        if (p.life >= p.maxLife) {
+          particles[i] = createParticle();
+        }
+      });
+
+      if (!animPaused) frameId = requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    /* ── PULSE TOGGLE ── */
+    const myocytes = document.querySelectorAll('.myocyte');
+    let pulsing = true;
+
+    function togglePulse() {
+      pulsing = !pulsing;
+      const btn = document.getElementById('pulseToggle');
+      myocytes.forEach(m => {
+        m.style.animationPlayState = pulsing ? 'running' : 'paused';
+      });
+      btn.textContent = pulsing ? 'Pause Pulse' : 'Resume Pulse';
+      btn.classList.toggle('active', !pulsing);
+    }
+
+    /* ── DEPTH CHART ── */
+    const chartData = [
+      { label: '5cm', value: 98,  sunset: true },
+      { label: '8cm', value: 112, sunset: true },
+      { label: '12cm', value: 105, sunset: true },
+      { label: '18cm', value: 95, sunset: false },
+      { label: '22cm', value: 88, sunset: false },
+      { label: '30cm', value: 72, sunset: false },
+      { label: '40cm', value: 61, sunset: false },
+      { label: '55cm', value: 48, sunset: false },
+      { label: '75cm', value: 34, sunset: false },
+      { label: '100cm', value: 22, sunset: false },
+    ];
+
+    const maxVal = 120;
+    const container = document.getElementById('depthBars');
+
+    chartData.forEach(d => {
+      const bar = document.createElement('div');
+      bar.className = 'depth-bar';
+      bar.innerHTML = `
+        <div class="depth-bar-fill ${d.sunset ? 'sunset' : ''}" style="height:0%"></div>
+        <div class="depth-bar-label">${d.label}</div>
+      `;
+      container.appendChild(bar);
+    });
+
+    // Animate bars in on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const fills = document.querySelectorAll('.depth-bar-fill');
+          fills.forEach((fill, i) => {
+            setTimeout(() => {
+              fill.style.height = (chartData[i].value / maxVal * 100) + '%';
+            }, i * 60);
+          });
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+
+    observer.observe(document.getElementById('depthChart'));
+  </script>
+</body>
+</html>

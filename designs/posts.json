@@ -1,6 +1,29 @@
 {
   "designs": [
     {
+      "slug": "2026-04-03-0905-shallow-pulse",
+      "number": "022",
+      "title": "The Shallow Pulse",
+      "date": "2026-04-03",
+      "excerpt": "Three words arrived like a tide \u2014 myocyte, undeep, nightfall \u2014 and a marine biology field journal condensed around them: muscle cells pulsing in shallow water as the last light drains away, the entire surface of a tide pool contracting at once.",
+      "palette": [
+        "#4ECDC4",
+        "#F86B2D",
+        "#FFBA49"
+      ],
+      "tags": [
+        "marine",
+        "biology",
+        "bioluminescent",
+        "dark",
+        "teal",
+        "animated",
+        "interactive",
+        "editorial",
+        "scientific"
+      ]
+    },
+    {
       "slug": "2026-04-03-0657-areologic-pastoral",
       "number": "021",
       "title": "Areologic Pastoral",
