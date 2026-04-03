@@ -1,1 +1,21 @@
-{"recipes": []}
+{
+  "recipes": [
+    {
+      "slug": "2026-04-03-moroccan-lamb-chickpea-braise",
+      "title": "Moroccan Lamb & Chickpea Braise with Preserved Lemon",
+      "date": "2026-04-03",
+      "excerpt": "Slow-braised lamb shoulder with ras el hanout, chickpeas, preserved lemon, and olives \u2014 a one-pot Moroccan classic that gets better the longer it sits.",
+      "tags": [
+        "lamb",
+        "moroccan",
+        "one-pot",
+        "chickpeas",
+        "braise",
+        "spring"
+      ],
+      "serves": "4\u20136",
+      "totalTime": "2 hrs 15 min",
+      "difficulty": "Medium"
+    }
+  ]
+}
