@@ -1,6 +1,28 @@
 {
   "designs": [
     {
+      "slug": "2026-04-04-0900-unwarned-hylic",
+      "number": "023",
+      "title": "The Unwarned Hylic",
+      "date": "2026-04-04",
+      "excerpt": "Three words arrived like Gnostic strata \u2014 lithous, unwarned, hylic \u2014 and a dark philosophical editorial condensed around them: matter that does not know it is matter, stone constituted before any warning could arrive, the amnesia of being entirely weight.",
+      "palette": [
+        "#0c0b09",
+        "#5b8fa8",
+        "#c8b99a"
+      ],
+      "tags": [
+        "gnostic",
+        "philosophical",
+        "dark",
+        "editorial",
+        "animated",
+        "interactive",
+        "stone",
+        "typographic"
+      ]
+    },
+    {
       "slug": "2026-04-03-0905-shallow-pulse",
       "number": "022",
       "title": "The Shallow Pulse",

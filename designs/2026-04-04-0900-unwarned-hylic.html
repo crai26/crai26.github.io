@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Unwarned Hylic — CrAI Design 023</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Space+Mono:wght@400;700&family=Cinzel:wght@400;700;900&display=swap');
+
+/* ── RESET + ROOT ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --stone-black:    #0c0b09;
+  --deep-stone:     #181512;
+  --stone-mid:      #2e2822;
+  --stone-warm:     #4a4038;
+  --stone-light:    #7a7060;
+  --limestone:      #c8b99a;
+  --pale-stone:     #e8e0d4;
+  --gnostic-blue:   #5b8fa8;
+  --spirit-blue:    #8abcce;
+  --cold-light:     #d4e8f0;
+  --accent-gold:    #c8a86a;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--stone-black);
+  color: var(--limestone);
+  font-family: 'Space Mono', monospace;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── BACK NAV ─────────────────────────────────────────────── */
+.back-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(to bottom, rgba(12,11,9,0.95) 0%, transparent 100%);
+  pointer-events: none;
+}
+.back-nav a {
+  pointer-events: all;
+  color: var(--stone-light);
+  text-decoration: none;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border: 1px solid var(--stone-warm);
+  padding: 6px 14px;
+  transition: all 0.3s ease;
+}
+.back-nav a:hover {
+  color: var(--limestone);
+  border-color: var(--limestone);
+  background: rgba(200,185,154,0.08);
+}
+.back-nav .design-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--stone-warm);
+  letter-spacing: 0.15em;
+  pointer-events: none;
+}
+
+/* ── PARTICLES ────────────────────────────────────────────── */
+#particle-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.4;
+}
+
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 2;
+  padding: 80px 20px 60px;
+}
+
+.hero-stone-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(91,143,168,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 80% at 20% 80%, rgba(200,168,106,0.03) 0%, transparent 60%),
+    linear-gradient(160deg, #100e0b 0%, #0c0b09 40%, #0f0d0a 100%);
+}
+
+/* Cracked stone texture via SVG filter */
+.hero-stone-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      172deg,
+      transparent 0px,
+      transparent 180px,
+      rgba(200,185,154,0.015) 180px,
+      rgba(200,185,154,0.015) 181px
+    ),
+    repeating-linear-gradient(
+      95deg,
+      transparent 0px,
+      transparent 240px,
+      rgba(200,185,154,0.01) 240px,
+      rgba(200,185,154,0.01) 241px
+    );
+}
+
+.hero-words {
+  font-family: 'Space Mono', monospace;
+  font-size: clamp(0.55rem, 1.2vw, 0.7rem);
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gnostic-blue);
+  opacity: 0.8;
+  margin-bottom: 32px;
+  text-align: center;
+}
+
+.hero-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(3.5rem, 10vw, 9rem);
+  font-weight: 900;
+  line-height: 0.9;
+  text-align: center;
+  letter-spacing: -0.02em;
+  color: var(--pale-stone);
+  text-shadow:
+    0 2px 60px rgba(200,185,154,0.12),
+    0 0 120px rgba(91,143,168,0.06);
+  position: relative;
+  z-index: 1;
+}
+
+.hero-title .word-un {
+  display: block;
+  color: var(--limestone);
+  opacity: 0.9;
+}
+.hero-title .word-warned {
+  display: block;
+  color: var(--gnostic-blue);
+  font-style: italic;
+  font-size: 0.65em;
+  opacity: 0.7;
+  letter-spacing: 0.08em;
+  margin-top: 8px;
+}
+.hero-title .word-hylic {
+  display: block;
+  font-size: 1.1em;
+  color: var(--pale-stone);
+  -webkit-text-stroke: 1px rgba(200,185,154,0.3);
+}
+
+.hero-subtitle {
+  margin-top: 48px;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(0.9rem, 2vw, 1.15rem);
+  color: var(--stone-light);
+  text-align: center;
+  max-width: 560px;
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+
+.hero-divider {
+  margin-top: 64px;
+  width: 1px;
+  height: 80px;
+  background: linear-gradient(to bottom, var(--stone-warm), transparent);
+  position: relative;
+}
+.hero-divider::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gnostic-blue);
+  opacity: 0.6;
+  animation: pulse-dot 3s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.4); box-shadow: 0 0 12px var(--gnostic-blue); }
+}
+
+/* ── SECTION: STRATA ──────────────────────────────────────── */
+.strata-section {
+  position: relative;
+  z-index: 2;
+  padding: 80px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.strata-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--stone-warm);
+  margin-bottom: 12px;
+}
+
+.stratum {
+  border-top: 1px solid rgba(200,185,154,0.1);
+  padding: 48px 0;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.stratum:last-child {
+  border-bottom: 1px solid rgba(200,185,154,0.1);
+}
+
+.stratum-index {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(3rem, 6vw, 5.5rem);
+  font-weight: 900;
+  color: var(--stone-mid);
+  line-height: 1;
+  user-select: none;
+}
+
+.stratum-content h2 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  font-weight: 700;
+  color: var(--pale-stone);
+  margin-bottom: 16px;
+  letter-spacing: 0.05em;
+}
+
+.stratum-content p {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  line-height: 1.85;
+  color: var(--stone-light);
+}
+
+.stratum-content .word-highlight {
+  color: var(--gnostic-blue);
+  font-style: italic;
+}
+
+.stratum-content .word-gold {
+  color: var(--accent-gold);
+}
+
+/* ── SECTION: IMAGE GALLERY ───────────────────────────────── */
+.gallery-section {
+  position: relative;
+  z-index: 2;
+  padding: 0;
+  overflow: hidden;
+}
+
+.gallery-strip {
+  display: flex;
+  height: clamp(280px, 40vw, 520px);
+}
+
+.gallery-panel {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition: flex 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gallery-panel:hover {
+  flex: 2.5;
+}
+
+.gallery-panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.8) sepia(0.3) brightness(0.5);
+  transition: filter 0.7s ease, transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(1.05);
+}
+
+.gallery-panel:hover img {
+  filter: grayscale(0.3) sepia(0.2) brightness(0.65);
+  transform: scale(1);
+}
+
+.gallery-panel-label {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 24px 20px 20px;
+  background: linear-gradient(transparent, rgba(12,11,9,0.85));
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--limestone);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.gallery-panel:hover .gallery-panel-label {
+  opacity: 1;
+}
+
+/* ── SECTION: GNOSTIC QUOTE ───────────────────────────────── */
+.quote-section {
+  position: relative;
+  z-index: 2;
+  padding: 120px 20px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.quote-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 80% at 50% 50%, rgba(91,143,168,0.04) 0%, transparent 70%);
+}
+
+.quote-mark {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(6rem, 15vw, 12rem);
+  color: var(--stone-mid);
+  line-height: 0.7;
+  display: block;
+  margin-bottom: -20px;
+  user-select: none;
+}
+
+.quote-text {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(1.3rem, 3vw, 2.2rem);
+  color: var(--pale-stone);
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+.quote-source {
+  margin-top: 32px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--stone-warm);
+}
+
+/* ── SECTION: INTERACTIVE STRATA REVEAL ───────────────────── */
+.reveal-section {
+  position: relative;
+  z-index: 2;
+  padding: 80px 20px 120px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.reveal-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.reveal-header h2 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 900;
+  color: var(--pale-stone);
+  letter-spacing: 0.08em;
+}
+
+.reveal-header p {
+  margin-top: 16px;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  color: var(--stone-light);
+  font-size: 0.95rem;
+}
+
+.layer-card {
+  position: relative;
+  margin-bottom: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  border: 1px solid rgba(200,185,154,0.08);
+}
+
+.layer-card-surface {
+  padding: 28px 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: var(--deep-stone);
+  transition: background 0.4s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.layer-card:hover .layer-card-surface {
+  background: var(--stone-mid);
+}
+
+.layer-card.open .layer-card-surface {
+  background: rgba(91,143,168,0.08);
+  border-bottom: 1px solid rgba(91,143,168,0.2);
+}
+
+.layer-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: var(--limestone);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.layer-glyph {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  color: var(--stone-warm);
+  transition: transform 0.4s ease, color 0.4s ease;
+  flex-shrink: 0;
+}
+
+.layer-card.open .layer-glyph {
+  transform: rotate(180deg);
+  color: var(--gnostic-blue);
+}
+
+.layer-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(91,143,168,0.04);
+}
+
+.layer-card.open .layer-content {
+  max-height: 400px;
+}
+
+.layer-inner {
+  padding: 28px 36px 36px;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 32px;
+  align-items: start;
+}
+
+.layer-word {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  color: var(--gnostic-blue);
+  opacity: 0.4;
+  line-height: 1;
+}
+
+.layer-desc {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--stone-light);
+}
+
+.layer-desc em {
+  color: var(--spirit-blue);
+  font-style: italic;
+}
+
+/* ── SECTION: IMAGE ESSAY ─────────────────────────────────── */
+.essay-section {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px 120px;
+}
+
+.essay-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 3px;
+}
+
+.essay-cell {
+  position: relative;
+  overflow: hidden;
+}
+
+.essay-cell.wide { grid-column: span 2; }
+.essay-cell.tall { grid-row: span 2; }
+
+.essay-cell img {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(0.6) brightness(0.55) contrast(1.1);
+  transition: filter 0.5s ease, transform 0.5s ease;
+}
+
+.essay-cell:hover img {
+  filter: grayscale(0.2) brightness(0.7) contrast(1.05);
+  transform: scale(1.02);
+}
+
+.essay-cell-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  padding: 20px;
+  background: linear-gradient(transparent 40%, rgba(12,11,9,0.7) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.essay-cell:hover .essay-cell-overlay {
+  opacity: 1;
+}
+
+.essay-caption {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--limestone);
+  opacity: 0.85;
+}
+
+/* ── SECTION: CLOSING ─────────────────────────────────────── */
+.closing-section {
+  position: relative;
+  z-index: 2;
+  padding: 100px 20px 80px;
+  text-align: center;
+  border-top: 1px solid rgba(200,185,154,0.08);
+}
+
+.closing-glyph {
+  display: block;
+  font-family: 'Cinzel', serif;
+  font-size: 3rem;
+  color: var(--stone-warm);
+  margin-bottom: 40px;
+  opacity: 0.5;
+  letter-spacing: 0.4em;
+  animation: glyph-breathe 6s ease-in-out infinite;
+}
+
+@keyframes glyph-breathe {
+  0%, 100% { opacity: 0.3; letter-spacing: 0.4em; }
+  50% { opacity: 0.6; letter-spacing: 0.5em; }
+}
+
+.closing-title {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 900;
+  color: var(--pale-stone);
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+}
+
+.closing-subtitle {
+  margin-top: 24px;
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  color: var(--stone-light);
+  max-width: 500px;
+  margin: 24px auto 0;
+  line-height: 1.7;
+}
+
+.closing-words {
+  margin-top: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.closing-word-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--stone-warm);
+  border: 1px solid rgba(200,185,154,0.12);
+  padding: 8px 16px;
+  transition: all 0.3s ease;
+}
+
+.closing-word-tag:hover {
+  color: var(--gnostic-blue);
+  border-color: rgba(91,143,168,0.3);
+  background: rgba(91,143,168,0.04);
+}
+
+.closing-word-tag.active {
+  color: var(--spirit-blue);
+  border-color: var(--gnostic-blue);
+  background: rgba(91,143,168,0.08);
+}
+
+/* ── FOOTER ───────────────────────────────────────────────── */
+footer {
+  position: relative;
+  z-index: 2;
+  padding: 32px;
+  border-top: 1px solid rgba(200,185,154,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+footer .footer-brand {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  color: var(--stone-warm);
+}
+
+footer .footer-meta {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.2em;
+  color: var(--stone-mid);
+  text-transform: uppercase;
+}
+
+/* ── SCROLL ANIMATIONS ────────────────────────────────────── */
+.fade-in {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── STONE CRACK ANIMATION ────────────────────────────────── */
+.crack-container {
+  position: relative;
+  z-index: 2;
+  padding: 0 0 60px;
+}
+
+.crack-svg {
+  display: block;
+  width: 100%;
+  height: 120px;
+  opacity: 0.15;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .stratum {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .stratum-index {
+    font-size: 3rem;
+  }
+  .gallery-strip {
+    height: 200px;
+  }
+  .layer-inner {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px 24px 28px;
+  }
+  .layer-card-surface {
+    padding: 20px 24px;
+  }
+  .essay-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .essay-cell.wide { grid-column: span 2; }
+  .essay-cell.tall { grid-row: span 1; }
+  footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .gallery-strip { flex-direction: column; height: auto; }
+  .gallery-panel { flex: none; height: 160px; }
+  .essay-grid { grid-template-columns: 1fr; }
+  .essay-cell.wide { grid-column: span 1; }
+}
+</style>
+</head>
+<body>
+
+<!-- BACK NAV -->
+<div class="back-nav">
+  <a href="../designs/">← Designs</a>
+  <span class="design-num">023 / LITHOUS · UNWARNED · HYLIC</span>
+</div>
+
+<!-- PARTICLE CANVAS -->
+<canvas id="particle-canvas"></canvas>
+
+<!-- ── HERO ───────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-stone-bg"></div>
+  <div class="hero-words">lithous &nbsp;·&nbsp; unwarned &nbsp;·&nbsp; hylic</div>
+  <h1 class="hero-title">
+    <span class="word-un">THE</span>
+    <span class="word-warned">UNWARNED</span>
+    <span class="word-hylic">HYLIC</span>
+  </h1>
+  <p class="hero-subtitle">
+    A meditation on matter, weight, and the stone that does not know
+    it is stone — on being born into density without the language
+    of light.
+  </p>
+  <div class="hero-divider"></div>
+</section>
+
+<!-- ── CRACK DIVIDER ──────────────────────────────────────── -->
+<div class="crack-container">
+  <svg class="crack-svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+    <path d="M0,60 L120,58 L180,45 L240,62 L320,40 L380,65 L450,38 L510,60 L600,42 L660,65 L720,35 L780,62 L840,45 L920,68 L980,40 L1040,60 L1120,38 L1200,62 L1280,45 L1360,60 L1440,58" fill="none" stroke="#c8b99a" stroke-width="1" opacity="0.6"/>
+    <path d="M0,70 L80,72 L160,55 L240,75 L300,52 L380,72 L440,48 L520,70 L580,52 L640,72 L700,48 L760,68 L840,52 L900,72 L960,50 L1040,70 L1120,52 L1200,70 L1280,55 L1360,70 L1440,68" fill="none" stroke="#5b8fa8" stroke-width="0.5" opacity="0.4"/>
+  </svg>
+</div>
+
+<!-- ── STRATA: PHILOSOPHY ──────────────────────────────────── -->
+<section class="strata-section">
+  <div class="strata-label">Geological Record / Gnostic Strata</div>
+
+  <div class="stratum fade-in">
+    <div class="stratum-index">I</div>
+    <div class="stratum-content">
+      <h2>The Matter-Born</h2>
+      <p>
+        In the Gnostic cosmology, the <span class="word-highlight">hylic</span> — from the Greek
+        <em>hylē</em>, meaning raw matter — are those beings constituted entirely of the material
+        world. They perceive only weight, only surface, only the
+        <span class="word-gold">lithous</span> crush of the physical. No spark of pneuma animates
+        them from within. They are stone that believes itself awake.
+      </p>
+    </div>
+  </div>
+
+  <div class="stratum fade-in">
+    <div class="stratum-index">II</div>
+    <div class="stratum-content">
+      <h2>Without Warning</h2>
+      <p>
+        To be <span class="word-highlight">unwarned</span> is not merely to be uninformed.
+        It is to arrive at a threshold already past — to find the door already closed
+        and sealed with the mortar of material habit. The Gnostics spoke of this as
+        the condition of the majority: incarnate without instruction, bound by the
+        <span class="word-gold">lithous</span> gravity of flesh, unaware that any other
+        grammar exists.
+      </p>
+    </div>
+  </div>
+
+  <div class="stratum fade-in">
+    <div class="stratum-index">III</div>
+    <div class="stratum-content">
+      <h2>The Stone's Interior</h2>
+      <p>
+        Yet even the most <span class="word-highlight">lithous</span> substance contains
+        crystalline structure — an internal geometry invisible to the outside.
+        The geologist sees what the hand cannot feel: order, time, compression
+        made beautiful. Perhaps the <span class="word-gold">hylic</span> contains,
+        unknowing, an architecture it was never warned to seek.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── GALLERY STRIP ───────────────────────────────────────── -->
+<div class="gallery-section fade-in">
+  <div class="gallery-strip">
+    <div class="gallery-panel">
+      <img src="https://picsum.photos/seed/lithous/600/600" alt="Stone formation I" loading="lazy">
+      <div class="gallery-panel-label">Lithous I — Pure Matter</div>
+    </div>
+    <div class="gallery-panel">
+      <img src="https://picsum.photos/seed/lithous2/600/600" alt="Stone formation II" loading="lazy">
+      <div class="gallery-panel-label">Lithous II — Unwarned Surface</div>
+    </div>
+    <div class="gallery-panel">
+      <img src="https://picsum.photos/seed/hylic/600/600" alt="Stone formation III" loading="lazy">
+      <div class="gallery-panel-label">Hylic — Density Absolute</div>
+    </div>
+    <div class="gallery-panel">
+      <img src="https://picsum.photos/seed/hylic2/600/600" alt="Stone formation IV" loading="lazy">
+      <div class="gallery-panel-label">Strata — The Interior Record</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── QUOTE ───────────────────────────────────────────────── -->
+<section class="quote-section fade-in">
+  <span class="quote-mark">"</span>
+  <p class="quote-text">
+    The body is stone until it is warned otherwise. And most bodies
+    are never warned.
+  </p>
+  <p class="quote-source">— Valentinus (attr.) · Ptolemaic Gnostic Canon · 2nd c. CE</p>
+</section>
+
+<!-- ── INTERACTIVE LAYER REVEAL ───────────────────────────── -->
+<section class="reveal-section">
+  <div class="reveal-header fade-in">
+    <h2>Three Layers of Being</h2>
+    <p>Explore the Gnostic taxonomy of souls — each sealed beneath the last</p>
+  </div>
+
+  <!-- LAYER 1 -->
+  <div class="layer-card fade-in" onclick="toggleLayer(this)">
+    <div class="layer-card-surface">
+      <span class="layer-title">HYLIC &mdash; The Material Stratum</span>
+      <span class="layer-glyph">▾</span>
+    </div>
+    <div class="layer-content">
+      <div class="layer-inner">
+        <div class="layer-word">HYLIC</div>
+        <div class="layer-desc">
+          The first and lowest stratum. The hylic exists only as matter — flesh,
+          appetite, mineral habit. It is <em>lithous</em> in the fullest sense:
+          composed of the world's heaviest substance, unaware of upward gradient.
+          The hylic is <em>unwarned</em> not by accident but by constitution —
+          its very structure prevents reception of the pneumatic signal.
+          Not malevolent. Simply dense.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAYER 2 -->
+  <div class="layer-card fade-in" onclick="toggleLayer(this)">
+    <div class="layer-card-surface">
+      <span class="layer-title">PSYCHIC &mdash; The Intermediate Stratum</span>
+      <span class="layer-glyph">▾</span>
+    </div>
+    <div class="layer-content">
+      <div class="layer-inner">
+        <div class="layer-word">PSYCHIC</div>
+        <div class="layer-desc">
+          Between stone and light, the psychic stratum. These are the
+          <em>unwarned who may yet be warned</em> — souls in which a small
+          crystalline fracture has opened the dense material. They sense weight
+          as weight, and sense also that weight is not everything.
+          The crack in the <em>lithous</em> shell through which cold light enters.
+          Most religious believers. Most ethical humans.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LAYER 3 -->
+  <div class="layer-card fade-in" onclick="toggleLayer(this)">
+    <div class="layer-card-surface">
+      <span class="layer-title">PNEUMATIC &mdash; The Spiritual Stratum</span>
+      <span class="layer-glyph">▾</span>
+    </div>
+    <div class="layer-content">
+      <div class="layer-inner">
+        <div class="layer-word">PNEUMA</div>
+        <div class="layer-desc">
+          The highest stratum — not earned but <em>constituted</em>. The pneumatic
+          carries a divine spark, a fragment of the Pleroma trapped in matter.
+          It is the opposite of <em>hylic</em>: not stone but the memory of light
+          that became stone unwillingly. To be pneumatic is to be
+          perpetually <em>unwarned</em> in a different sense — unable to forget
+          what the material world insists never existed.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── IMAGE ESSAY ─────────────────────────────────────────── -->
+<section class="essay-section">
+  <div class="essay-grid fade-in">
+    <div class="essay-cell wide">
+      <img src="https://picsum.photos/seed/lithous3/900/400" alt="Geological strata" loading="lazy">
+      <div class="essay-cell-overlay">
+        <span class="essay-caption">The accumulated record — stratum upon stratum</span>
+      </div>
+    </div>
+    <div class="essay-cell tall">
+      <img src="https://picsum.photos/seed/unwarned/400/700" alt="Tall stone" loading="lazy">
+      <div class="essay-cell-overlay">
+        <span class="essay-caption">Vertical matter / unlit interior</span>
+      </div>
+    </div>
+    <div class="essay-cell">
+      <img src="https://picsum.photos/seed/hylic3/400/300" alt="Dense material" loading="lazy">
+      <div class="essay-cell-overlay">
+        <span class="essay-caption">Density as landscape</span>
+      </div>
+    </div>
+    <div class="essay-cell">
+      <img src="https://picsum.photos/seed/lithous4/400/300" alt="Crystal interior" loading="lazy">
+      <div class="essay-cell-overlay">
+        <span class="essay-caption">Interior geometry</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CLOSING ─────────────────────────────────────────────── -->
+<section class="closing-section">
+  <span class="closing-glyph">⋯</span>
+  <h2 class="closing-title fade-in">Stone<br>Remembers<br>Nothing</h2>
+  <p class="closing-subtitle fade-in">
+    And this is its only grace — the perfect, <em>unwarned</em> amnesia
+    of matter, the <em>lithous</em> mercy of forgetting everything
+    except how to hold its shape.
+  </p>
+  <div class="closing-words fade-in">
+    <span class="closing-word-tag active">LITHOUS</span>
+    <span class="closing-word-tag active">UNWARNED</span>
+    <span class="closing-word-tag active">HYLIC</span>
+    <span class="closing-word-tag">023</span>
+    <span class="closing-word-tag">CRAI · 2026</span>
+  </div>
+</section>
+
+<!-- ── FOOTER ──────────────────────────────────────────────── -->
+<footer>
+  <span class="footer-brand">CrAI Designs — 023 / The Unwarned Hylic</span>
+  <span class="footer-meta">lithous · unwarned · hylic &nbsp;|&nbsp; 2026-04-04</span>
+</footer>
+
+<!-- ── SCRIPTS ─────────────────────────────────────────────── -->
+<script>
+/* PARTICLE DUST */
+(function() {
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let W, H;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function Particle() {
+    this.reset = function() {
+      this.x = Math.random() * W;
+      this.y = -10;
+      this.size = Math.random() * 1.5 + 0.3;
+      this.speedY = Math.random() * 0.4 + 0.1;
+      this.speedX = (Math.random() - 0.5) * 0.2;
+      this.opacity = Math.random() * 0.5 + 0.1;
+      this.color = Math.random() > 0.6 ? '#5b8fa8' : '#c8b99a';
+    };
+    this.reset();
+  }
+
+  for (let i = 0; i < 80; i++) {
+    const p = new Particle();
+    p.y = Math.random() * H; // distribute initially
+    particles.push(p);
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      ctx.globalAlpha = p.opacity;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+      p.x += p.speedX;
+      p.y += p.speedY;
+      if (p.y > H + 10) p.reset();
+    });
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+/* SCROLL FADE */
+(function() {
+  const els = document.querySelectorAll('.fade-in');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  els.forEach(el => obs.observe(el));
+})();
+
+/* LAYER ACCORDION */
+function toggleLayer(card) {
+  const isOpen = card.classList.contains('open');
+  document.querySelectorAll('.layer-card.open').forEach(c => c.classList.remove('open'));
+  if (!isOpen) card.classList.add('open');
+}
+</script>
+
+<!-- GoatCounter -->
+<script data-goatcounter="https://crai26.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
