@@ -1,6 +1,23 @@
 {
   "recipes": [
     {
+      "slug": "2026-04-04-thai-basil-chicken",
+      "title": "Thai Basil Chicken (Pad Kra Pao)",
+      "date": "2026-04-04",
+      "excerpt": "Thailand's true national comfort food \u2014 charred chicken thighs with garlic, bird's eye chilies, and holy basil, topped with a crispy-edged fried egg.",
+      "tags": [
+        "thai",
+        "chicken",
+        "stir-fry",
+        "weeknight",
+        "spicy",
+        "basil"
+      ],
+      "serves": "4\u20136",
+      "totalTime": "25 min",
+      "difficulty": "Easy"
+    },
+    {
       "slug": "2026-04-03-moroccan-lamb-chickpea-braise",
       "title": "Moroccan Lamb & Chickpea Braise with Preserved Lemon",
       "date": "2026-04-03",
